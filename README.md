@@ -1,19 +1,28 @@
+# OpenFermi 
 
-Compute Layer:  
-> this is going to be an initial commit for this repo and open version of this project : fermi.ai
-> everything is vibe coded 
-> main models being used : deepseek v3.2 terminus with opencode 
-> tech stack is this : 
-  >> frontend : tailwind, shadcn, nextjs 
-  >> backend : next server components (eventually would move them to java backend) 
-  >> db layer : postgres in AWS + prisma for migrations etc 
-  >> auth : better auth with JWT 
-  >> more things : TLDRAW for canvas and vercel ai for agent sdk 
-   
+This is a quick prototype to enable all the major features that kids in K12 need to succeed in Jee, Neet and other major papers that are there 
 
-Data Layer : 
-> Jee Past Papers and a big llm to find out if the student is doing this correctly or now 
-> random samples Jee Past Papers to enable users to learn a quick question / take a test 
-> text to voice over websockets (courtesy : cartesia (Karan G has cooked here; this is the best product ever)) 
+# Features : 
+
+1. Canvas to implement past questions and use AI to see if the answers are good and learn from mistakes 
+2. Save progress and choose from a random subset of questions to work on 
 
 
+## Compute Layer
+
+This is an initial commit for the repo and an open version of the project [fermi.ai](https://fermi.ai). Everything is vibe-coded.
+
+**Models:** DeepSeek v3.2 Terminus with OpenCode.
+
+**Tech stack:**
+- **Frontend:** Tailwind, shadcn, Next.js
+- **Backend:** Next.js server components (planned migration to a Java backend)
+- **DB:** Postgres on AWS, Prisma for migrations
+- **Auth:** Better Auth with JWT
+- **Other:** TLDraw for the canvas, Vercel AI for the agent SDK
+
+## Data Layer
+
+- JEE past papers plus a large LLM to assess whether the student’s work is correct or not
+- Random samples from JEE past papers for quick practice and tests
+- Text-to-voice over WebSockets (courtesy Cartesia—Karan G has cooked here; best product ever)
