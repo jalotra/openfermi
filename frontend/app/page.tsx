@@ -14,7 +14,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold">Learn with Friends</span>
           </div>
-          <Link href="/canvas/1">
+          <Link href="/sessions/1">
             <Button>Get Started</Button>
           </Link>
         </div>
@@ -37,7 +37,7 @@ export default function LandingPage() {
             learning like never before.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/canvas/1">
+            <Link href="/sessions/1">
               <Button size="lg" className="text-lg px-8">
                 Start Learning
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -169,7 +169,7 @@ export default function LandingPage() {
               Join thousands of students and educators using Canvas Interface to
               enhance their learning experience.
             </p>
-            <Link href="/canvas/1">
+            <Link href="/sessions/1">
               <Button size="lg" className="text-lg px-8">
                 Start Your First Session
                 <ArrowRight className="ml-2 h-5 w-5" />
