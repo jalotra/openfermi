@@ -164,7 +164,6 @@ export default function LandingPage() {
       <section className="container mx-auto px-6 py-20">
         <Card className="p-12 bg-gradient-to-r from-primary/10 to-blue-100/50 border-2">
           <div className="max-w-3xl mx-auto text-center">
-            <Zap className="h-12 w-12 text-primary mx-auto mb-4" />
             <h2 className="text-4xl font-bold mb-4">Ready to Get Started?</h2>
             <p className="text-xl text-gray-700 mb-8">
               Join thousands of students and educators using Canvas Interface to
@@ -172,7 +171,7 @@ export default function LandingPage() {
             </p>
             <Link href="/canvas/1">
               <Button size="lg" className="text-lg px-8">
-                Start Your First Canvas
+                Start Your First Session
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
