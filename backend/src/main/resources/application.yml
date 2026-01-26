@@ -21,7 +21,7 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        default_schema: ${DB_SCHEMA:-public}
+        default_schema: ${DB_SCHEMA:public}
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 management:
   endpoints:

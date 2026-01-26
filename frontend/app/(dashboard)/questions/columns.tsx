@@ -14,16 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import { QuestionDto } from "@/lib/backend"
 
-export type Question = {
-  id: string
-  title: string
-  question: string
-  difficulty: "Easy" | "Medium" | "Hard"
-  category?: string
-}
-
-export const columns: ColumnDef<Question>[] = [
+export const columns: ColumnDef<QuestionDto>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -102,7 +95,7 @@ export const columns: ColumnDef<Question>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(question.id)}
+              onClick={() => navigator.clipboard.writeText(question.id || '')}
             >
               Copy Question ID
             </DropdownMenuItem>

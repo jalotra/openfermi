@@ -1,33 +1,47 @@
 import { columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
-import { Plus, RefreshCw } from "lucide-react"
-import { QuestionsClient } from "./questions-client"
+import { Plus } from "lucide-react"
+import { backendClient } from "@/lib/backend-client"
+import { QuestionDto } from "@/lib/backend"
+import { GenericResponseListQuestionDto } from "@/lib/backend/types.gen"
+import { AxiosError } from "axios"
 
-async function getQuestions() {
+export default async function QuestionsPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined }
+}) {
+  const { pageNumber, pageSize } = await searchParams
+
+  let questions: QuestionDto[] = []
+  let error: string | null = null
+
   try {
-    // Use absolute URL for server-side fetch
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-    const host = process.env.VERCEL_URL || 'localhost:3000'
-    const baseUrl = `${protocol}://${host}`
-    
-    const response = await fetch(`${baseUrl}/api/questions`, {
-      cache: 'no-store' // Always fetch fresh data
+    const response = await backendClient.get<GenericResponseListQuestionDto>({
+      url: '/questions',
+      query: {
+        page: pageNumber,
+        size: pageSize,
+      },
     })
     
-    if (response.ok) {
-      return await response.json()
+    if ('error' in response && response.error) {
+      const errorData = response.error as any
+      error = errorData?.message || errorData?.response?.data?.message || 'Failed to fetch questions'
+    } else if (response.data) {
+      const genericResponse = response.data as GenericResponseListQuestionDto
+      if (genericResponse.data) {
+        questions = genericResponse.data
+      }
     }
-    return { questions: [], sources: [] }
   } catch (err) {
-    console.error('Error fetching questions:', err)
-    return { questions: [], sources: [], error: 'Failed to connect to API' }
+    if (err instanceof AxiosError) {
+      error = err.response?.data?.message || err.message || 'Failed to fetch questions'
+    } else {
+      error = err instanceof Error ? err.message : 'Failed to fetch questions'
+    }
   }
-}
-
-export default async function QuestionsPage() {
-  // Fetch questions from API
-  const { questions = [], sources = [], error = null } = await getQuestions()
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-white">
@@ -40,14 +54,8 @@ export default async function QuestionsPage() {
                 ? `${questions.length} questions loaded from extracted JSON files`
                 : 'Manage and browse through your educational questions.'}
             </p>
-            {sources.length > 0 && (
-              <p className="text-sm text-muted-foreground mt-1">
-                Sources: {sources.join(', ')}
-              </p>
-            )}
           </div>
           <div className="flex gap-2">
-            <QuestionsClient />
             <Button>
               <Plus className="mr-2 h-4 w-4" />
               Add Question
@@ -59,7 +67,7 @@ export default async function QuestionsPage() {
           <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <p className="text-yellow-800">{error}</p>
             <p className="text-sm text-yellow-600 mt-2">
-              Make sure you've run the extraction script: <code className="bg-yellow-100 px-1 rounded">npm run extract</code> in the scripts directory
+              No questions found.
             </p>
           </div>
         ) : questions.length === 0 ? (
@@ -70,9 +78,9 @@ export default async function QuestionsPage() {
             </p>
           </div>
         ) : (
-          <DataTable 
+          <DataTable<QuestionDto, string> 
             columns={columns} 
-            data={questions as any} 
+            data={questions} 
             filterColumn="title"
           />
         )}

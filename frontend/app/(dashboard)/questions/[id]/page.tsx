@@ -6,31 +6,19 @@ import { Separator } from "@/components/ui/separator"
 import { LatexRenderer } from "@/components/ui/latex-renderer"
 import { Play, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { backendClient } from "@/lib/backend-client"
+import { GenericResponseQuestionDto } from "@/lib/backend/types.gen"
 
-async function getQuestion(id: string) {
-  try {
-    // Use absolute URL for server-side fetch
-    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-    const host = process.env.VERCEL_URL || 'localhost:3000'
-    const baseUrl = `${protocol}://${host}`
-    
-    const response = await fetch(`${baseUrl}/api/questions/${id}`, {
-      cache: 'no-store'
-    })
-    
-    if (!response.ok) {
-      return null
-    }
-    
-    return await response.json()
-  } catch (error) {
-    console.error('Error fetching question:', error)
-    return null
-  }
-}
 
 export default async function QuestionDetailsPage({ params }: { params: { id: string } }) {
-  const question = await getQuestion(params.id)
+  const { id } = await params
+  const response = await backendClient.get<GenericResponseQuestionDto>({
+    url: `/questions/${id}`
+  })
+  if ('error' in response && response.error) {
+    notFound()
+  }
+  const question = response.data.data?.data
   
   if (!question) {
     notFound()

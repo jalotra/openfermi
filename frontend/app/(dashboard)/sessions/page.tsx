@@ -1,42 +1,76 @@
-"use client"
+import { ListChecks } from "lucide-react"
+import { backendClient } from "@/lib/backend-client"
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Play, ListChecks } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { mockQuestions } from "@/lib/data"
+interface GenericResponse<T> {
+  data: T
+  message: string
+}
 
-export default function SessionsPage() {
-  const router = useRouter()
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+interface QuestionDto {
+  id: string
+  questionText: string
+  subject: string
+  examType: string
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD'
+  options: string[]
+  correctAnswer?: string
+  explanation?: string
+  imageUrls?: string[]
+  year?: number
+  paperNumber?: number
+  questionNumber?: number
+  tags?: string[]
+  topic?: string
+  marks?: number
+  negativeMarks?: number
+  isActive?: boolean
+}
 
-  const toggleQuestion = (id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
+// Map backend QuestionDto to frontend Question format for sessions page
+function mapQuestionDtoToQuestion(dto: QuestionDto) {
+  // Convert difficulty from EASY/MEDIUM/HARD to Easy/Medium/Hard
+  const difficultyMap: Record<string, "Easy" | "Medium" | "Hard"> = {
+    'EASY': 'Easy',
+    'MEDIUM': 'Medium',
+    'HARD': 'Hard'
+  }
+
+  return {
+    id: dto.id,
+    title: dto.questionText.substring(0, 100) + (dto.questionText.length > 100 ? '...' : ''),
+    difficulty: difficultyMap[dto.difficulty] || 'Medium'
+  }
+}
+
+async function getQuestions() {
+  try {
+    const response = await backendClient.get<GenericResponse<QuestionDto[]>>({
+      url: '/questions',
+      query: {
+        // Optional pagination params
+      }
     })
-  }
 
-  const selectAll = () => {
-    if (selectedIds.size === mockQuestions.length) {
-      setSelectedIds(new Set())
-    } else {
-      setSelectedIds(new Set(mockQuestions.map((q) => q.id)))
+    if (response.error) {
+      console.error('Backend API error:', response.error)
+      return []
     }
-  }
 
-  const handleCreateSession = () => {
-    const ids = Array.from(selectedIds)
-    if (ids.length === 0) return
-    const query = ids.length > 1 ? `?ids=${ids.join(",")}` : ""
-    router.push(`/sessions/${ids[0]}${query}`)
+    if (response.data) {
+      const genericResponse = response.data as GenericResponse<QuestionDto[]>
+      if (genericResponse.data) {
+        return genericResponse.data.map(mapQuestionDtoToQuestion)
+      }
+    }
+    return []
+  } catch (err) {
+    console.error('Error fetching questions:', err)
+    return []
   }
+}
 
-  const selectedCount = selectedIds.size
+export default async function SessionsPage() {
+  const questions = await getQuestions()
 
   return (
     <div className="flex flex-1 flex-col min-h-0 bg-background">
@@ -50,7 +84,7 @@ export default function SessionsPage() {
           </p>
         </div>
 
-        {mockQuestions.length === 0 ? (
+        {questions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4 rounded-lg border border-dashed border-muted-foreground/25 bg-muted/20">
             <ListChecks className="h-12 w-12 text-muted-foreground/50 mb-4" />
             <p className="text-sm font-medium text-foreground">
@@ -62,66 +96,13 @@ export default function SessionsPage() {
             </p>
           </div>
         ) : (
-          <>
-            <div className="flex items-center justify-between gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={selectAll}
-                className="text-muted-foreground"
-              >
-                {selectedIds.size === mockQuestions.length
-                  ? "Deselect all"
-                  : "Select all"}
-              </Button>
-              {selectedCount > 0 && (
-                <span className="text-xs text-muted-foreground">
-                  {selectedCount} selected
-                </span>
-              )}
-            </div>
-
-            <div className="rounded-lg border border-border bg-card divide-y divide-border overflow-hidden">
-              {mockQuestions.map((q) => (
-                <label
-                  key={q.id}
-                  className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-muted/30 transition-colors"
-                >
-                  <Checkbox
-                    checked={selectedIds.has(q.id)}
-                    onCheckedChange={() => toggleQuestion(q.id)}
-                    aria-label={`Select ${q.title}`}
-                  />
-                  <span className="flex-1 text-sm font-medium truncate">
-                    {q.title}
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className={
-                      q.difficulty === "Easy"
-                        ? "bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-400"
-                        : q.difficulty === "Medium"
-                          ? "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400"
-                          : "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-400"
-                    }
-                  >
-                    {q.difficulty}
-                  </Badge>
-                </label>
-              ))}
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <Button
-                onClick={handleCreateSession}
-                disabled={selectedCount === 0}
-              >
-                <Play className="mr-2 h-4 w-4" />
-                Create session
-              </Button>
-            </div>
-          </>
-        )}
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              Sessions
+            </h1>
+          </div>
+        )
+        }
       </div>
     </div>
   )

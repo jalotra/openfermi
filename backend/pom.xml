@@ -257,31 +257,6 @@
 	</dependencyManagement>
 	<build>
 		<plugins>
-		<plugin>
-				<groupId>org.openapitools</groupId>
-				<artifactId>openapi-generator-maven-plugin</artifactId>
-				<version>7.7.0</version>
-				<executions>
-					<execution>
-					<goals>
-						<goal>generate</goal>
-					</goals>
-					<configuration>
-						<inputSpec>${project.basedir}/src/main/resources/python-backend/openapi.yml</inputSpec>
-					<generatorName>spring</generatorName>
-					<configOptions>
-						<additionalModelTypeAnnotations>@lombok.Data @lombok.AllArgsConstructor @lombok.Builder</additionalModelTypeAnnotations>
-					</configOptions>
-					<generateApis>false</generateApis>
-					<generateSupportingFiles>false</generateSupportingFiles>
-					<generateApiDocumentation>false</generateApiDocumentation>
-							<configOptions>
-								<useJakartaEe>true</useJakartaEe>
-							</configOptions>
-					</configuration>
-				</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
