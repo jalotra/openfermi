@@ -13,7 +13,7 @@ const openrouter = createOpenRouter({
 
 const optionSchema = z.object({
   label: z.string().describe('The option label (A, B, C, D, etc.)'),
-  text: z.string().describe('The option text content')
+  text: z.string().describe('The option text content'),
 });
 
 const questionSchema = z.object({
@@ -27,12 +27,12 @@ const questionSchema = z.object({
   isMultiPart: z.boolean().describe('Whether this is a multi-part question'),
   parts: z.array(z.object({
     partLabel: z.string().describe('Part label (e.g., "a", "b", "i", "ii")'),
-    partText: z.string().describe('Part question text')
-  })).optional().describe('Sub-parts if this is a multi-part question')
+    partText: z.string().describe('Part question text'),
+  })).optional().describe('Sub-parts if this is a multi-part question'),
 });
 
 const extractionSchema = z.object({
-  questions: z.array(questionSchema).describe('Array of extracted questions from the page')
+  questions: z.array(questionSchema).describe('Array of extracted questions from the page'),
 });
 
 export interface ExtractedQuestion {
@@ -41,30 +41,18 @@ export interface ExtractedQuestion {
   options: Array<{ label: string; text: string }>;
   hasImages: boolean;
   imageIndices?: number[];
-  images?: any[]; // Not used in image-based approach
+  images?: never;
   subject?: string;
   topic?: string;
   isMultiPart: boolean;
   parts?: Array<{ partLabel: string; partText: string }>;
   pageNumber: number;
-  pageImagePath?: string; // Path to the page image
+  pageImagePath?: string;
 }
 
-/**
- * Extract questions from a PDF page image using AI agent (vision-based)
- */
-export async function extractQuestionsFromPageImage(
-  pageImage: PageImage,
-  model: string = 'google/gemini-3-flash-preview'
-): Promise<ExtractedQuestion[]> {
-  try {
-    // Prepare content with image
-    const content: Array<{ type: 'text' | 'image'; text?: string; image?: string }> = [
-      {
-        type: 'text',
-        text: `You are an expert at extracting questions from JEE (Joint Entrance Examination) papers. 
+const EXTRACTION_PROMPT = (pageNumber: number) => `You are an expert at extracting questions from JEE (Joint Entrance Examination) papers. 
 
-Extract all questions from this page image (Page ${pageImage.pageNumber}). 
+Extract all questions from this page image (Page ${pageNumber}). 
 
 Instructions:
 1. Look at the entire page image carefully
@@ -76,41 +64,56 @@ Instructions:
 7. Preserve all mathematical notation and equations exactly as they appear in the image
 8. Extract text exactly as shown, including any special formatting
 
-Be thorough and extract all questions visible on this page.`
-      },
-      {
-        type: 'image',
-        image: pageImage.base64
-      }
-    ];
+Be thorough and extract all questions visible on this page.`;
 
+function isApiError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const message = 'message' in error ? String(error.message) : String(error);
+  return message.includes('API') || message.includes('401') || message.includes('auth');
+}
+
+export async function extractQuestionsFromPageImage(
+  pageImage: PageImage,
+  model: string = 'google/gemini-3-flash-preview'
+): Promise<ExtractedQuestion[]> {
+  const content = [
+    {
+      type: 'text' as const,
+      text: EXTRACTION_PROMPT(pageImage.pageNumber),
+    },
+    {
+      type: 'image' as const,
+      image: pageImage.base64,
+    },
+  ];
+
+  try {
     // @ts-ignore - Type instantiation depth issue with AI SDK
     const { object } = await generateObject({
       model: openrouter(model),
       schema: extractionSchema,
       messages: [
         {
-          role: 'user',
-          content: content
-        }
+          role: 'user' as const,
+          content: content as any,
+        },
       ] as any,
-      temperature: 0.1, // Low temperature for consistent extraction
+      temperature: 0.1,
     });
 
-    // Map extracted questions
-    return object.questions.map((q: any) => ({
+    return object.questions.map((q) => ({
       questionNumber: q.questionNumber,
       questionText: q.questionText,
       options: q.options,
       hasImages: q.hasImages || false,
       imageIndices: q.imageIndices,
-      images: undefined, // Images are embedded in the page image
+      images: undefined,
       subject: q.subject,
       topic: q.topic,
       isMultiPart: q.isMultiPart,
       parts: q.parts,
       pageNumber: pageImage.pageNumber,
-      pageImagePath: pageImage.imagePath // Store reference to page image
+      pageImagePath: pageImage.imagePath,
     }));
   } catch (error) {
     console.error(`Error extracting questions from page ${pageImage.pageNumber}:`, error);
@@ -118,9 +121,6 @@ Be thorough and extract all questions visible on this page.`
   }
 }
 
-/**
- * Extract questions from multiple page images
- */
 export async function extractQuestionsFromPageImages(
   pageImages: PageImage[],
   model?: string
@@ -136,14 +136,13 @@ export async function extractQuestionsFromPageImages(
       const questions = await extractQuestionsFromPageImage(pageImage, model);
       allQuestions.push(...questions);
       console.log(`✓ Found ${questions.length} question(s)`);
-    } catch (error: any) {
-      const errorMsg = error?.message || error?.toString() || 'Unknown error';
-      if (errorMsg.includes('API') || errorMsg.includes('401') || errorMsg.includes('auth')) {
+    } catch (error) {
+      if (isApiError(error)) {
         console.log(`✗ API error - check your OPENROUTER_API_KEY`);
-        throw error; // Stop processing if API key issue
+        throw error;
       }
+      const errorMsg = error instanceof Error ? error.message : String(error);
       console.log(`✗ Error: ${errorMsg.substring(0, 50)}...`);
-      // Continue with other pages
     }
   }
   

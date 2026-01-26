@@ -2,41 +2,54 @@
 
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { LatexRenderer } from "@/components/ui/latex-renderer"
 
 interface QuestionPanelProps {
   question: string
+  latexQuestion?: string // LaTeX version of the question
   options: {
     A: string
     B: string
     C: string
     D: string
   }
+  latexOptions?: {
+    A?: string
+    B?: string
+    C?: string
+    D?: string
+  }
 }
 
-export function QuestionPanel({ question, options }: QuestionPanelProps) {
+export function QuestionPanel({ 
+  question, 
+  latexQuestion,
+  options,
+  latexOptions 
+}: QuestionPanelProps) {
+  // Use LaTeX version if available, otherwise fallback to plain text
+  const questionContent = latexQuestion || question
+  
   return (
     <div className="w-full px-6 py-4">
       <Card className="p-6 bg-white rounded-lg shadow-sm">
         <div className="mb-6">
-          <p className="text-base text-gray-900 leading-relaxed">{question}</p>
+          <div className="text-base text-gray-900 leading-relaxed">
+            <LatexRenderer content={questionContent} displayMode={false} />
+          </div>
         </div>
         <div className="space-y-3">
-          <div className="flex items-start gap-3">
-            <span className="font-medium text-gray-700 min-w-[24px]">A.</span>
-            <span className="text-gray-700">{options.A}</span>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="font-medium text-gray-700 min-w-[24px]">B.</span>
-            <span className="text-gray-700">{options.B}</span>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="font-medium text-gray-700 min-w-[24px]">C.</span>
-            <span className="text-gray-700">{options.C}</span>
-          </div>
-          <div className="flex items-start gap-3">
-            <span className="font-medium text-gray-700 min-w-[24px]">D.</span>
-            <span className="text-gray-700">{options.D}</span>
-          </div>
+          {(['A', 'B', 'C', 'D'] as const).map((key) => {
+            const optionText = latexOptions?.[key] || options[key]
+            return (
+              <div key={key} className="flex items-start gap-3">
+                <span className="font-medium text-gray-700 min-w-[24px]">{key}.</span>
+                <div className="text-gray-700 flex-1">
+                  <LatexRenderer content={optionText} displayMode={false} />
+                </div>
+              </div>
+            )
+          })}
         </div>
       </Card>
       <Separator className="mt-4 bg-gray-200" />

@@ -1,13 +1,13 @@
-import { ExtractedQuestion } from './question-extractor.js';
-import { LaTeXQuestion } from './latex-converter.js';
 import fs from 'fs';
 import path from 'path';
+import { ExtractedQuestion } from './question-extractor.js';
+import { LaTeXQuestion } from './latex-converter.js';
 
 export interface FormattedQuestion {
   id: string;
   title: string;
-  question: string; // Plain text version
-  latexQuestion: string; // LaTeX version
+  question: string;
+  latexQuestion: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   options: {
     A: string;
@@ -22,13 +22,13 @@ export interface FormattedQuestion {
     D: string;
   };
   images?: Array<{
-    data?: string; // Base64 encoded (optional)
+    data?: string;
     format: string;
-    filename?: string; // Image filename
-    path?: string; // Path to image file
+    filename?: string;
+    path?: string;
   }>;
   metadata: {
-    source: string; // e.g., "JEE Advanced 2025"
+    source: string;
     page: number;
     questionNumber: number;
     subject?: string;
@@ -42,52 +42,78 @@ export interface FormattedQuestion {
   };
 }
 
-/**
- * Format extracted question with LaTeX into final JSON structure
- */
+const OPTION_LABELS = ['A', 'B', 'C', 'D'] as const;
+type OptionLabel = typeof OPTION_LABELS[number];
+
+function generateQuestionId(source: string, questionNumber: number): string {
+  return `${source.toLowerCase().replace(/\s+/g, '-')}-q${questionNumber}`;
+}
+
+function generateQuestionTitle(questionText: string): string {
+  const truncated = questionText.substring(0, 50).replace(/\n/g, ' ').trim();
+  return truncated.length < questionText.length ? `${truncated}...` : truncated;
+}
+
+function mapOptionsToABCD(
+  options: Array<{ label: string; text: string }>
+): { A: string; B: string; C: string; D: string } {
+  const mapped: { A: string; B: string; C: string; D: string } = {
+    A: '',
+    B: '',
+    C: '',
+    D: '',
+  };
+
+  options.forEach((opt) => {
+    const label = opt.label.toUpperCase() as OptionLabel;
+    if (OPTION_LABELS.includes(label)) {
+      mapped[label] = opt.text;
+    }
+  });
+
+  return mapped;
+}
+
+function mapLatexOptionsToABCD(
+  options: Array<{ label: string; latexText: string }>
+): { A: string; B: string; C: string; D: string } {
+  const mapped: { A: string; B: string; C: string; D: string } = {
+    A: '',
+    B: '',
+    C: '',
+    D: '',
+  };
+
+  options.forEach((opt) => {
+    const label = opt.label.toUpperCase() as OptionLabel;
+    if (OPTION_LABELS.includes(label)) {
+      mapped[label] = opt.latexText;
+    }
+  });
+
+  return mapped;
+}
+
+function hasLatexOptions(latexOptions: { A: string; B: string; C: string; D: string }): boolean {
+  return Object.values(latexOptions).some(v => v.trim().length > 0);
+}
+
 export function formatQuestion(
   extracted: ExtractedQuestion,
   latex: LaTeXQuestion,
   source: string
 ): FormattedQuestion {
-  // Generate ID from source and question number
-  const id = `${source.toLowerCase().replace(/\s+/g, '-')}-q${extracted.questionNumber}`;
-  
-  // Generate title from question text (first 50 chars)
-  const title = extracted.questionText.substring(0, 50).replace(/\n/g, ' ').trim() + '...';
-  
-  // Map options to A, B, C, D format
-  const options: { A: string; B: string; C: string; D: string } = {
-    A: '',
-    B: '',
-    C: '',
-    D: ''
-  };
-  
-  const latexOptions: { A: string; B: string; C: string; D: string } = {
-    A: '',
-    B: '',
-    C: '',
-    D: ''
-  };
-  
-  latex.options.forEach((opt, idx) => {
-    const label = opt.label.toUpperCase();
-    if (['A', 'B', 'C', 'D'].includes(label)) {
-      options[label as 'A' | 'B' | 'C' | 'D'] = opt.text;
-      latexOptions[label as 'A' | 'B' | 'C' | 'D'] = opt.latexText;
-    }
-  });
-  
-  // Determine difficulty (placeholder - could be enhanced with AI)
-  const difficulty: 'Easy' | 'Medium' | 'Hard' = 'Medium';
-  
-  // Include page image reference if available
+  const id = generateQuestionId(source, extracted.questionNumber);
+  const title = generateQuestionTitle(extracted.questionText);
+  const options = mapOptionsToABCD(latex.options);
+  const latexOptionsMap = mapLatexOptionsToABCD(latex.options);
+  const latexOptions = hasLatexOptions(latexOptionsMap) ? latexOptionsMap : undefined;
+
   const formattedImages = extracted.pageImagePath ? [{
-    data: '', // Not storing base64 in JSON to keep file size manageable
+    data: '',
     format: 'png',
     filename: path.basename(extracted.pageImagePath),
-    path: extracted.pageImagePath
+    path: extracted.pageImagePath,
   }] : undefined;
   
   return {
@@ -95,9 +121,9 @@ export function formatQuestion(
     title,
     question: extracted.questionText,
     latexQuestion: latex.latexQuestion,
-    difficulty,
+    difficulty: 'Medium',
     options,
-    latexOptions: Object.values(latexOptions).some(v => v) ? latexOptions : undefined,
+    latexOptions,
     images: formattedImages,
     metadata: {
       source,
@@ -109,15 +135,12 @@ export function formatQuestion(
       parts: latex.parts?.map(p => ({
         partLabel: p.partLabel,
         partText: p.partText,
-        latexText: p.latexText
-      }))
-    }
+        latexText: p.latexText,
+      })),
+    },
   };
 }
 
-/**
- * Save formatted questions to JSON file
- */
 export function saveQuestionsToJSON(
   questions: FormattedQuestion[],
   outputPath: string
@@ -131,14 +154,11 @@ export function saveQuestionsToJSON(
     metadata: {
       extractedAt: new Date().toISOString(),
       totalQuestions: questions.length,
-      source: questions[0]?.metadata.source || 'Unknown'
+      source: questions[0]?.metadata.source || 'Unknown',
     },
-    questions: questions
+    questions,
   };
   
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
   console.log(` Saved ${questions.length} questions to ${outputPath}`);
 }
-
-// Note: Images are already saved as PNG files from PDF conversion
-// No need for separate image saving function in image-based approach

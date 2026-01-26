@@ -1,14 +1,36 @@
-import { mockQuestions } from "@/lib/data"
 import { notFound } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { LatexRenderer } from "@/components/ui/latex-renderer"
 import { Play, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
-export default function QuestionDetailsPage({ params }: { params: { id: string } }) {
-  const question = mockQuestions.find(q => q.id === params.id)
+async function getQuestion(id: string) {
+  try {
+    // Use absolute URL for server-side fetch
+    const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+    const host = process.env.VERCEL_URL || 'localhost:3000'
+    const baseUrl = `${protocol}://${host}`
+    
+    const response = await fetch(`${baseUrl}/api/questions/${id}`, {
+      cache: 'no-store'
+    })
+    
+    if (!response.ok) {
+      return null
+    }
+    
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching question:', error)
+    return null
+  }
+}
+
+export default async function QuestionDetailsPage({ params }: { params: { id: string } }) {
+  const question = await getQuestion(params.id)
   
   if (!question) {
     notFound()
@@ -54,9 +76,12 @@ export default function QuestionDetailsPage({ params }: { params: { id: string }
                 <CardDescription>The primary problem statement for this question.</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-lg leading-relaxed text-gray-800">
-                  {question.question}
-                </p>
+                <div className="text-lg leading-relaxed text-gray-800">
+                  <LatexRenderer 
+                    content={question.latexQuestion || question.question} 
+                    displayMode={false}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -65,14 +90,19 @@ export default function QuestionDetailsPage({ params }: { params: { id: string }
                 <CardTitle>Options</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
-                {Object.entries(question.options || {}).map(([key, value]) => (
-                  <div key={key} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
-                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
-                      {key}
-                    </span>
-                    <span className="text-gray-700">{value as string}</span>
-                  </div>
-                ))}
+                {Object.entries(question.options || {}).map(([key, value]) => {
+                  const optionText = question.latexOptions?.[key as 'A' | 'B' | 'C' | 'D'] || (value as string)
+                  return (
+                    <div key={key} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
+                      <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
+                        {key}
+                      </span>
+                      <div className="text-gray-700 flex-1">
+                        <LatexRenderer content={optionText} displayMode={false} />
+                      </div>
+                    </div>
+                  )
+                })}
               </CardContent>
             </Card>
           </div>
@@ -83,14 +113,30 @@ export default function QuestionDetailsPage({ params }: { params: { id: string }
                 <CardTitle>Metadata</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
-                  <p className="font-medium">Mathematics</p>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Topic</label>
-                  <p className="font-medium">Calculus</p>
-                </div>
+                {question.metadata?.subject && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
+                    <p className="font-medium">{question.metadata.subject}</p>
+                  </div>
+                )}
+                {question.metadata?.topic && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Topic</label>
+                    <p className="font-medium">{question.metadata.topic}</p>
+                  </div>
+                )}
+                {question.metadata?.source && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Source</label>
+                    <p className="font-medium">{question.metadata.source}</p>
+                  </div>
+                )}
+                {question.metadata?.page && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Page</label>
+                    <p className="font-medium">{question.metadata.page}</p>
+                  </div>
+                )}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Created</label>
                   <p className="font-medium">Jan 24, 2026</p>

@@ -8,7 +8,7 @@ import { CanvasEditor } from "@/components/canvas/CanvasEditor"
 import { DrawingToolbar } from "@/components/canvas/DrawingToolbar"
 import { CollaborationBar } from "@/components/canvas/CollaborationBar"
 import { useSidebar } from "@/components/canvas/SidebarContext"
-import { mockQuestions } from "@/lib/data"
+import { fetchQuestions, fetchQuestion, type Question } from "@/lib/questions"
 
 export default function CanvasPage({
   params,
@@ -19,15 +19,32 @@ export default function CanvasPage({
   const searchParams = useSearchParams()
   const { toggle } = useSidebar()
   const questionId = params.questionId
+  const [allQuestions, setAllQuestions] = useState<Question[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Fetch all questions on mount
+  useEffect(() => {
+    async function loadQuestions() {
+      try {
+        const data = await fetchQuestions()
+        setAllQuestions(data.questions)
+      } catch (error) {
+        console.error('Failed to load questions:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadQuestions()
+  }, [])
 
   const sessionQuestions = useMemo(() => {
     const idsParam = searchParams.get("ids")
-    if (!idsParam) return mockQuestions
+    if (!idsParam) return allQuestions
     const ids = idsParam.split(",").map((s) => s.trim())
     return ids
-      .map((id) => mockQuestions.find((q) => q.id === id))
-      .filter(Boolean) as typeof mockQuestions
-  }, [searchParams])
+      .map((id) => allQuestions.find((q) => q.id === id))
+      .filter(Boolean) as Question[]
+  }, [searchParams, allQuestions])
 
   const currentIndex = sessionQuestions.findIndex((q) => q.id === questionId)
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
@@ -44,7 +61,7 @@ export default function CanvasPage({
   const currentQuestion = sessionQuestions[currentQuestionIndex]
 
   const idsQuery =
-    sessionQuestions.length > 0 && sessionQuestions.length < mockQuestions.length
+    sessionQuestions.length > 0 && sessionQuestions.length < allQuestions.length
       ? `?ids=${sessionQuestions.map((q) => q.id).join(",")}`
       : ""
 
@@ -71,7 +88,8 @@ export default function CanvasPage({
   const handleSpeakerClick = () => console.log("Speaker clicked")
   const handleMenuClick = () => console.log("Menu clicked")
 
-  if (!currentQuestion) return <div>Question not found</div>
+  if (loading) return <div className="flex items-center justify-center h-screen">Loading question...</div>
+  if (!currentQuestion) return <div className="flex items-center justify-center h-screen">Question not found</div>
 
   return (
     <>
@@ -84,7 +102,9 @@ export default function CanvasPage({
       />
       <QuestionPanel
         question={currentQuestion.question}
+        latexQuestion={currentQuestion.latexQuestion}
         options={currentQuestion.options}
+        latexOptions={currentQuestion.latexOptions}
       />
       <div className="flex-1 relative overflow-hidden">
         <CanvasEditor

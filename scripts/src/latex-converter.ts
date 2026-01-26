@@ -1,8 +1,8 @@
 import { generateObject } from 'ai';
 import { createOpenRouter } from '@openrouter/ai-sdk-provider';
 import { z } from 'zod';
-import { ExtractedQuestion } from './question-extractor.js';
 import fs from 'fs';
+import { ExtractedQuestion } from './question-extractor.js';
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -16,33 +16,22 @@ const latexConversionSchema = z.object({
   latexQuestion: z.string().describe('The question text converted to LaTeX format with proper mathematical notation'),
   latexOptions: z.array(z.object({
     label: z.string().describe('Option label (A, B, C, D)'),
-    latexText: z.string().describe('Option text in LaTeX format')
+    latexText: z.string().describe('Option text in LaTeX format'),
   })).describe('Answer options converted to LaTeX format'),
   latexParts: z.array(z.object({
     partLabel: z.string(),
-    latexText: z.string()
-  })).optional().describe('Multi-part question parts in LaTeX format if applicable')
+    latexText: z.string(),
+  })).optional().describe('Multi-part question parts in LaTeX format if applicable'),
 });
 
 export interface LaTeXQuestion {
-  questionText: string; // Original plain text
-  latexQuestion: string; // LaTeX version
+  questionText: string;
+  latexQuestion: string;
   options: Array<{ label: string; text: string; latexText: string }>;
   parts?: Array<{ partLabel: string; partText: string; latexText: string }>;
 }
 
-/**
- * Convert a question to LaTeX format
- */
-export async function convertQuestionToLaTeX(
-  question: ExtractedQuestion,
-  model: string = 'google/gemini-3-flash-preview'
-): Promise<LaTeXQuestion> {
-  try {
-    const content: Array<{ type: 'text' | 'image'; text?: string; image?: string }> = [
-      {
-        type: 'text',
-        text: `You are an expert at converting mathematical text to LaTeX format. 
+const LATEX_CONVERSION_PROMPT = (question: ExtractedQuestion) => `You are an expert at converting mathematical text to LaTeX format. 
 
 Convert the following JEE question to LaTeX format. Preserve all mathematical notation, equations, symbols, and formatting.
 
@@ -63,29 +52,61 @@ ${question.options.map(opt => `${opt.label}. ${opt.text}`).join('\n')}
 
 ${question.isMultiPart && question.parts ? `\nMulti-part question parts:\n${question.parts.map(p => `${p.partLabel}. ${p.partText}`).join('\n')}` : ''}
 
-Please provide the LaTeX version of this question and all its components.`
-      }
-    ];
+Please provide the LaTeX version of this question and all its components.`;
 
-    // Include page image if available (for better LaTeX conversion context)
-    if (question.pageImagePath && fs.existsSync(question.pageImagePath)) {
-      const imageBuffer = fs.readFileSync(question.pageImagePath);
-      const base64 = imageBuffer.toString('base64');
-      content.push({
-        type: 'image',
-        image: `data:image/png;base64,${base64}`
-      });
-    }
+function createFallbackLaTeX(question: ExtractedQuestion): LaTeXQuestion {
+  return {
+    questionText: question.questionText,
+    latexQuestion: question.questionText,
+    options: question.options.map(opt => ({
+      label: opt.label,
+      text: opt.text,
+      latexText: opt.text,
+    })),
+    parts: question.parts?.map(part => ({
+      partLabel: part.partLabel,
+      partText: part.partText,
+      latexText: part.partText,
+    })),
+  };
+}
 
+function isApiError(error: unknown): boolean {
+  if (typeof error !== 'object' || error === null) return false;
+  const message = 'message' in error ? String(error.message) : String(error);
+  return message.includes('API') || message.includes('401') || message.includes('auth');
+}
+
+export async function convertQuestionToLaTeX(
+  question: ExtractedQuestion,
+  model: string = 'google/gemini-3-flash-preview'
+): Promise<LaTeXQuestion> {
+  const content: Array<{ type: 'text' | 'image'; text?: string; image?: string }> = [
+    {
+      type: 'text',
+      text: LATEX_CONVERSION_PROMPT(question),
+    },
+  ];
+
+  if (question.pageImagePath && fs.existsSync(question.pageImagePath)) {
+    const imageBuffer = fs.readFileSync(question.pageImagePath);
+    const base64 = imageBuffer.toString('base64');
+    content.push({
+      type: 'image',
+      image: `data:image/png;base64,${base64}`,
+    });
+  }
+
+  try {
     // @ts-ignore - Type instantiation depth issue with AI SDK
     const { object } = await generateObject({
       model: openrouter(model),
       schema: latexConversionSchema,
       messages: [
         {
-          role: 'user',
-          content: content
-        }
+          role: 'user' as const,
+          content: content as any,
+        },
       ] as any,
       temperature: 0.1,
     });
@@ -96,39 +117,22 @@ Please provide the LaTeX version of this question and all its components.`
       options: question.options.map((opt, idx) => ({
         label: opt.label,
         text: opt.text,
-        latexText: object.latexOptions[idx]?.latexText || opt.text
+        latexText: object.latexOptions[idx]?.latexText || opt.text,
       })),
       parts: question.parts && object.latexParts
         ? question.parts.map((part, idx) => ({
             partLabel: part.partLabel,
             partText: part.partText,
-            latexText: object.latexParts?.[idx]?.latexText || part.partText
+            latexText: object.latexParts?.[idx]?.latexText || part.partText,
           }))
-        : undefined
+        : undefined,
     };
   } catch (error) {
     console.error(`Error converting question ${question.questionNumber} to LaTeX:`, error);
-    // Fallback: return original text as LaTeX
-    return {
-      questionText: question.questionText,
-      latexQuestion: question.questionText,
-      options: question.options.map(opt => ({
-        label: opt.label,
-        text: opt.text,
-        latexText: opt.text
-      })),
-      parts: question.parts?.map(part => ({
-        partLabel: part.partLabel,
-        partText: part.partText,
-        latexText: part.partText
-      }))
-    };
+    return createFallbackLaTeX(question);
   }
 }
 
-/**
- * Convert multiple questions to LaTeX format
- */
 export async function convertQuestionsToLaTeX(
   questions: ExtractedQuestion[],
   model?: string
@@ -144,28 +148,14 @@ export async function convertQuestionsToLaTeX(
       const latexQ = await convertQuestionToLaTeX(question, model);
       latexQuestions.push(latexQ);
       console.log(`✓`);
-    } catch (error: any) {
-      const errorMsg = error?.message || error?.toString() || 'Unknown error';
-      if (errorMsg.includes('API') || errorMsg.includes('401') || errorMsg.includes('auth')) {
+    } catch (error) {
+      if (isApiError(error)) {
         console.log(`✗ API error - check your OPENROUTER_API_KEY`);
-        throw error; // Stop processing if API key issue
+        throw error;
       }
+      const errorMsg = error instanceof Error ? error.message : String(error);
       console.log(`✗ Error: ${errorMsg.substring(0, 50)}...`);
-      // Fallback: add original text as LaTeX
-      latexQuestions.push({
-        questionText: question.questionText,
-        latexQuestion: question.questionText,
-        options: question.options.map(opt => ({
-          label: opt.label,
-          text: opt.text,
-          latexText: opt.text
-        })),
-        parts: question.parts?.map(part => ({
-          partLabel: part.partLabel,
-          partText: part.partText,
-          latexText: part.partText
-        }))
-      });
+      latexQuestions.push(createFallbackLaTeX(question));
     }
   }
   

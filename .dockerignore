@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+
+# Node modules
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Next.js
+.next
+out
+build
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+
+# Maven
+backend/target
+backend/.mvn
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv
+env
+
+# Scripts
+scripts/500
+scripts/papers
