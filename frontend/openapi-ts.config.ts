@@ -3,8 +3,7 @@ export default defineConfig({
   input: "lib/backend/openapi.json",
   output: {
     path: "lib/backend",
-    format: "prettier",
-    lint: "eslint",
+    postProcess: ["eslint", "prettier"],
   },
   plugins: [
     {
@@ -14,13 +13,15 @@ export default defineConfig({
       name: "@hey-api/typescript",
       enums: "javascript",
     },
-    // {
-    //   name: "@hey-api/sdk",
-    //   asClass: true,
-    //   serviceNameBuilder: "{{name}}",
-    //   methodNameBuilder: (operation: any) => {
-    //     return operation.id.replaceAll(/_\d+$/g, "");
-    //   },
-    // },
+    {
+      name: "@hey-api/sdk",
+      operations: {
+        strategy: "byTags",
+        methodNameBuilder: (operation: any) =>
+          operation.id.replaceAll(/_\d+$/g, ""),
+        serviceNameBuilder: "{{name}}",
+        asClass: true,
+      },
+    },
   ],
 });

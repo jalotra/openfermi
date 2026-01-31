@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 
-const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,7 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Canvas Interface - Interactive Learning Platform",
-  description: "An intuitive platform for educators and students to work through questions, draw solutions, and collaborate in real-time.",
+  description:
+    "An intuitive platform for educators and students to work through questions, draw solutions, and collaborate in real-time.",
 };
 
 export default function RootLayout({

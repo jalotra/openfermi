@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, ExternalLink } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-import { QuestionDto } from "@/lib/backend"
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { QuestionDto } from "@/lib/backend";
 
 export const columns: ColumnDef<QuestionDto>[] = [
   {
@@ -55,14 +55,14 @@ export const columns: ColumnDef<QuestionDto>[] = [
           Title
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
   },
   {
     accessorKey: "difficulty",
     header: "Difficulty",
     cell: ({ row }) => {
-      const difficulty = row.getValue("difficulty") as string
+      const difficulty = row.getValue("difficulty") as string;
       return (
         <Badge
           variant="secondary"
@@ -70,19 +70,19 @@ export const columns: ColumnDef<QuestionDto>[] = [
             difficulty === "Easy"
               ? "bg-green-100 text-green-700"
               : difficulty === "Medium"
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-red-100 text-red-700"
+                ? "bg-yellow-100 text-yellow-700"
+                : "bg-red-100 text-red-700"
           }
         >
           {difficulty}
         </Badge>
-      )
+      );
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const question = row.original
+      const question = row.original;
 
       return (
         <DropdownMenu>
@@ -95,7 +95,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(question.id || '')}
+              onClick={() => navigator.clipboard.writeText(question.id || "")}
             >
               Copy Question ID
             </DropdownMenuItem>
@@ -112,7 +112,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];

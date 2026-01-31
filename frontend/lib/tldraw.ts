@@ -4,4 +4,4 @@
 
 export const tldrawConfig = {
   // Add any custom TLDRAW configuration here if needed
-}
+};

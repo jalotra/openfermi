@@ -1,9 +1,9 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { FeaturesCarousel } from "@/components/FeaturesCarousel"
-import { ArrowRight, CheckCircle2, Sparkles, Zap } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { FeaturesCarousel } from "@/components/FeaturesCarousel";
+import { ArrowRight, CheckCircle2, Sparkles, Zap } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -95,7 +95,9 @@ export default function LandingPage() {
               <div className="h-16 w-16 bg-primary rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">
                 3
               </div>
-              <h3 className="text-xl font-semibold mb-2">Collaborate & Share</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                Collaborate & Share
+              </h3>
               <p className="text-gray-600">
                 Work with others, get feedback, and export your solutions when
                 you're done.
@@ -109,7 +111,9 @@ export default function LandingPage() {
       <section className="container mx-auto px-6 py-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Why Choose Learn with Friends?</h2>
+            <h2 className="text-4xl font-bold mb-4">
+              Why Choose Learn with Friends?
+            </h2>
             <p className="text-gray-600 text-lg">
               Built for modern learners and students
             </p>
@@ -140,7 +144,9 @@ export default function LandingPage() {
             <div className="flex gap-4">
               <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-lg mb-2">Question Navigation</h3>
+                <h3 className="font-semibold text-lg mb-2">
+                  Question Navigation
+                </h3>
                 <p className="text-gray-600">
                   Easily move between questions with our seamless navigation
                   system.
@@ -150,7 +156,9 @@ export default function LandingPage() {
             <div className="flex gap-4">
               <CheckCircle2 className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="font-semibold text-lg mb-2">Real-time Updates</h3>
+                <h3 className="font-semibold text-lg mb-2">
+                  Real-time Updates
+                </h3>
                 <p className="text-gray-600">
                   See changes instantly as you draw and collaborate with others.
                 </p>
@@ -193,5 +201,5 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

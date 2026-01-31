@@ -1,17 +1,12 @@
-import { ListChecks } from "lucide-react"
-import { backendClient } from "@/lib/backend-client"
-
+import { ListChecks } from "lucide-react";
+import { backendClient } from "@/lib/backend-client";
 
 export default async function SessionsPage() {
-  const questions = await getQuestions()
-
   return (
     <div className="flex flex-1 flex-col min-h-0 bg-background">
       <div className="p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            New session
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight">New session</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Select the questions you want to practice, then start your session.
           </p>
@@ -30,13 +25,10 @@ export default async function SessionsPage() {
           </div>
         ) : (
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
-              Sessions
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
           </div>
-        )
-        }
+        )}
       </div>
     </div>
-  )
+  );
 }

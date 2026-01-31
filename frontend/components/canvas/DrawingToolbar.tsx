@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { Undo2, Redo2, Eraser, Pen, FileDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { cn } from "@/lib/utils"
+import { Undo2, Redo2, Eraser, Pen, FileDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
-type Tool = "pen" | "eraser"
+type Tool = "pen" | "eraser";
 
 interface DrawingToolbarProps {
-  onToolChange?: (tool: Tool) => void
-  onUndo?: () => void
-  onRedo?: () => void
-  onExport?: () => void
+  onToolChange?: (tool: Tool) => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  onExport?: () => void;
 }
 
 export function DrawingToolbar({
@@ -20,12 +20,12 @@ export function DrawingToolbar({
   onRedo,
   onExport,
 }: DrawingToolbarProps) {
-  const [activeTool, setActiveTool] = useState<Tool>("pen")
+  const [activeTool, setActiveTool] = useState<Tool>("pen");
 
   const handleToolClick = (tool: Tool) => {
-    setActiveTool(tool)
-    onToolChange?.(tool)
-  }
+    setActiveTool(tool);
+    onToolChange?.(tool);
+  };
 
   return (
     <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
@@ -53,7 +53,7 @@ export function DrawingToolbar({
           onClick={() => handleToolClick("eraser")}
           className={cn(
             "h-10 w-10 rounded-full",
-            activeTool === "eraser" && "bg-gray-100"
+            activeTool === "eraser" && "bg-gray-100",
           )}
         >
           <Eraser className="h-5 w-5" />
@@ -64,7 +64,7 @@ export function DrawingToolbar({
           onClick={() => handleToolClick("pen")}
           className={cn(
             "h-10 w-10 rounded-full",
-            activeTool === "pen" && "bg-gray-100"
+            activeTool === "pen" && "bg-gray-100",
           )}
         >
           <Pen className="h-5 w-5" />
@@ -81,5 +81,5 @@ export function DrawingToolbar({
         </Button>
       </div>
     </div>
-  )
+  );
 }

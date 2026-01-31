@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import { Tldraw } from "@tldraw/tldraw"
-import "@tldraw/tldraw/tldraw.css"
-import { useRef } from "react"
+import { Tldraw } from "@tldraw/tldraw";
+import "@tldraw/tldraw/tldraw.css";
+import { useRef } from "react";
 
 interface CanvasEditorProps {
-  onUndo?: () => void
-  onRedo?: () => void
-  onToolChange?: (tool: string) => void
+  onUndo?: () => void;
+  onRedo?: () => void;
+  onToolChange?: (tool: string) => void;
 }
 
-export function CanvasEditor({ onUndo, onRedo, onToolChange }: CanvasEditorProps) {
-  const editorRef = useRef<any>(null)
+export function CanvasEditor({
+  onUndo,
+  onRedo,
+  onToolChange,
+}: CanvasEditorProps) {
+  const editorRef = useRef<any>(null);
 
   return (
     <div className="flex-1 w-full h-full relative bg-gray-50">
@@ -25,10 +29,10 @@ export function CanvasEditor({ onUndo, onRedo, onToolChange }: CanvasEditorProps
       <div className="absolute inset-0 z-10">
         <Tldraw
           onMount={(editor) => {
-            editorRef.current = editor
+            editorRef.current = editor;
           }}
         />
       </div>
     </div>
-  )
+  );
 }
