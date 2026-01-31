@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Carousel,
@@ -6,9 +6,9 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel"
-import { Card } from "@/components/ui/card"
-import { PenTool, Users, Clock, FileText } from "lucide-react"
+} from "@/components/ui/carousel";
+import { Card } from "@/components/ui/card";
+import { PenTool, Users, Clock, FileText } from "lucide-react";
 
 const FEATURES = [
   {
@@ -43,7 +43,7 @@ const FEATURES = [
     description:
       "Export your work as PDF, save your progress, and never lose your solutions.",
   },
-]
+];
 
 export function FeaturesCarousel() {
   return (
@@ -51,7 +51,7 @@ export function FeaturesCarousel() {
       <Carousel opts={{ loop: true, align: "start" }}>
         <CarouselContent className="items-stretch pb-6">
           {FEATURES.map((feature) => {
-            const Icon = feature.icon
+            const Icon = feature.icon;
             return (
               <CarouselItem
                 key={feature.title}
@@ -63,16 +63,18 @@ export function FeaturesCarousel() {
                   >
                     <Icon className={`h-6 w-6 ${feature.iconColor}`} />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                  <h3 className="text-xl font-semibold mb-2">
+                    {feature.title}
+                  </h3>
                   <p className="text-gray-600">{feature.description}</p>
                 </Card>
               </CarouselItem>
-            )
+            );
           })}
         </CarouselContent>
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
     </div>
-  )
+  );
 }

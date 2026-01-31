@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { Menu, Mic, MicOff, MessageCircle, Users } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import { cn } from "@/lib/utils"
+import { Menu, Mic, MicOff, MessageCircle, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 interface CollaborationBarProps {
-  onMenuClick?: () => void
-  onMicToggle?: (muted: boolean) => void
-  onChatClick?: () => void
-  onSpeakerClick?: () => void
+  onMenuClick?: () => void;
+  onMicToggle?: (muted: boolean) => void;
+  onChatClick?: () => void;
+  onSpeakerClick?: () => void;
 }
 
 export function CollaborationBar({
@@ -18,13 +18,13 @@ export function CollaborationBar({
   onChatClick,
   onSpeakerClick,
 }: CollaborationBarProps) {
-  const [isMuted, setIsMuted] = useState(true)
+  const [isMuted, setIsMuted] = useState(true);
 
   const handleMicToggle = () => {
-    const newMutedState = !isMuted
-    setIsMuted(newMutedState)
-    onMicToggle?.(newMutedState)
-  }
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    onMicToggle?.(newMutedState);
+  };
 
   return (
     <div className="fixed left-6 top-1/2 -translate-y-1/2 z-50">
@@ -63,7 +63,7 @@ export function CollaborationBar({
           onClick={handleMicToggle}
           className={cn(
             "h-10 w-10 rounded-full",
-            isMuted && "bg-red-50 hover:bg-red-100"
+            isMuted && "bg-red-50 hover:bg-red-100",
           )}
         >
           {isMuted ? (
@@ -74,5 +74,5 @@ export function CollaborationBar({
         </Button>
       </div>
     </div>
-  )
+  );
 }

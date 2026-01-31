@@ -40,6 +40,7 @@ export type QuestionDto = {
   createdBy?: string;
   updatedBy?: string;
   questionText?: string;
+  latexQuestionText?: string;
   subject?: "PHYSICS" | "CHEMISTRY" | "MATHEMATICS" | "BIOLOGY";
   examType?: "JEE_ADVANCED" | "JEE_MAIN" | "NEET";
   difficulty?: "EASY" | "MEDIUM" | "HARD";
@@ -55,6 +56,9 @@ export type QuestionDto = {
   marks?: number;
   negativeMarks?: number;
   isActive?: boolean;
+  metadata?: {
+    [key: string]: string;
+  };
 };
 
 export type GenericResponseQuestionDto = {

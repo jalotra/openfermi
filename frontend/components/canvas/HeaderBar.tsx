@@ -1,17 +1,25 @@
-"use client"
+"use client";
 
-import { ArrowLeft, ChevronLeft, ChevronRight, ThumbsUp, Bell, HelpCircle, Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  ThumbsUp,
+  Bell,
+  HelpCircle,
+  Menu,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 interface HeaderBarProps {
-  currentQuestion: number
-  totalQuestions: number
-  onPreviousQuestion: () => void
-  onNextQuestion: () => void
-  onSidebarToggle?: () => void
+  currentQuestion: number;
+  totalQuestions: number;
+  onPreviousQuestion: () => void;
+  onNextQuestion: () => void;
+  onSidebarToggle?: () => void;
 }
 
 export function HeaderBar({
@@ -21,23 +29,23 @@ export function HeaderBar({
   onNextQuestion,
   onSidebarToggle,
 }: HeaderBarProps) {
-  const router = useRouter()
-  const [timer, setTimer] = useState(0) // Timer in seconds
+  const router = useRouter();
+  const [timer, setTimer] = useState(0); // Timer in seconds
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimer((prev) => prev + 1)
-    }, 1000)
+      setTimer((prev) => prev + 1);
+    }, 1000);
 
-    return () => clearInterval(interval)
-  }, [])
+    return () => clearInterval(interval);
+  }, []);
 
   const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600)
-    const mins = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`
-  }
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
 
   return (
     <header className="w-full bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
@@ -112,5 +120,5 @@ export function HeaderBar({
         </Button>
       </div>
     </header>
-  )
+  );
 }

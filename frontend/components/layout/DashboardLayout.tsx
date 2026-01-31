@@ -1,14 +1,10 @@
-"use client"
+"use client";
 
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { SidebarProvider as SidebarContextProvider } from "@/components/canvas/SidebarContext"
-import { GlobalSidebar } from "@/components/canvas/GlobalSidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider as SidebarContextProvider } from "@/components/canvas/SidebarContext";
+import { GlobalSidebar } from "@/components/canvas/GlobalSidebar";
 
-export function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SidebarContextProvider>
       <SidebarProvider className="h-screen">
@@ -21,5 +17,5 @@ export function DashboardLayout({
         </main>
       </SidebarProvider>
     </SidebarContextProvider>
-  )
+  );
 }

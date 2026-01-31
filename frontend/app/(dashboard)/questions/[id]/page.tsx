@@ -1,13 +1,19 @@
-import { notFound } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { LatexRenderer } from "@/components/ui/latex-renderer"
-import { Play, ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { backendClient } from "@/lib/backend-client"
-import { GenericResponseQuestionDto } from "@/lib/backend/types.gen"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { LatexRenderer } from "@/components/ui/latex-renderer";
+import { Play, ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { backendClient } from "@/lib/backend-client";
+import { QuestionDto } from "@/lib/backend/types.gen";
+import { QuestionController } from "@/lib/backend/sdk.gen";
 
 
 export default async function QuestionDetailsPage({ params }: { params: { id: string } }) {
@@ -33,11 +39,14 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
   return (
     <div className="flex-1 bg-gray-50/50 p-8 overflow-y-auto">
       <div className="max-w-4xl mx-auto space-y-6">
-        <Link href="/questions" className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors">
+        <Link
+          href="/questions"
+          className="inline-flex items-center text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+        >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Questions
         </Link>
-        
+
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight">{question.questionText}</h1>
@@ -49,7 +58,9 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
               }>
                 {question.difficulty}
               </Badge>
-              <span className="text-sm text-muted-foreground">ID: {question.id}</span>
+              <span className="text-sm text-muted-foreground">
+                ID: {question.id}
+              </span>
             </div>
           </div>
           <Link href={`/canvas/${question.id}`}>
@@ -67,7 +78,9 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
             <Card>
               <CardHeader>
                 <CardTitle>Question Content</CardTitle>
-                <CardDescription>The primary problem statement for this question.</CardDescription>
+                <CardDescription>
+                  The primary problem statement for this question.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-lg leading-relaxed text-gray-800">
@@ -89,13 +102,13 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
                   return (
                     <div key={index} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
                       <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
-                        {key}
+                        {String.fromCharCode(65 + index)}
                       </span>
                       <div className="text-gray-700 flex-1">
                         <LatexRenderer content={option} displayMode={false} />
                       </div>
                     </div>
-                  )
+                  );
                 })}
               </CardContent>
             </Card>
@@ -165,5 +178,5 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
         </div>
       </div>
     </div>
-  )
+  );
 }

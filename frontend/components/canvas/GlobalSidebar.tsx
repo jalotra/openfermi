@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Clock, Home, ListTodo, Settings } from "lucide-react"
+import Link from "next/link";
+import { Clock, Home, ListTodo, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,20 +13,19 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const navItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Questions", url: "/questions", icon: ListTodo },
-  {title : "Sessions", url: "/sessions", icon: Clock },
+  { title: "Sessions", url: "/sessions", icon: Clock },
   { title: "Settings", url: "#", icon: Settings },
-]
+];
 
 export function GlobalSidebar() {
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
-      </SidebarHeader>
+      <SidebarHeader></SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>OpenFermi</SidebarGroupLabel>
@@ -48,5 +47,5 @@ export function GlobalSidebar() {
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @SuperBuilder
@@ -17,6 +18,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class QuestionDto extends BaseDto {
     private String questionText;
+    private String latexQuestionText;
     private Question.Subject subject;
     private Question.ExamType examType;
     private Question.DifficultyLevel difficulty;
@@ -32,4 +34,5 @@ public class QuestionDto extends BaseDto {
     private Integer marks;
     private Double negativeMarks;
     private Boolean isActive;
+    private Map<String, String> metadata;
 }

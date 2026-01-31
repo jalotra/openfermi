@@ -5,11 +5,14 @@ import com.law.tech.backend.base.converters.StringListConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @SuperBuilder
@@ -22,6 +25,9 @@ public class Question extends BaseEntity {
 
     @Column(name = "question_text", columnDefinition = "TEXT", nullable = false)
     private String questionText;
+
+    @Column(name = "latex_question_text", columnDefinition = "TEXT")
+    private String latexQuestionText;
 
     @Column(name = "subject", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -73,6 +79,10 @@ public class Question extends BaseEntity {
 
     @Column(name = "is_active")
     private Boolean isActive = true;
+
+    @Column(name = "metadata")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> metadata;
 
     public enum Subject {
         PHYSICS,

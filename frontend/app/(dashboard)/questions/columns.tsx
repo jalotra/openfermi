@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal, ExternalLink } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from "next/link"
-import { QuestionDto } from "@/lib/backend"
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { QuestionDto } from "@/lib/backend";
 
 export const columns: ColumnDef<QuestionDto>[] = [
   {
@@ -55,7 +55,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
           Question
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      )
+      );
     },
     cell: ({ row }) => {
       const text = row.getValue("questionText") as string
@@ -87,13 +87,13 @@ export const columns: ColumnDef<QuestionDto>[] = [
         >
           {display}
         </Badge>
-      )
+      );
     },
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const question = row.original
+      const question = row.original;
 
       return (
         <DropdownMenu>
@@ -106,7 +106,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(question.id || '')}
+              onClick={() => navigator.clipboard.writeText(question.id || "")}
             >
               Copy Question ID
             </DropdownMenuItem>
@@ -123,7 +123,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
+      );
     },
   },
-]
+];

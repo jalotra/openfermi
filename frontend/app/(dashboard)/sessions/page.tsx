@@ -1,3 +1,17 @@
+<<<<<<< HEAD
+import { ListChecks } from "lucide-react";
+import { backendClient } from "@/lib/backend-client";
+
+export default async function SessionsPage() {
+  return (
+    <div className="flex flex-1 flex-col min-h-0 bg-background">
+      <div className="p-8 space-y-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">New session</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Select the questions you want to practice, then start your session.
+          </p>
+=======
 import { columns } from "./columns"
 import { DataTable } from "@/components/ui/data-table"
 import { Button } from "@/components/ui/button"
@@ -43,6 +57,7 @@ export default async function SessionsPage() {
               New Session
             </Button>
           </Link>
+>>>>>>> 0b0e768724c9412c253a4a69cdcc7cf2804f5ee0
         </div>
 
         {error ? (
@@ -57,13 +72,19 @@ export default async function SessionsPage() {
             </p>
           </div>
         ) : (
+<<<<<<< HEAD
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">Sessions</h1>
+          </div>
+=======
           <DataTable<SessionDto, string> 
             columns={columns} 
             data={sessions} 
             filterColumn="status"
           />
+>>>>>>> 0b0e768724c9412c253a4a69cdcc7cf2804f5ee0
         )}
       </div>
     </div>
-  )
+  );
 }

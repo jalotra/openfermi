@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -6,14 +6,14 @@ import { LatexRenderer } from "@/components/ui/latex-renderer"
 import { cn } from "@/lib/utils"
 
 interface QuestionPanelProps {
-  question: string
-  latexQuestion?: string // LaTeX version of the question
+  question: string;
+  latexQuestion?: string; // LaTeX version of the question
   options: {
-    A: string
-    B: string
-    C: string
-    D: string
-  }
+    A: string;
+    B: string;
+    C: string;
+    D: string;
+  };
   latexOptions?: {
     A?: string
     B?: string
@@ -24,8 +24,8 @@ interface QuestionPanelProps {
   onAnswerChange?: (answer: string) => void
 }
 
-export function QuestionPanel({ 
-  question, 
+export function QuestionPanel({
+  question,
   latexQuestion,
   options,
   latexOptions,
@@ -33,8 +33,8 @@ export function QuestionPanel({
   onAnswerChange
 }: QuestionPanelProps) {
   // Use LaTeX version if available, otherwise fallback to plain text
-  const questionContent = latexQuestion || question
-  
+  const questionContent = latexQuestion || question;
+
   return (
     <div className="w-full px-6 py-4">
       <Card className="p-6 bg-white rounded-lg shadow-sm">
@@ -76,5 +76,5 @@ export function QuestionPanel({
       </Card>
       <Separator className="mt-4 bg-gray-200" />
     </div>
-  )
+  );
 }
