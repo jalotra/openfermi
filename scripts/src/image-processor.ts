@@ -1,6 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export interface PageImage {
   pageNumber: number;
@@ -8,20 +12,45 @@ export interface PageImage {
   base64: string;
 }
 
-/**
- * Convert PDF to PNG images using Python script
- */
+const SUPPORTED_IMAGE_FORMATS = ['.png', '.jpg', '.jpeg', '.webp'] as const;
+const MIME_TYPES: Record<string, string> = {
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+};
+
+function getMimeType(filePath: string): string {
+  const ext = path.extname(filePath).toLowerCase();
+  return MIME_TYPES[ext] || 'image/png';
+}
+
+function ensureDirectoryExists(dirPath: string): void {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+}
+
+function extractPageNumber(filename: string, currentIndex: number): number {
+  const match = filename.match(/_page_(\d+)\.png$/);
+  return match ? parseInt(match[1], 10) : currentIndex + 1;
+}
+
+function convertImageToBase64(imagePath: string): string {
+  const imageBuffer = fs.readFileSync(imagePath);
+  const base64 = imageBuffer.toString('base64');
+  const mimeType = getMimeType(imagePath);
+  return `data:${mimeType};base64,${base64}`;
+}
+
 export async function convertPDFToImages(
   pdfPath: string,
   outputDir: string,
   dpi: number = 300
 ): Promise<PageImage[]> {
-  // Ensure output directory exists
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
+  ensureDirectoryExists(outputDir);
 
-  const scriptDir = path.dirname(path.dirname(__filename || __dirname));
+  const scriptDir = path.dirname(__dirname);
   const pythonScript = path.join(scriptDir, 'pdf_to_images.py');
 
   console.log(` Converting PDF to images using Python...`);
@@ -30,38 +59,47 @@ export async function convertPDFToImages(
   console.log(`  DPI: ${dpi}`);
 
   try {
-    // Run Python script
     const pythonCmd = `python3 "${pythonScript}" "${pdfPath}" "${outputDir}" ${dpi}`;
     execSync(pythonCmd, { stdio: 'inherit' });
-  } catch (error: any) {
-    throw new Error(`Failed to convert PDF to images: ${error.message}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to convert PDF to images: ${message}`);
   }
 
-  // Read all PNG files and convert to base64
-  const imageFiles = fs.readdirSync(outputDir)
+  const imageFiles = fs
+    .readdirSync(outputDir)
     .filter(file => file.endsWith('.png'))
-    .sort(); // Sort to ensure correct page order
+    .sort();
 
-  const pageImages: PageImage[] = [];
-
-  for (const imageFile of imageFiles) {
-    // Extract page number from filename (format: name_page_001.png)
-    const match = imageFile.match(/_page_(\d+)\.png$/);
-    const pageNumber = match ? parseInt(match[1], 10) : pageImages.length + 1;
-
+  const pageImages: PageImage[] = imageFiles.map((imageFile, index) => {
     const imagePath = path.join(outputDir, imageFile);
-    const imageBuffer = fs.readFileSync(imagePath);
-    const base64 = imageBuffer.toString('base64');
-    const mimeType = 'image/png';
-    const base64WithPrefix = `data:${mimeType};base64,${base64}`;
+    const pageNumber = extractPageNumber(imageFile, index);
+    const base64 = convertImageToBase64(imagePath);
 
-    pageImages.push({
+    return {
       pageNumber,
       imagePath,
-      base64: base64WithPrefix
-    });
-  }
+      base64,
+    };
+  });
 
   console.log(`✓ Loaded ${pageImages.length} page images\n`);
   return pageImages;
+}
+
+export async function loadSingleImage(
+  imagePath: string,
+  pageNumber: number = 1
+): Promise<PageImage> {
+  if (!fs.existsSync(imagePath)) {
+    throw new Error(`Image file not found: ${imagePath}`);
+  }
+
+  const base64 = convertImageToBase64(imagePath);
+
+  return {
+    pageNumber,
+    imagePath,
+    base64,
+  };
 }

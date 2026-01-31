@@ -14,16 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import Link from "next/link"
+import { QuestionDto } from "@/lib/backend"
 
-export type Question = {
-  id: string
-  title: string
-  question: string
-  difficulty: "Easy" | "Medium" | "Hard"
-  category?: string
-}
-
-export const columns: ColumnDef<Question>[] = [
+export const columns: ColumnDef<QuestionDto>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -51,7 +44,7 @@ export const columns: ColumnDef<Question>[] = [
     header: "ID",
   },
   {
-    accessorKey: "title",
+    accessorKey: "questionText",
     header: ({ column }) => {
       return (
         <Button
@@ -59,10 +52,14 @@ export const columns: ColumnDef<Question>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           className="-ml-4"
         >
-          Title
+          Question
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
+    },
+    cell: ({ row }) => {
+      const text = row.getValue("questionText") as string
+      return <span className="truncate max-w-md">{text?.substring(0, 100)}{text?.length > 100 ? '...' : ''}</span>
     },
   },
   {
@@ -70,18 +67,25 @@ export const columns: ColumnDef<Question>[] = [
     header: "Difficulty",
     cell: ({ row }) => {
       const difficulty = row.getValue("difficulty") as string
+      // Map backend enum to display format
+      const displayMap: Record<string, string> = {
+        'EASY': 'Easy',
+        'MEDIUM': 'Medium',
+        'HARD': 'Hard'
+      }
+      const display = displayMap[difficulty] || difficulty
       return (
         <Badge
           variant="secondary"
           className={
-            difficulty === "Easy"
+            difficulty === "EASY"
               ? "bg-green-100 text-green-700"
-              : difficulty === "Medium"
+              : difficulty === "MEDIUM"
               ? "bg-yellow-100 text-yellow-700"
               : "bg-red-100 text-red-700"
           }
         >
-          {difficulty}
+          {display}
         </Badge>
       )
     },
@@ -102,7 +106,7 @@ export const columns: ColumnDef<Question>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(question.id)}
+              onClick={() => navigator.clipboard.writeText(question.id || '')}
             >
               Copy Question ID
             </DropdownMenuItem>
@@ -113,7 +117,7 @@ export const columns: ColumnDef<Question>[] = [
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/canvas/${question.id}`}>
+              <Link href={`/sessions/${question.id}`}>
                 Start Learning Session
               </Link>
             </DropdownMenuItem>

@@ -43,6 +43,13 @@ Extract questions from a PDF:
 npm run extract papers/2025/jee_advanced_2025.pdf
 ```
 
+Extract questions from a single image:
+```bash
+npm run extract output/temp_images/jee_advanced_2025_page_001.png --source "JEE Advanced 2025"
+```
+
+The script automatically detects if the input is a PDF or image file based on the file extension. Supported image formats: `.png`, `.jpg`, `.jpeg`, `.webp`
+
 ### With Options
 
 ```bash

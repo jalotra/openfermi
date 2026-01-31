@@ -1,14 +1,30 @@
-import { mockQuestions } from "@/lib/data"
 import { notFound } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
+import { LatexRenderer } from "@/components/ui/latex-renderer"
 import { Play, ArrowLeft } from "lucide-react"
 import Link from "next/link"
+import { backendClient } from "@/lib/backend-client"
+import { GenericResponseQuestionDto } from "@/lib/backend/types.gen"
 
-export default function QuestionDetailsPage({ params }: { params: { id: string } }) {
-  const question = mockQuestions.find(q => q.id === params.id)
+
+export default async function QuestionDetailsPage({ params }: { params: { id: string } }) {
+  const { id } = await params
+  const response = await backendClient.get<GenericResponseQuestionDto>({
+    url: `/questions/${id}`
+  })
+  if ('error' in response && response.error) {
+    notFound()
+  }
+  
+  if (!response.data) {
+    notFound()
+  }
+  
+  const genericResponse = response.data as GenericResponseQuestionDto
+  const question = genericResponse.data
   
   if (!question) {
     notFound()
@@ -24,11 +40,11 @@ export default function QuestionDetailsPage({ params }: { params: { id: string }
         
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{question.title}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{question.questionText}</h1>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className={
-                question.difficulty === "Easy" ? "bg-green-100 text-green-700" :
-                question.difficulty === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                question.difficulty === "EASY" ? "bg-green-100 text-green-700" :
+                question.difficulty === "MEDIUM" ? "bg-yellow-100 text-yellow-700" :
                 "bg-red-100 text-red-700"
               }>
                 {question.difficulty}
@@ -54,9 +70,12 @@ export default function QuestionDetailsPage({ params }: { params: { id: string }
                 <CardDescription>The primary problem statement for this question.</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-lg leading-relaxed text-gray-800">
-                  {question.question}
-                </p>
+                <div className="text-lg leading-relaxed text-gray-800">
+                  <LatexRenderer 
+                    content={question.questionText || ''} 
+                    displayMode={false}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -65,14 +84,19 @@ export default function QuestionDetailsPage({ params }: { params: { id: string }
                 <CardTitle>Options</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
-                {Object.entries(question.options || {}).map(([key, value]) => (
-                  <div key={key} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
-                    <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
-                      {key}
-                    </span>
-                    <span className="text-gray-700">{value as string}</span>
-                  </div>
-                ))}
+                {(question.options || []).map((option, index) => {
+                  const key = String.fromCharCode(65 + index) // A, B, C, D
+                  return (
+                    <div key={index} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
+                      <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
+                        {key}
+                      </span>
+                      <div className="text-gray-700 flex-1">
+                        <LatexRenderer content={option} displayMode={false} />
+                      </div>
+                    </div>
+                  )
+                })}
               </CardContent>
             </Card>
           </div>
@@ -83,21 +107,37 @@ export default function QuestionDetailsPage({ params }: { params: { id: string }
                 <CardTitle>Metadata</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
-                  <p className="font-medium">Mathematics</p>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Topic</label>
-                  <p className="font-medium">Calculus</p>
-                </div>
+                {question.subject && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
+                    <p className="font-medium">{question.subject}</p>
+                  </div>
+                )}
+                {question.topic && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Topic</label>
+                    <p className="font-medium">{question.topic}</p>
+                  </div>
+                )}
+                {question.examType && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Exam Type</label>
+                    <p className="font-medium">{question.examType}</p>
+                  </div>
+                )}
+                {question.year && (
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Year</label>
+                    <p className="font-medium">{question.year}</p>
+                  </div>
+                )}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Created</label>
-                  <p className="font-medium">Jan 24, 2026</p>
+                  <p className="font-medium">{question.createdAt ? new Date(question.createdAt).toLocaleDateString() : 'Unknown'}</p>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Last Modified</label>
-                  <p className="font-medium">2 hours ago</p>
+                  <p className="font-medium">{question.updatedAt ? new Date(question.updatedAt).toLocaleDateString() : 'Unknown'}</p>
                 </div>
               </CardContent>
             </Card>
