@@ -3,6 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { LatexRenderer } from "@/components/ui/latex-renderer"
+import { cn } from "@/lib/utils"
 
 interface QuestionPanelProps {
   question: string
@@ -19,13 +20,17 @@ interface QuestionPanelProps {
     C?: string
     D?: string
   }
+  selectedAnswer?: string
+  onAnswerChange?: (answer: string) => void
 }
 
 export function QuestionPanel({ 
   question, 
   latexQuestion,
   options,
-  latexOptions 
+  latexOptions,
+  selectedAnswer,
+  onAnswerChange
 }: QuestionPanelProps) {
   // Use LaTeX version if available, otherwise fallback to plain text
   const questionContent = latexQuestion || question
@@ -41,13 +46,30 @@ export function QuestionPanel({
         <div className="space-y-3">
           {(['A', 'B', 'C', 'D'] as const).map((key) => {
             const optionText = latexOptions?.[key] || options[key]
+            const isSelected = selectedAnswer === key
             return (
-              <div key={key} className="flex items-start gap-3">
-                <span className="font-medium text-gray-700 min-w-[24px]">{key}.</span>
-                <div className="text-gray-700 flex-1">
+              <button
+                key={key}
+                onClick={() => onAnswerChange?.(key)}
+                className={cn(
+                  "flex items-start gap-3 w-full text-left p-3 rounded-lg transition-colors",
+                  "hover:bg-gray-50",
+                  isSelected && "bg-blue-50 border-2 border-blue-500 hover:bg-blue-50"
+                )}
+              >
+                <span className={cn(
+                  "font-medium min-w-[24px]",
+                  isSelected ? "text-blue-700" : "text-gray-700"
+                )}>
+                  {key}.
+                </span>
+                <div className={cn(
+                  "flex-1",
+                  isSelected ? "text-blue-900" : "text-gray-700"
+                )}>
                   <LatexRenderer content={optionText} displayMode={false} />
                 </div>
-              </div>
+              </button>
             )
           })}
         </div>
