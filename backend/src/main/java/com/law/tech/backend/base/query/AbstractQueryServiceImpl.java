@@ -1,8 +1,8 @@
 package com.law.tech.backend.base.query;
 
-import com.law.tech.backend.base.BaseMapper;
-import com.law.tech.backend.base.BaseRepository;
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.mappers.BaseMapper;
+import com.law.tech.backend.base.repositories.BaseRepository;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import com.law.tech.backend.base.models.BaseEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

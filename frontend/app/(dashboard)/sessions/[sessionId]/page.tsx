@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { HeaderBar } from "@/components/canvas/HeaderBar";
@@ -22,9 +21,31 @@ export default function CanvasPage({
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch all questions on mount
-  useEffect(() => {
-    async function loadQuestions() {
+  // Fetch session
+  let session: SessionDto | null = null
+  try {
+    const response = await backendClient.get<GenericResponseSessionDto>({
+      url: `/sessions/${sessionId}`
+    })
+    
+    if (!response.data) {
+      notFound()
+    }
+    
+    const genericResponse = response.data as GenericResponseSessionDto
+    session = genericResponse.data || null
+  } catch (err) {
+    console.error('Failed to fetch session:', err)
+  }
+
+  if (!session) {
+    notFound()
+  }
+
+  // Fetch all questions in the session
+  const questions: QuestionDto[] = []
+  if (session.questionIds) {
+    for (const questionId of session.questionIds) {
       try {
         const data = await fetchQuestions();
         setAllQuestions(data.questions);

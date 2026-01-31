@@ -1,4 +1,4 @@
-package com.law.tech.backend.base.models;
+package com.law.tech.backend.base.models.dtos;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

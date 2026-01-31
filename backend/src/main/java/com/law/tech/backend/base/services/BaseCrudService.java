@@ -1,19 +1,32 @@
-package com.law.tech.backend.base;
+package com.law.tech.backend.base.services;
 
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import com.law.tech.backend.base.models.BaseEntity;
+import com.law.tech.backend.base.mappers.BaseMapper;
+import com.law.tech.backend.base.repositories.BaseRepository;
 import java.lang.reflect.Field;
 import java.util.Optional;
 import java.util.UUID;
 
 public class BaseCrudService<T extends BaseDto, E extends BaseEntity, R extends BaseRepository<E>>
-        implements BaseCrudInterface<T> {
+        implements com.law.tech.backend.base.BaseCrudInterface<T> {
     public R repository;
     public BaseMapper<T, E> mapper;
 
     public BaseCrudService(R repository, BaseMapper<T, E> mapper) {
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    protected void validateBeforeSave(E entity) {
+    }
+
+    protected void validateBeforeDelete(E entity) {
+    }
+
+    public E save(E entity) {
+        validateBeforeSave(entity);
+        return repository.save(entity);
     }
 
     @Override

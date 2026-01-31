@@ -66,8 +66,6 @@ next-env.d.ts
 hs_err_pid*
 replay_pid*
 
-# this is added to not add the md files which are agent generated
-*.md
 
 # dont add target folder
 *target/

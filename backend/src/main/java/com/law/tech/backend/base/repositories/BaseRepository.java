@@ -1,4 +1,4 @@
-package com.law.tech.backend.base;
+package com.law.tech.backend.base.repositories;
 
 import com.law.tech.backend.base.models.BaseEntity;
 import org.springframework.data.domain.Pageable;

@@ -1,6 +1,6 @@
 package com.law.tech.backend.base;
 
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;

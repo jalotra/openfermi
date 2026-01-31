@@ -1,7 +1,7 @@
 package com.law.tech.backend.sessions.controllers;
 
-import com.law.tech.backend.base.BaseController;
-import com.law.tech.backend.base.BaseReadController;
+import com.law.tech.backend.base.controllers.BaseController;
+import com.law.tech.backend.base.controllers.BaseReadController;
 import com.law.tech.backend.base.models.GenericResponse;
 import com.law.tech.backend.sessions.models.Session;
 import com.law.tech.backend.sessions.models.dtos.SessionDto;

@@ -1,9 +1,11 @@
-package com.law.tech.backend.base;
+package com.law.tech.backend.base.controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import com.law.tech.backend.base.models.BaseEntity;
 import com.law.tech.backend.base.models.GenericResponse;
+import com.law.tech.backend.base.repositories.BaseRepository;
+import com.law.tech.backend.base.services.BaseCrudService;
 import com.law.tech.backend.base.utils.SchemaUtils;
 import jakarta.validation.Valid;
 import java.lang.reflect.ParameterizedType;

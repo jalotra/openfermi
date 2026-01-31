@@ -1,8 +1,10 @@
-package com.law.tech.backend.base;
+package com.law.tech.backend.base.controllers;
 
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import com.law.tech.backend.base.models.BaseEntity;
 import com.law.tech.backend.base.models.GenericResponse;
+import com.law.tech.backend.base.repositories.BaseRepository;
+import com.law.tech.backend.base.services.BaseReadService;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
@@ -19,7 +21,7 @@ import java.util.List;
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 public class BaseReadController<T extends BaseDto, E extends BaseEntity, R extends BaseRepository<E>> {
-    
+
     BaseReadService<T, E, R> baseReadService;
 
     public BaseReadController(BaseReadService<T, E, R> baseReadService) {
