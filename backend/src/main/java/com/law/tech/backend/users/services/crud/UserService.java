@@ -14,12 +14,12 @@ import java.util.UUID;
 
 @Service
 @Transactional
-public class UserService extends BaseCrudService<User, UserRepository> {
+public class UserService extends BaseCrudService<UserDto, User, UserRepository> {
 
     private final UserMapper mapper;
 
     public UserService(UserRepository repository, UserMapper mapper) {
-        super(repository);
+        super(repository, mapper);
         this.mapper = mapper;
     }
 

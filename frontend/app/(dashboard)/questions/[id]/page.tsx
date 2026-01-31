@@ -18,7 +18,13 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
   if ('error' in response && response.error) {
     notFound()
   }
-  const question = response.data.data?.data
+  
+  if (!response.data) {
+    notFound()
+  }
+  
+  const genericResponse = response.data as GenericResponseQuestionDto
+  const question = genericResponse.data
   
   if (!question) {
     notFound()
@@ -34,11 +40,11 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
         
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{question.title}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{question.questionText}</h1>
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className={
-                question.difficulty === "Easy" ? "bg-green-100 text-green-700" :
-                question.difficulty === "Medium" ? "bg-yellow-100 text-yellow-700" :
+                question.difficulty === "EASY" ? "bg-green-100 text-green-700" :
+                question.difficulty === "MEDIUM" ? "bg-yellow-100 text-yellow-700" :
                 "bg-red-100 text-red-700"
               }>
                 {question.difficulty}
@@ -66,7 +72,7 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
               <CardContent>
                 <div className="text-lg leading-relaxed text-gray-800">
                   <LatexRenderer 
-                    content={question.latexQuestion || question.question} 
+                    content={question.questionText || ''} 
                     displayMode={false}
                   />
                 </div>
@@ -78,15 +84,15 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
                 <CardTitle>Options</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4">
-                {Object.entries(question.options || {}).map(([key, value]) => {
-                  const optionText = question.latexOptions?.[key as 'A' | 'B' | 'C' | 'D'] || (value as string)
+                {(question.options || []).map((option, index) => {
+                  const key = String.fromCharCode(65 + index) // A, B, C, D
                   return (
-                    <div key={key} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
+                    <div key={index} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
                       <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
                         {key}
                       </span>
                       <div className="text-gray-700 flex-1">
-                        <LatexRenderer content={optionText} displayMode={false} />
+                        <LatexRenderer content={option} displayMode={false} />
                       </div>
                     </div>
                   )
@@ -101,37 +107,37 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
                 <CardTitle>Metadata</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {question.metadata?.subject && (
+                {question.subject && (
                   <div>
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
-                    <p className="font-medium">{question.metadata.subject}</p>
+                    <p className="font-medium">{question.subject}</p>
                   </div>
                 )}
-                {question.metadata?.topic && (
+                {question.topic && (
                   <div>
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Topic</label>
-                    <p className="font-medium">{question.metadata.topic}</p>
+                    <p className="font-medium">{question.topic}</p>
                   </div>
                 )}
-                {question.metadata?.source && (
+                {question.examType && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Source</label>
-                    <p className="font-medium">{question.metadata.source}</p>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Exam Type</label>
+                    <p className="font-medium">{question.examType}</p>
                   </div>
                 )}
-                {question.metadata?.page && (
+                {question.year && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Page</label>
-                    <p className="font-medium">{question.metadata.page}</p>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Year</label>
+                    <p className="font-medium">{question.year}</p>
                   </div>
                 )}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Created</label>
-                  <p className="font-medium">Jan 24, 2026</p>
+                  <p className="font-medium">{question.createdAt ? new Date(question.createdAt).toLocaleDateString() : 'Unknown'}</p>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Last Modified</label>
-                  <p className="font-medium">2 hours ago</p>
+                  <p className="font-medium">{question.updatedAt ? new Date(question.updatedAt).toLocaleDateString() : 'Unknown'}</p>
                 </div>
               </CardContent>
             </Card>

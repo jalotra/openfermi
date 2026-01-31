@@ -15,8 +15,11 @@ export default async function SessionsPage() {
       url: '/sessions',
     })
     
-    if (response.data?.data) {
-      sessions = response.data.data
+    if (response.data) {
+      const genericResponse = response.data as GenericResponseListSessionDto
+      if (genericResponse.data) {
+        sessions = genericResponse.data
+      }
     }
   } catch (err) {
     error = err instanceof Error ? err.message : 'Failed to fetch sessions'

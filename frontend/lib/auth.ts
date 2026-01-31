@@ -54,19 +54,7 @@ export const auth = betterAuth({
     },
   },
 
-  // Hooks to sync user to backend after sign in/sign up
-  hooks: {
-    after: [
-      {
-        handler: async (ctx) => {
-          // Sync user after successful social sign in
-          if (ctx.path === "/sign-in/social" && ctx.context.user) {
-            await syncUserToBackend(ctx.context.user);
-          }
-        },
-      },
-    ],
-  },
+
 
   // Enable Next.js cookies plugin (must be last in plugins array)
   plugins: [nextCookies()],

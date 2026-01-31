@@ -13,7 +13,7 @@ import org.mapstruct.ReportingPolicy;
     nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
     unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
-public interface UserMapper extends BaseMapper<User, UserDto> {
+public interface UserMapper extends com.law.tech.backend.base.mappers.BaseMapper<UserDto, User> {
     // Inherits toDto and toEntity from BaseMapper
     // All fields have matching names, so no custom mappings needed
 }

@@ -1,6 +1,6 @@
 package com.law.tech.backend.questions.models.dtos;
 
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import com.law.tech.backend.questions.models.Question;
 import lombok.AllArgsConstructor;
 import lombok.Data;

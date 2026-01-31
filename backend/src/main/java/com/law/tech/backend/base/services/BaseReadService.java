@@ -1,7 +1,9 @@
-package com.law.tech.backend.base;
+package com.law.tech.backend.base.services;
 
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import com.law.tech.backend.base.models.BaseEntity;
+import com.law.tech.backend.base.mappers.BaseMapper;
+import com.law.tech.backend.base.repositories.BaseRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
@@ -17,7 +19,7 @@ import java.util.stream.StreamSupport;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BaseReadService<T extends BaseDto, E extends BaseEntity, R extends BaseRepository<E>>
-        implements BaseReadInterface<T> {
+        implements com.law.tech.backend.base.BaseReadInterface<T> {
     protected final R repository;
     protected final BaseMapper<T, E> mapper;
 

@@ -132,7 +132,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
     }
   } : null
 
-  if (!currentQuestion) {
+  if (!currentQuestion || !questionPanelData) {
     return <div className="flex items-center justify-center h-screen">No questions in session</div>
   }
 
@@ -144,8 +144,6 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
         onPreviousQuestion={handlePreviousQuestion}
         onNextQuestion={handleNextQuestion}
         onSidebarToggle={toggle}
-        saveStatus={saveStatus}
-        onFinish={currentIndex === totalQuestions - 1 ? handleFinish : undefined}
       />
       <QuestionPanel
         question={questionPanelData.question}

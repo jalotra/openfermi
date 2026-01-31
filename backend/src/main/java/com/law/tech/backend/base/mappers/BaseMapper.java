@@ -1,8 +1,8 @@
-package com.law.tech.backend.base;
+package com.law.tech.backend.base.mappers;
 
 import java.util.List;
 
-import com.law.tech.backend.base.models.BaseDto;
+import com.law.tech.backend.base.models.dtos.BaseDto;
 import com.law.tech.backend.base.models.BaseEntity;
 
 public interface BaseMapper <T extends BaseDto, E extends BaseEntity>  {

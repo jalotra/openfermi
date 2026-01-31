@@ -1,6 +1,6 @@
 package com.law.tech.backend.sessions.repositories;
 
-import com.law.tech.backend.base.BaseRepository;
+import com.law.tech.backend.base.repositories.BaseRepository;
 import com.law.tech.backend.sessions.models.Session;
 import org.springframework.stereotype.Repository;
 

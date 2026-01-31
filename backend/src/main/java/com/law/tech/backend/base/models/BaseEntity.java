@@ -2,19 +2,25 @@ package com.law.tech.backend.base.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @MappedSuperclass
 public class BaseEntity {
 
     @Id
     @GeneratedValue
     @UuidGenerator
-    private UUID id;  // Changed to private for better encapsulation
+    private UUID id;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;

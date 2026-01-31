@@ -21,7 +21,13 @@ export default async function SessionPage({
     const response = await backendClient.get<GenericResponseSessionDto>({
       url: `/sessions/${sessionId}`
     })
-    session = response.data?.data || null
+    
+    if (!response.data) {
+      notFound()
+    }
+    
+    const genericResponse = response.data as GenericResponseSessionDto
+    session = genericResponse.data || null
   } catch (err) {
     console.error('Failed to fetch session:', err)
   }
@@ -38,8 +44,11 @@ export default async function SessionPage({
         const response = await backendClient.get<GenericResponseQuestionDto>({
           url: `/questions/${questionId}`
         })
-        if (response.data?.data) {
-          questions.push(response.data.data)
+        if (response.data) {
+          const genericResponse = response.data as GenericResponseQuestionDto
+          if (genericResponse.data) {
+            questions.push(genericResponse.data)
+          }
         }
       } catch (err) {
         console.error(`Failed to fetch question ${questionId}:`, err)

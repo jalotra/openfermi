@@ -19,7 +19,7 @@ public class UserController extends BaseController<UserDto, User, UserRepository
     private final UserMapper userMapper;
 
     public UserController(UserService userService, UserMapper userMapper) {
-        super(userService, userMapper);
+        super(userService);
         this.userService = userService;
         this.userMapper = userMapper;
     }

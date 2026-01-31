@@ -1,6 +1,6 @@
 package com.law.tech.backend.config;
 
-import com.law.tech.backend.base.BaseController;
+import com.law.tech.backend.base.controllers.BaseController;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.info.Info;

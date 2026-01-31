@@ -35,7 +35,12 @@ async function createSession(formData: FormData) {
     }
   })
 
-  const session = response.data?.data
+  if (!response.data) {
+    throw new Error('Failed to create session')
+  }
+  
+  const genericResponse = response.data as GenericResponseSessionDto
+  const session = genericResponse.data
   if (session?.id) {
     redirect(`/sessions/${session.id}`)
   }
@@ -75,8 +80,11 @@ export default async function NewSessionPage({
       const response = await backendClient.get<GenericResponseQuestionDto>({
         url: `/questions/${id}`
       })
-      if (response.data?.data) {
-        questions.push(response.data.data)
+      if (response.data) {
+        const genericResponse = response.data as GenericResponseQuestionDto
+        if (genericResponse.data) {
+          questions.push(genericResponse.data)
+        }
       }
     } catch (err) {
       console.error(`Failed to fetch question ${id}:`, err)
