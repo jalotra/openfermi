@@ -34,6 +34,7 @@ export interface LaTeXQuestion {
 const LATEX_CONVERSION_PROMPT = (question: ExtractedQuestion) => `You are an expert at converting mathematical text to LaTeX format. 
 
 Convert the following JEE question to LaTeX format. Preserve all mathematical notation, equations, symbols, and formatting.
+Use the provided image as the source of truth for equations and symbols; use the provided text mainly for structure.
 
 Instructions:
 1. Convert all mathematical expressions to proper LaTeX syntax
@@ -88,8 +89,9 @@ export async function convertQuestionToLaTeX(
     },
   ];
 
-  if (question.pageImagePath && fs.existsSync(question.pageImagePath)) {
-    const imageBuffer = fs.readFileSync(question.pageImagePath);
+  const imagePath = question.questionImagePath || question.pageImagePath;
+  if (imagePath && fs.existsSync(imagePath)) {
+    const imageBuffer = fs.readFileSync(imagePath);
     const base64 = imageBuffer.toString('base64');
     content.push({
       type: 'image',

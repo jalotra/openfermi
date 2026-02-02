@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { convertPDFToImages, loadSingleImage } from './image-processor.js';
+import { convertPDFToImages, cropImageNormalized, loadSingleImage } from './image-processor.js';
 import { extractQuestionsFromPageImages } from './question-extractor.js';
 import { convertQuestionsToLaTeX } from './latex-converter.js';
 import { formatQuestion, saveQuestionsToJSON } from './question-formatter.js';
@@ -21,6 +21,7 @@ interface ExtractionOptions {
   extractionModel?: string;
   latexModel?: string;
   isImage?: boolean;
+  embedImages?: boolean;
 }
 
 const SUPPORTED_IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'] as const;
@@ -63,6 +64,7 @@ async function extractQuestions(options: ExtractionOptions) {
     extractionModel = process.env.EXTRACTION_MODEL || DEFAULT_MODEL,
     latexModel = process.env.LATEX_MODEL || DEFAULT_MODEL,
     isImage = false,
+    embedImages = false,
   } = options;
 
   validateApiKey();
@@ -102,21 +104,42 @@ async function extractQuestions(options: ExtractionOptions) {
     return;
   }
 
-  console.log(' Step 3: Converting questions to LaTeX format...');
+  const sourceSlug = source.toLowerCase().replace(/\s+/g, '-');
+  const year = new Date().getFullYear().toString();
+  const imagesDir = path.join(outputDir, year, 'images', sourceSlug);
+
+  console.log(' Step 3: Cropping per-question images...');
+  let croppedCount = 0;
+  for (const q of extractedQuestions) {
+    if (!q.pageImagePath) continue;
+    const filename = `${sourceSlug}-p${q.pageNumber}-q${q.questionNumber}.png`;
+    const questionImagePath = path.join(imagesDir, filename);
+
+    try {
+      cropImageNormalized(q.pageImagePath, questionImagePath, q.questionBbox, { padPct: 0.02 });
+      q.questionImagePath = questionImagePath;
+      croppedCount += 1;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      console.warn(`  Warning: failed to crop image for q${q.questionNumber} (page ${q.pageNumber}): ${message}`);
+    }
+  }
+  console.log(` Cropped ${croppedCount}/${extractedQuestions.length} question image(s)`);
+  console.log(` Question crops: ${imagesDir}\n`);
+
+  console.log(' Step 4: Converting questions to LaTeX format...');
   console.log(` This may take a while as we convert ${extractedQuestions.length} questions...\n`);
   const latexQuestions = await convertQuestionsToLaTeX(extractedQuestions, latexModel);
   console.log(`\n Converted ${latexQuestions.length} questions to LaTeX\n`);
 
-  console.log(' Step 4: Formatting questions...');
+  console.log(' Step 5: Formatting questions...');
   const formattedQuestions = extractedQuestions.map((extracted, idx) => {
     const latex = latexQuestions[idx];
-    return formatQuestion(extracted, latex, source);
+    return formatQuestion(extracted, latex, source, { embedImages });
   });
   console.log(` Formatted ${formattedQuestions.length} questions\n`);
 
-  console.log(' Step 5: Saving questions to JSON...');
-  const sourceSlug = source.toLowerCase().replace(/\s+/g, '-');
-  const year = new Date().getFullYear().toString();
+  console.log(' Step 6: Saving questions to JSON...');
   const yearDir = path.join(outputDir, year);
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
   const outputFilename = `${sourceSlug}-${timestamp}.json`;
@@ -131,6 +154,7 @@ async function extractQuestions(options: ExtractionOptions) {
   if (tempImagesDir && !isImageFile) {
     console.log(`  • Page images: ${tempImagesDir}`);
   }
+  console.log(`  • Question crops: ${imagesDir}`);
   console.log('');
 
   return {
@@ -167,6 +191,10 @@ function parseCliArgs(args: string[]): ExtractionOptions {
         options.isImage = true;
         i--;
         break;
+      case '--embed-images':
+        options.embedImages = true;
+        i--;
+        break;
     }
   }
 
@@ -181,6 +209,7 @@ function printUsage(): void {
   console.log('  --extraction-model <model>  Model for extraction (default: google/gemini-3-flash-preview)');
   console.log('  --latex-model <model>       Model for LaTeX conversion (default: google/gemini-3-flash-preview)');
   console.log('  --image                Treat input as image file (auto-detected by extension)');
+  console.log('  --embed-images         Embed question images as base64 data URIs in the output JSON');
   console.log('\nExamples:');
   console.log('  npm run extract papers/2025/jee_advanced_2025.pdf --source "JEE Advanced 2025"');
   console.log('  npm run extract output/temp_images/page_001.png --source "JEE Advanced 2025"');
