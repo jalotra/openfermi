@@ -38,8 +38,8 @@ app:
   allowedOrigins: ${ALLOWED_ORIGINS:http://localhost:3000}
   api:
     key:
-      value: ${API_KEY}
-      header: ${API_KEY_HEADER}
+      enabled: ${API_KEY_ENABLED:false}
+      value: ${API_KEY:}
 springdoc:
   api-docs:
     path: /api/v3/api-docs
