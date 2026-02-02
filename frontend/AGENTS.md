@@ -261,6 +261,20 @@ npx tsc --noEmit
 ```
 
 
+### Environment Variables
+
+Required environment variables for the frontend (see `.env.example`):
+
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `NEXT_PUBLIC_API_URL` | Backend API base URL | `http://localhost:8080` |
+| `NEXT_PUBLIC_API_KEY` | API key for backend auth (sent as `X-API-KEY` header) | *(none)* |
+| `BETTER_AUTH_URL` | Better Auth server URL | *(none)* |
+| `BETTER_AUTH_SECRET` | Session signing secret | *(none)* |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID | *(none)* |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret | *(none)* |
+| `NEXT_PUBLIC_BETTER_AUTH_URL` | Client-side auth URL | `http://localhost:3000` |
+
 ### Client Integration 
 hey the java backend is the thing that gives you ORM layer (on top of http api)
 always use this pattern of integrating with the backend 
