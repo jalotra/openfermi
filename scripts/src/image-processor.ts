@@ -12,7 +12,6 @@ export interface PageImage {
   base64: string;
 }
 
-const SUPPORTED_IMAGE_FORMATS = ['.png', '.jpg', '.jpeg', '.webp'] as const;
 const MIME_TYPES: Record<string, string> = {
   '.png': 'image/png',
   '.jpg': 'image/jpeg',

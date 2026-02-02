@@ -1,15 +1,15 @@
 import { backendClient } from "@/lib/backend-client"
-import { 
-  GenericResponseQuestionDto, 
-  QuestionDto,
-  GenericResponseSessionDto 
-} from "@/lib/backend/types.gen"
+import { QuestionController, SessionController } from "@/lib/backend/sdk.gen"
+import type { QuestionDto, SessionDto } from "@/lib/backend/types.gen"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Play } from "lucide-react"
 import Link from "next/link"
 import { redirect } from "next/navigation"
+import { AxiosError } from "axios"
+
+export const dynamic = "force-dynamic";
 
 // Server Action to create session
 async function createSession(formData: FormData) {
@@ -22,27 +22,35 @@ async function createSession(formData: FormData) {
     throw new Error('No questions selected')
   }
 
-  const response = await backendClient.post<GenericResponseSessionDto>({
-    url: '/sessions',
-    body: {
-      userId: 'anonymous', // TODO: Add auth later
-      questionIds: ids,
-      status: 'IN_PROGRESS',
-      startTime: new Date().toISOString(),
-      totalQuestions: ids.length,
-      examType: 'MIXED',
-      subject: 'MIXED'
-    }
-  })
-
-  if (!response.data) {
-    throw new Error('Failed to create session')
+  const body: SessionDto = {
+    userId: "anonymous",
+    questionIds: ids,
+    status: "IN_PROGRESS",
+    startTime: new Date().toISOString(),
+    totalQuestions: ids.length,
+    examType: "MIXED",
+    subject: "MIXED",
   }
-  
-  const genericResponse = response.data as GenericResponseSessionDto
-  const session = genericResponse.data
-  if (session?.id) {
-    redirect(`/sessions/${session.id}`)
+
+  try {
+    const response = await SessionController.sessionUpsert({
+      client: backendClient,
+      body,
+    })
+
+    const session = response.data?.data
+    if (session?.id) {
+      redirect(`/sessions/${session.id}`)
+    }
+
+    throw new Error("Failed to create session")
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      throw new Error(
+        err.response?.data?.message || err.message || "Failed to create session",
+      )
+    }
+    throw err
   }
 }
 
@@ -74,22 +82,21 @@ export default async function NewSessionPage({
   }
 
   // Fetch selected questions
-  const questions: QuestionDto[] = []
-  for (const id of ids) {
-    try {
-      const response = await backendClient.get<GenericResponseQuestionDto>({
-        url: `/questions/${id}`
-      })
-      if (response.data) {
-        const genericResponse = response.data as GenericResponseQuestionDto
-        if (genericResponse.data) {
-          questions.push(genericResponse.data)
-        }
+  const questionResults = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const response = await QuestionController.questionGet({
+          client: backendClient,
+          path: { id },
+        })
+        return response.data?.data || null
+      } catch {
+        return null
       }
-    } catch (err) {
-      console.error(`Failed to fetch question ${id}:`, err)
-    }
-  }
+    }),
+  )
+
+  const questions = questionResults.filter((q): q is QuestionDto => Boolean(q))
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-white">

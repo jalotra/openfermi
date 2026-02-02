@@ -259,3 +259,39 @@ npm run build
 # Type checking
 npx tsc --noEmit
 ```
+
+
+### Client Integration 
+hey the java backend is the thing that gives you ORM layer (on top of http api)
+always use this pattern of integrating with the backend 
+see this file : frontend/lib/backend/sdk.gen.ts
+
+and this is the pattern of integration see that here I am integrating with a listing page for seeing all questions etc
+```
+try {
+    const response = await QuestionController.questionRead({
+      client: backendClient,
+      query: {
+        page: pageNumber as string,
+        size: pageSize as string,
+      },
+    });
+    questions = response.data?.data || [];
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      error =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to fetch questions";
+    } else {
+      error = err instanceof Error ? err.message : "Failed to fetch questions";
+    }
+  }
+```
+
+
+# Post coding Steps
+Always make sure that you do these things in order 
+1.  npx prettier --write "**/*.{js,jsx,mjs,cjs,ts,tsx,js}" -- This is used to lint the code 
+2. npx tsc --noEmit -- This is used to make sure the code in ts layer is compiling (and fix issues if you see any; this should always pass and dont use Any as types; figure those out meaningfully)
+3. npm run build -- This would build the nextjs project and make sure the code compiles down and would be visible similarly in vercel as well

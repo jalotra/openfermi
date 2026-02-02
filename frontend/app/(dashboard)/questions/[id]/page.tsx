@@ -14,27 +14,34 @@ import Link from "next/link";
 import { backendClient } from "@/lib/backend-client";
 import { QuestionDto } from "@/lib/backend/types.gen";
 import { QuestionController } from "@/lib/backend/sdk.gen";
+import { AxiosError } from "axios";
+import { notFound } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 
 export default async function QuestionDetailsPage({ params }: { params: { id: string } }) {
-  const { id } = await params
-  const response = await backendClient.get<GenericResponseQuestionDto>({
-    url: `/questions/${id}`
-  })
-  if ('error' in response && response.error) {
-    notFound()
+  const { id } = params;
+
+  let question: QuestionDto | null = null;
+
+  try {
+    const response = await QuestionController.questionGet({
+      client: backendClient,
+      path: { id },
+    });
+    question = response.data?.data || null;
+  } catch (err) {
+    if (err instanceof AxiosError) {
+      console.error(
+        err.response?.data?.message || err.message || "Failed to fetch question",
+      );
+      notFound();
+    }
+    throw err;
   }
-  
-  if (!response.data) {
-    notFound()
-  }
-  
-  const genericResponse = response.data as GenericResponseQuestionDto
-  const question = genericResponse.data
-  
-  if (!question) {
-    notFound()
-  }
+
+  if (!question) notFound();
 
   return (
     <div className="flex-1 bg-gray-50/50 p-8 overflow-y-auto">
@@ -63,7 +70,7 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
               </span>
             </div>
           </div>
-          <Link href={`/canvas/${question.id}`}>
+          <Link href={`/sessions/new?questionIds=${question.id || id}`}>
             <Button size="lg" className="shadow-lg shadow-primary/20">
               <Play className="mr-2 h-4 w-4 fill-current" />
               Start Session
