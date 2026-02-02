@@ -1,7 +1,7 @@
-/**
- * Client-side utility functions for fetching questions
- * These functions use fetch API to call the backend directly
- */
+import { AxiosError } from "axios";
+import { backendClient } from "@/lib/backend-client";
+import { QuestionController } from "@/lib/backend/sdk.gen";
+import type { QuestionDto } from "@/lib/backend/types.gen";
 
 export interface Question {
   id: string;
@@ -36,31 +36,6 @@ export interface Question {
   };
 }
 
-interface GenericResponse<T> {
-  data: T;
-  message: string;
-}
-
-interface QuestionDto {
-  id: string;
-  questionText: string;
-  subject: string;
-  examType: string;
-  difficulty: "EASY" | "MEDIUM" | "HARD";
-  options: string[];
-  correctAnswer?: string;
-  explanation?: string;
-  imageUrls?: string[];
-  year?: number;
-  paperNumber?: number;
-  questionNumber?: number;
-  tags?: string[];
-  topic?: string;
-  marks?: number;
-  negativeMarks?: number;
-  isActive?: boolean;
-}
-
 // Map backend QuestionDto to frontend Question format
 function mapQuestionDtoToQuestion(dto: QuestionDto): Question {
   // Convert options array to object format { A: ..., B: ..., C: ..., D: ... }
@@ -78,13 +53,13 @@ function mapQuestionDtoToQuestion(dto: QuestionDto): Question {
   };
 
   return {
-    id: dto.id,
+    id: dto.id || "",
     title:
-      dto.questionText.substring(0, 100) +
-      (dto.questionText.length > 100 ? "..." : ""),
-    question: dto.questionText,
-    latexQuestion: dto.questionText, // Assuming same for now
-    difficulty: difficultyMap[dto.difficulty] || "Medium",
+      (dto.questionText || "").substring(0, 100) +
+      ((dto.questionText || "").length > 100 ? "..." : ""),
+    question: dto.questionText || "",
+    latexQuestion: dto.latexQuestionText || dto.questionText || "",
+    difficulty: difficultyMap[dto.difficulty || "MEDIUM"] || "Medium",
     options: {
       A: optionsObj["A"] || "",
       B: optionsObj["B"] || "",
@@ -110,18 +85,6 @@ function mapQuestionDtoToQuestion(dto: QuestionDto): Question {
 }
 
 /**
- * Get backend API URL from environment or default to localhost:8080
- */
-function getBackendUrl(): string {
-  if (typeof window !== "undefined") {
-    // Client-side: use NEXT_PUBLIC_API_URL
-    return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-  }
-  // Server-side: use NEXT_PUBLIC_API_URL or default
-  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-}
-
-/**
  * Fetch all questions from the backend API
  */
 export async function fetchQuestions(
@@ -132,24 +95,15 @@ export async function fetchQuestions(
   sources: string[];
   total: number;
 }> {
-  const baseUrl = getBackendUrl();
-  const params = new URLSearchParams();
-  // Backend supports page and size params, but we'll fetch all for now
-  // if (source) params.append('source', source)
-  // if (year) params.append('year', year)
+  void source;
+  void year;
 
-  const response = await fetch(`${baseUrl}/questions?${params.toString()}`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch questions");
-  }
+  const response = await QuestionController.questionRead({
+    client: backendClient,
+  });
 
-  const genericResponse: GenericResponse<QuestionDto[]> = await response.json();
-
-  if (!genericResponse.data) {
-    return { questions: [], sources: [], total: 0 };
-  }
-
-  const questions = genericResponse.data.map(mapQuestionDtoToQuestion);
+  const dtos = response.data?.data || [];
+  const questions = dtos.map(mapQuestionDtoToQuestion);
   const sources = Array.from(
     new Set(questions.map((q) => q.metadata?.source).filter(Boolean)),
   ) as string[];
@@ -165,17 +119,20 @@ export async function fetchQuestions(
  * Fetch a single question by ID from the backend API
  */
 export async function fetchQuestion(id: string): Promise<Question | null> {
-  const baseUrl = getBackendUrl();
-  const response = await fetch(`${baseUrl}/questions/${id}`);
-  if (!response.ok) {
-    return null;
+  try {
+    const response = await QuestionController.questionGet({
+      client: backendClient,
+      path: { id },
+    });
+
+    const dto = response.data?.data;
+    if (!dto) return null;
+
+    return mapQuestionDtoToQuestion(dto);
+  } catch (err) {
+    if (err instanceof AxiosError && err.response?.status === 404) {
+      return null;
+    }
+    throw err;
   }
-
-  const genericResponse: GenericResponse<QuestionDto> = await response.json();
-
-  if (!genericResponse.data) {
-    return null;
-  }
-
-  return mapQuestionDtoToQuestion(genericResponse.data);
 }

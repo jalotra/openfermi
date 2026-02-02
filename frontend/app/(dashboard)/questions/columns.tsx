@@ -117,7 +117,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/sessions/${question.id}`}>
+              <Link href={`/sessions/new?questionIds=${question.id || ""}`}>
                 Start Learning Session
               </Link>
             </DropdownMenuItem>

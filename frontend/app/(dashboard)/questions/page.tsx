@@ -7,6 +7,8 @@ import { AxiosError } from "axios";
 import { QuestionController } from "@/lib/backend/sdk.gen";
 import { backendClient } from "@/lib/backend-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function QuestionsPage({
   searchParams,
 }: {
@@ -73,7 +75,7 @@ export default async function QuestionsPage({
           <DataTable<QuestionDto, string>
             columns={columns}
             data={questions}
-            filterColumn="title"
+            filterColumn="questionText"
           />
         )}
       </div>

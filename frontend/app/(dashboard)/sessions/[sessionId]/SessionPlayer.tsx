@@ -10,6 +10,8 @@ import { CollaborationBar } from "@/components/canvas/CollaborationBar"
 import { useSidebar } from "@/components/canvas/SidebarContext"
 import { SessionDto, QuestionDto } from "@/lib/backend/types.gen"
 import { backendClient } from "@/lib/backend-client"
+import { SessionController } from "@/lib/backend/sdk.gen"
+import { AxiosError } from "axios"
 
 interface SessionPlayerProps {
   session: SessionDto
@@ -42,18 +44,26 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   }, [answers, saveStatus])
 
   const saveAnswers = async () => {
+    if (!session.id) return
     try {
-      await backendClient.put({
-        url: `/sessions/${session.id}`,
+      await SessionController.sessionUpsert({
+        client: backendClient,
         body: {
+          id: session.id,
           answers,
-          timeSpentSeconds: Math.floor((Date.now() - startTime) / 1000)
-        }
-      })
+          timeSpentSeconds: Math.floor((Date.now() - startTime) / 1000),
+        },
+      });
       setSaveStatus('saved')
       setTimeout(() => setSaveStatus('idle'), 1000)
     } catch (err) {
-      console.error('Failed to save answers:', err)
+      if (err instanceof AxiosError) {
+        console.error(
+          err.response?.data?.message || err.message || "Failed to save answers",
+        );
+      } else {
+        console.error("Failed to save answers:", err);
+      }
       setSaveStatus('idle')
     }
   }
@@ -94,23 +104,34 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
 
     const score = totalQuestions > 0 ? (correct / totalQuestions) * 100 : 0
 
+    if (!session.id) return
+
     try {
-      await backendClient.put({
-        url: `/sessions/${session.id}`,
+      await SessionController.sessionUpsert({
+        client: backendClient,
         body: {
-          status: 'COMPLETED',
+          id: session.id,
+          status: "COMPLETED",
           endTime: new Date().toISOString(),
           score,
           correctAnswers: correct,
           incorrectAnswers: incorrect,
           unanswered,
           answers,
-          timeSpentSeconds: Math.floor((Date.now() - startTime) / 1000)
-        }
-      })
+          timeSpentSeconds: Math.floor((Date.now() - startTime) / 1000),
+        },
+      });
       router.push(`/sessions`)
     } catch (err) {
-      console.error('Failed to complete session:', err)
+      if (err instanceof AxiosError) {
+        console.error(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to complete session",
+        );
+      } else {
+        console.error("Failed to complete session:", err);
+      }
     }
   }
 

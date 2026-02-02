@@ -152,7 +152,11 @@ The JSON structure matches your frontend's question format. You can customize th
 
 ## Notes
 
-- Page images are saved in `output/temp_images/` - you can delete this folder after processing if desired
-- Each page image can be quite large (several MB at 300 DPI)
-- Vision models can be slower than text-only extraction but provide better accuracy
-- Complex multi-page questions may need manual review
+- Page images are saved in `output/temp_images/` — you can delete this folder after processing if desired.
+- Each page image can be quite large (several MB at 300 DPI).
+- Vision models can be slower than text-only extraction but provide better accuracy.
+- Complex multi-page questions may need manual review.
+
+## Development Guidelines
+
+See [`AGENTS.md`](./AGENTS.md) for coding conventions and best practices when contributing to these scripts.
