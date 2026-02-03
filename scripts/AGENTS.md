@@ -15,13 +15,16 @@ This folder contains the **question extraction pipeline** — a set of TypeScrip
 
 ```
 scripts/
+├── python/
+│   ├── pdf_to_images.py           # Python helper for PDF conversion
+│   ├── crop_image.py              # Python helper for image cropping
+│   └── upload_images_and_ingest.py # Upload crops to S3 + ingest into backend
 ├── src/
 │   ├── extract-questions.ts   # Main CLI entrypoint
 │   ├── image-processor.ts     # PDF→images (calls Python) + image loading
 │   ├── question-extractor.ts  # AI vision extraction from page images
 │   ├── latex-converter.ts     # AI LaTeX conversion
 │   └── question-formatter.ts  # Final JSON formatting + file output
-├── pdf_to_images.py           # Python helper for PDF conversion
 ├── papers/                    # Input PDFs
 ├── output/                    # Generated JSON + images (gitignored)
 ├── package.json
@@ -35,7 +38,7 @@ scripts/
 PDF file
     │
     ▼
-pdf_to_images.py (Python + poppler)
+python/pdf_to_images.py (Python + poppler)
     │
     ▼
 Page PNG images

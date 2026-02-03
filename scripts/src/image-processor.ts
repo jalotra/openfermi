@@ -5,6 +5,16 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const scriptsDir = path.dirname(__dirname);
+const pythonHelpersDir = path.join(scriptsDir, 'python');
+
+function resolvePythonHelper(scriptName: string): string {
+  const fullPath = path.join(pythonHelpersDir, scriptName);
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Missing python helper at ${fullPath} (expected under scripts/python/).`);
+  }
+  return fullPath;
+}
 
 export interface PageImage {
   pageNumber: number;
@@ -80,8 +90,7 @@ export function cropImageNormalized(
   const padPct = options.padPct ?? 0.02;
   const sanitized = sanitizeBBox(bbox);
 
-  const scriptDir = path.dirname(__dirname);
-  const pythonScript = path.join(scriptDir, 'crop_image.py');
+  const pythonScript = resolvePythonHelper('crop_image.py');
 
   ensureDirectoryExists(path.dirname(outputImagePath));
 
@@ -113,8 +122,7 @@ export async function convertPDFToImages(
 ): Promise<PageImage[]> {
   ensureDirectoryExists(outputDir);
 
-  const scriptDir = path.dirname(__dirname);
-  const pythonScript = path.join(scriptDir, 'pdf_to_images.py');
+  const pythonScript = resolvePythonHelper('pdf_to_images.py');
 
   console.log(` Converting PDF to images using Python...`);
   console.log(`  PDF: ${pdfPath}`);

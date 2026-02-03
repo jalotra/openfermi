@@ -58,8 +58,9 @@ def pdf_to_images(pdf_path: str, output_dir: str, dpi: int = 300):
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
-        print("Usage: python pdf_to_images.py <pdf_path> <output_dir> [dpi]")
-        print("Example: python pdf_to_images.py paper.pdf ./images 300")
+        script_name = Path(__file__).name
+        print(f"Usage: python {script_name} <pdf_path> <output_dir> [dpi]")
+        print(f"Example: python {script_name} paper.pdf ./images 300")
         sys.exit(1)
     
     pdf_path = sys.argv[1]

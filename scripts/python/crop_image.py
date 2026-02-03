@@ -85,9 +85,10 @@ def ensure_parent_dir(path: Path) -> None:
 
 
 def main(argv: list[str]) -> int:
+    script_name = Path(__file__).name
     if len(argv) < 7:
         print(
-            "Usage: python3 crop_image.py <input_path> <output_path> <left> <top> <right> <bottom> [pad_pct]",
+            f"Usage: python3 {script_name} <input_path> <output_path> <left> <top> <right> <bottom> [pad_pct]",
             file=sys.stderr,
         )
         return 2
@@ -126,4 +127,3 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))
-
