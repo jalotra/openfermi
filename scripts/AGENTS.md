@@ -15,7 +15,7 @@ This folder contains the **question extraction pipeline** — a set of TypeScrip
 
 ```
 scripts/
-├── @python/
+├── python/
 │   ├── pdf_to_images.py           # Python helper for PDF conversion
 │   ├── crop_image.py              # Python helper for image cropping
 │   └── upload_images_and_ingest.py # Upload crops to S3 + ingest into backend
@@ -38,7 +38,7 @@ scripts/
 PDF file
     │
     ▼
-@python/pdf_to_images.py (Python + poppler)
+python/pdf_to_images.py (Python + poppler)
     │
     ▼
 Page PNG images

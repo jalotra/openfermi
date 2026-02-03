@@ -6,12 +6,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const scriptsDir = path.dirname(__dirname);
-const pythonHelpersDir = path.join(scriptsDir, '@python');
+const pythonHelpersDir = path.join(scriptsDir, 'python');
 
 function resolvePythonHelper(scriptName: string): string {
   const fullPath = path.join(pythonHelpersDir, scriptName);
   if (!fs.existsSync(fullPath)) {
-    throw new Error(`Missing python helper at ${fullPath} (expected under scripts/@python/).`);
+    throw new Error(`Missing python helper at ${fullPath} (expected under scripts/python/).`);
   }
   return fullPath;
 }
