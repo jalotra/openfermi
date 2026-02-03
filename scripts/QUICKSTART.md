@@ -52,7 +52,7 @@ The script will create:
 Once you have a JSON + cropped images on disk, upload images to S3 (deduped by SHA-256) and POST questions to the Java backend:
 
 ```bash
-python3 upload_images_and_ingest.py \
+python3 @python/upload_images_and_ingest.py \
   --json output/2026/jee-advanced-2025-YYYY-MM-DD.json \
   --bucket your-s3-bucket \
   --backend-url http://localhost:8080

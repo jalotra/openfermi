@@ -39,9 +39,14 @@ def _load_local_env() -> None:
     if load_dotenv is None:
         return
     script_dir = Path(__file__).resolve().parent
-    env_path = script_dir / ".env"
-    if env_path.exists():
-        load_dotenv(dotenv_path=str(env_path), override=False)
+    candidate_paths = [
+        script_dir / ".env",
+        script_dir.parent / ".env",
+    ]
+    for env_path in candidate_paths:
+        if env_path.exists():
+            load_dotenv(dotenv_path=str(env_path), override=False)
+            break
 
 
 def _normalize_aws_env() -> None:
@@ -895,4 +900,3 @@ def main(argv: List[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
-

@@ -55,7 +55,7 @@ The script automatically detects if the input is a PDF or image file based on th
 After extraction, you can upload the cropped question images to S3 (deduped by SHA-256 content hash) and ingest the questions into the Java backend:
 
 ```bash
-python3 upload_images_and_ingest.py \
+python3 @python/upload_images_and_ingest.py \
   --json output/2026/jee-advanced-2025-YYYY-MM-DD.json \
   --bucket your-s3-bucket \
   --backend-url http://localhost:8080 \
@@ -140,7 +140,7 @@ Questions are saved to `output/{year}/{source}-{date}.json` with the following s
 
 The pipeline follows this flow:
 
-1. **PDF to Images** (`pdf_to_images.py`): Converts PDF pages to PNG images
+1. **PDF to Images** (`@python/pdf_to_images.py`): Converts PDF pages to PNG images
 2. **Image Processor** (`src/image-processor.ts`): Loads images and prepares them for AI processing
 3. **Question Extractor** (`src/question-extractor.ts`): AI agent extracts questions from page images using vision
 4. **LaTeX Converter** (`src/latex-converter.ts`): AI agent converts math to LaTeX
