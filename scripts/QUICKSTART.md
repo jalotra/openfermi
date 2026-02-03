@@ -45,7 +45,7 @@ The script automatically detects PDF vs image files by extension. Supported imag
 
 The script will create:
 - `output/2025/jee-advanced-2025-{date}.json` - Questions in JSON format
-- `output/2025/images/` - All extracted images
+- `output/{year}/images/{sourceSlug}/` - Per-question cropped PNG images
 
 ## JSON Structure
 
@@ -55,7 +55,7 @@ Each question in the JSON file includes:
 - `latexQuestion`: LaTeX formatted version
 - `options`: A, B, C, D options (plain text)
 - `latexOptions`: A, B, C, D options (LaTeX)
-- `images`: Array of base64-encoded images with metadata
+- `images`: Array of image metadata with `path`; optionally `data` (base64 `data:` URI) via `--embed-images`
 - `metadata`: Source, page number, question number, subject, topic
 
 ## Troubleshooting

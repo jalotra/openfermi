@@ -57,7 +57,8 @@ npm run extract papers/2025/jee_advanced_2025.pdf \
   --source "JEE Advanced 2025" \
   --output-dir ./output \
   --extraction-model google/gemini-3-flash-preview \
-  --latex-model google/gemini-3-flash-preview
+  --latex-model google/gemini-3-flash-preview \
+  --embed-images
 ```
 
 ### Output Structure
@@ -93,8 +94,9 @@ Questions are saved to `output/{year}/{source}-{date}.json` with the following s
       "images": [
         {
           "format": "png",
-          "filename": "jee_advanced_2025_page_001.png",
-          "path": "./output/temp_images/jee_advanced_2025_page_001.png"
+          "filename": "jee-advanced-2025-p1-q1.png",
+          "path": "./output/2026/images/jee-advanced-2025/jee-advanced-2025-p1-q1.png",
+          "data": "data:image/png;base64,..."
         }
       ],
       "metadata": {
@@ -110,7 +112,12 @@ Questions are saved to `output/{year}/{source}-{date}.json` with the following s
 }
 ```
 
-Page images are saved to `output/temp_images/` directory.
+### Images Output
+
+- **Page images** (PDF pages rendered to PNG) are saved to `output/temp_images/` directory.
+- **Question crops** (per-question PNG crops) are saved to `output/{year}/images/{sourceSlug}/`.
+- The JSON `questions[].images[].path` points to the per-question crop image by default.
+- If you pass `--embed-images`, the JSON will also include `questions[].images[].data` as a `data:` URI (note: this can make JSON files very large).
 
 ## Architecture
 

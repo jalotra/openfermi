@@ -98,23 +98,39 @@ function hasLatexOptions(latexOptions: { A: string; B: string; C: string; D: str
   return Object.values(latexOptions).some(v => v.trim().length > 0);
 }
 
+function tryEncodePngDataUri(filePath: string): string | undefined {
+  try {
+    const buffer = fs.readFileSync(filePath);
+    const base64 = buffer.toString('base64');
+    return `data:image/png;base64,${base64}`;
+  } catch {
+    return undefined;
+  }
+}
+
 export function formatQuestion(
   extracted: ExtractedQuestion,
   latex: LaTeXQuestion,
-  source: string
+  source: string,
+  formatOptions: { embedImages?: boolean } = {}
 ): FormattedQuestion {
+  const embedImages = formatOptions.embedImages ?? false;
+
   const id = generateQuestionId(source, extracted.questionNumber);
   const title = generateQuestionTitle(extracted.questionText);
   const options = mapOptionsToABCD(latex.options);
   const latexOptionsMap = mapLatexOptionsToABCD(latex.options);
   const latexOptions = hasLatexOptions(latexOptionsMap) ? latexOptionsMap : undefined;
 
-  const formattedImages = extracted.pageImagePath ? [{
-    data: '',
-    format: 'png',
-    filename: path.basename(extracted.pageImagePath),
-    path: extracted.pageImagePath,
-  }] : undefined;
+  const imagePath = extracted.questionImagePath;
+  const formattedImages = imagePath
+    ? [{
+        data: embedImages ? tryEncodePngDataUri(imagePath) : undefined,
+        format: 'png',
+        filename: path.basename(imagePath),
+        path: imagePath,
+      }]
+    : undefined;
   
   return {
     id,
