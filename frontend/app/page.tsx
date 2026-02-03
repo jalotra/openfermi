@@ -177,9 +177,9 @@ export default function LandingPage() {
               Join thousands of students and educators using Canvas Interface to
               enhance their learning experience.
             </p>
-            <Link href="/sessions/1">
+            <Link href="/questions">
               <Button size="lg" className="text-lg px-8">
-                Start Your First Session
+                Solve your First Question
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
