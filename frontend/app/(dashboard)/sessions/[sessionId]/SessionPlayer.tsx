@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { HeaderBar } from "@/components/canvas/HeaderBar"
 import { QuestionPanel } from "@/components/canvas/QuestionPanel"
-import { CanvasEditor } from "@/components/canvas/CanvasEditor"
+import { CanvasEditor, CanvasTool } from "@/components/canvas/CanvasEditor"
 import { DrawingToolbar } from "@/components/canvas/DrawingToolbar"
 import { CollaborationBar } from "@/components/canvas/CollaborationBar"
 import { useSidebar } from "@/components/canvas/SidebarContext"
@@ -21,6 +21,7 @@ interface SessionPlayerProps {
 export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   const router = useRouter()
   const { toggle } = useSidebar()
+  const editorRef = useRef<any>(null)
   
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>(session.answers || {})
@@ -153,7 +154,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
     }
   } : null
 
-  if (!currentQuestion || !questionPanelData) {
+  if (!currentQuestion || !questionPanelData || !session.id || !currentQuestion.id) {
     return <div className="flex items-center justify-center h-screen">No questions in session</div>
   }
 
@@ -176,14 +177,24 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
       />
       <div className="flex-1 relative overflow-hidden">
         <CanvasEditor
-          onUndo={() => console.log("Undo")}
-          onRedo={() => console.log("Redo")}
-          onToolChange={(tool) => console.log("Tool:", tool)}
+          key={`${session.id}-${currentQuestion.id}`}
+          sessionId={session.id}
+          questionId={currentQuestion.id}
+          onEditorReady={(editor) => {
+            editorRef.current = editor
+          }}
         />
         <DrawingToolbar
-          onToolChange={(tool) => console.log("Tool:", tool)}
-          onUndo={() => console.log("Undo")}
-          onRedo={() => console.log("Redo")}
+          onToolChange={(tool: CanvasTool) => {
+            const toolMap: Record<CanvasTool, string> = {
+              pen: "draw",
+              eraser: "eraser",
+              hand: "hand",
+            }
+            editorRef.current?.setCurrentTool(toolMap[tool] ?? "draw")
+          }}
+          onUndo={() => editorRef.current?.undo()}
+          onRedo={() => editorRef.current?.redo()}
           onExport={() => console.log("Export")}
         />
         <CollaborationBar
