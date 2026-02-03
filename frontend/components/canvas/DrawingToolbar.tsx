@@ -1,11 +1,11 @@
 "use client";
 
-import { Undo2, Redo2, Eraser, Pen, FileDown } from "lucide-react";
+import { Undo2, Redo2, Eraser, Pen, FileDown, Hand } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-type Tool = "pen" | "eraser";
+type Tool = "pen" | "eraser" | "hand";
 
 interface DrawingToolbarProps {
   onToolChange?: (tool: Tool) => void;
@@ -57,6 +57,17 @@ export function DrawingToolbar({
           )}
         >
           <Eraser className="h-5 w-5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleToolClick("hand")}
+          className={cn(
+            "h-10 w-10 rounded-full",
+            activeTool === "hand" && "bg-gray-100",
+          )}
+        >
+          <Hand className="h-5 w-5" />
         </Button>
         <Button
           variant="ghost"
