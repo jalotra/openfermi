@@ -179,7 +179,7 @@ export default function LandingPage() {
             </p>
             <Link href="/questions">
               <Button size="lg" className="text-lg px-8">
-                Solve your first question
+                Solve your First Question
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
