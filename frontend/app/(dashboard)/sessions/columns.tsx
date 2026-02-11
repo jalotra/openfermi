@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Play } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Play, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -91,6 +91,14 @@ export const columns: ColumnDef<SessionDto>[] = [
                 {session.status === "IN_PROGRESS" ? "Continue" : "View"}
               </Link>
             </DropdownMenuItem>
+            {session.status === "COMPLETED" && (
+              <DropdownMenuItem asChild>
+                <Link href={`/sessions/${session.id}/results`}>
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  View Results
+                </Link>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => navigator.clipboard.writeText(session.id || "")}

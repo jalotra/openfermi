@@ -68,11 +68,53 @@ export const columns: ColumnDef<QuestionDto>[] = [
     },
   },
   {
+    accessorKey: "subject",
+    header: "Subject",
+    cell: ({ row }) => {
+      const subject = row.getValue("subject") as string;
+      return subject ? (
+        <Badge variant="outline">{subject}</Badge>
+      ) : (
+        <span className="text-muted-foreground">-</span>
+      );
+    },
+    filterFn: "equals",
+  },
+  {
+    accessorKey: "examType",
+    header: "Exam",
+    cell: ({ row }) => {
+      const examType = row.getValue("examType") as string;
+      const displayMap: Record<string, string> = {
+        JEE_ADVANCED: "JEE Advanced",
+        JEE_MAIN: "JEE Main",
+        NEET: "NEET",
+      };
+      return examType ? (
+        <Badge variant="outline">{displayMap[examType] || examType}</Badge>
+      ) : (
+        <span className="text-muted-foreground">-</span>
+      );
+    },
+    filterFn: "equals",
+  },
+  {
+    accessorKey: "year",
+    header: "Year",
+    cell: ({ row }) => {
+      const year = row.getValue("year") as number;
+      return year || <span className="text-muted-foreground">-</span>;
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true;
+      return String(row.getValue(columnId)) === String(filterValue);
+    },
+  },
+  {
     accessorKey: "difficulty",
     header: "Difficulty",
     cell: ({ row }) => {
       const difficulty = row.getValue("difficulty") as string;
-      // Map backend enum to display format
       const displayMap: Record<string, string> = {
         EASY: "Easy",
         MEDIUM: "Medium",
@@ -94,6 +136,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
         </Badge>
       );
     },
+    filterFn: "equals",
   },
   {
     id: "actions",

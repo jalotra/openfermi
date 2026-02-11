@@ -32,16 +32,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+export interface SelectFilter {
+  columnId: string;
+  label: string;
+  options: { label: string; value: string }[];
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterColumn?: string;
+  selectFilters?: SelectFilter[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filterColumn,
+  selectFilters,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -72,7 +80,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-wrap">
         {filterColumn && (
           <Input
             placeholder={`Filter ${filterColumn}...`}
@@ -85,6 +93,28 @@ export function DataTable<TData, TValue>({
             className="max-w-sm"
           />
         )}
+        {selectFilters?.map((filter) => {
+          const column = table.getColumn(filter.columnId);
+          if (!column) return null;
+          const currentValue = (column.getFilterValue() as string) ?? "";
+          return (
+            <select
+              key={filter.columnId}
+              value={currentValue}
+              onChange={(e) =>
+                column.setFilterValue(e.target.value || undefined)
+              }
+              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              <option value="">{filter.label}</option>
+              {filter.options.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          );
+        })}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

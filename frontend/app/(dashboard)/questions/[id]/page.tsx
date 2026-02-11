@@ -197,25 +197,6 @@ export default async function QuestionDetailsPage({
               </CardContent>
             </Card>
 
-            <Card className="bg-primary/5 border-primary/10">
-              <CardHeader>
-                <CardTitle className="text-sm">Quick Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Total Attempts</span>
-                  <span className="font-bold">124</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Avg. Accuracy</span>
-                  <span className="font-bold text-green-600">68%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Avg. Time</span>
-                  <span className="font-bold">4:20m</span>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </div>

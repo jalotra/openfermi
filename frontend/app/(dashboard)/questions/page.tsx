@@ -1,5 +1,5 @@
 import { columns } from "./columns";
-import { DataTable } from "@/components/ui/data-table";
+import { DataTable, SelectFilter } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { QuestionDto } from "@/lib/backend";
@@ -76,6 +76,49 @@ export default async function QuestionsPage({
             columns={columns}
             data={questions}
             filterColumn="questionText"
+            selectFilters={[
+              {
+                columnId: "subject",
+                label: "All Subjects",
+                options: [
+                  { label: "Physics", value: "PHYSICS" },
+                  { label: "Chemistry", value: "CHEMISTRY" },
+                  { label: "Mathematics", value: "MATHEMATICS" },
+                  { label: "Biology", value: "BIOLOGY" },
+                ],
+              },
+              {
+                columnId: "examType",
+                label: "All Exams",
+                options: [
+                  { label: "JEE Advanced", value: "JEE_ADVANCED" },
+                  { label: "JEE Main", value: "JEE_MAIN" },
+                  { label: "NEET", value: "NEET" },
+                ],
+              },
+              {
+                columnId: "difficulty",
+                label: "All Difficulties",
+                options: [
+                  { label: "Easy", value: "EASY" },
+                  { label: "Medium", value: "MEDIUM" },
+                  { label: "Hard", value: "HARD" },
+                ],
+              },
+              {
+                columnId: "year",
+                label: "All Years",
+                options: Array.from(
+                  new Set(
+                    questions
+                      .map((q) => q.year)
+                      .filter((y): y is number => y != null),
+                  ),
+                )
+                  .sort((a, b) => b - a)
+                  .map((y) => ({ label: String(y), value: String(y) })),
+              },
+            ]}
           />
         )}
       </div>

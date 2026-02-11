@@ -14,7 +14,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-2">
             <span className="text-xl font-bold">Learn with Friends</span>
           </div>
-          <Link href="/sessions/1">
+          <Link href="/questions">
             <Button>Get Started</Button>
           </Link>
         </div>
@@ -37,21 +37,23 @@ export default function LandingPage() {
             learning like never before.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/sessions/1">
+            <Link href="/questions">
               <Button size="lg" className="text-lg px-8">
                 Start Learning
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="text-lg px-8">
-              Learn More
-            </Button>
+            <Link href="#features">
+              <Button size="lg" variant="outline" className="text-lg px-8">
+                Learn More
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="container mx-auto px-6 py-20">
+      <section id="features" className="container mx-auto px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">Powerful Features</h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
