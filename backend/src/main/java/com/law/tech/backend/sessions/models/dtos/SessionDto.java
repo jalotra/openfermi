@@ -1,6 +1,6 @@
 package com.law.tech.backend.sessions.models.dtos;
 
-import com.law.tech.backend.base.models.dtos.BaseDto;
+import com.law.tech.backend.base.statemachine.StatefulDto;
 import com.law.tech.backend.sessions.models.Session;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,19 +18,19 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class SessionDto extends BaseDto {
+public class SessionDto extends StatefulDto {
     private String userId;
     private List<String> questionIds;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Session.SessionStatus status;
     private Double score;
     private Integer totalQuestions;
     private Integer correctAnswers;
     private Integer incorrectAnswers;
     private Integer unanswered;
-    private Map<UUID, String> answers; // Map of questionId -> user's answer
+    private Map<UUID, String> answers;
     private Long timeSpentSeconds;
+    private Long timeLeftSeconds;
     private Session.ExamType examType;
     private Session.Subject subject;
 }

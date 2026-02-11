@@ -1,9 +1,11 @@
 package com.law.tech.backend.sessions.controllers;
 
-import com.law.tech.backend.base.controllers.BaseController;
 import com.law.tech.backend.base.controllers.BaseReadController;
 import com.law.tech.backend.base.models.GenericResponse;
+import com.law.tech.backend.base.statemachine.StatefulController;
 import com.law.tech.backend.sessions.models.Session;
+import com.law.tech.backend.sessions.models.SessionEvent;
+import com.law.tech.backend.sessions.models.SessionState;
 import com.law.tech.backend.sessions.models.dtos.SessionDto;
 import com.law.tech.backend.sessions.repositories.SessionRepository;
 import com.law.tech.backend.sessions.services.crud.SessionCrudService;
@@ -16,12 +18,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/sessions")
-public class SessionController extends BaseController<SessionDto, Session, SessionRepository> {
-    
+public class SessionController
+        extends StatefulController<SessionDto, Session, SessionRepository, SessionState, SessionEvent> {
+
     private final SessionReadService sessionReadService;
 
     public SessionController(SessionCrudService sessionCrudService, SessionReadService sessionReadService) {
-        super(sessionCrudService);
+        super(sessionCrudService, SessionEvent.class);
         this.sessionReadService = sessionReadService;
     }
 
@@ -29,8 +32,8 @@ public class SessionController extends BaseController<SessionDto, Session, Sessi
     public ResponseEntity<GenericResponse<List<SessionDto>>> read(
             @RequestParam(required = false) String page,
             @RequestParam(required = false) String size) {
-        BaseReadController<SessionDto, Session, SessionRepository> readController = 
-            new BaseReadController<>(sessionReadService);
+        BaseReadController<SessionDto, Session, SessionRepository> readController =
+                new BaseReadController<>(sessionReadService);
         return readController.read(page, size);
     }
 
@@ -40,20 +43,16 @@ public class SessionController extends BaseController<SessionDto, Session, Sessi
             @RequestParam String sortBy,
             @RequestParam String page,
             @RequestParam String size) {
-        BaseReadController<SessionDto, Session, SessionRepository> readController = 
-            new BaseReadController<>(sessionReadService);
+        BaseReadController<SessionDto, Session, SessionRepository> readController =
+                new BaseReadController<>(sessionReadService);
         return readController.readWithSorting(
-            Sort.Direction.valueOf(direction.toUpperCase()),
-            sortBy,
-            page,
-            size
-        );
+                Sort.Direction.valueOf(direction.toUpperCase()), sortBy, page, size);
     }
 
     @GetMapping("/count")
     public ResponseEntity<GenericResponse<Long>> count() {
-        BaseReadController<SessionDto, Session, SessionRepository> readController = 
-            new BaseReadController<>(sessionReadService);
+        BaseReadController<SessionDto, Session, SessionRepository> readController =
+                new BaseReadController<>(sessionReadService);
         return readController.count();
     }
 }
