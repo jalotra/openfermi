@@ -137,12 +137,6 @@
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.jobrunr/jobrunr -->
-		<dependency>
-			<groupId>org.jobrunr</groupId>
-			<artifactId>jobrunr-spring-boot-3-starter</artifactId>
-			<version>8.0.0-RC.0</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

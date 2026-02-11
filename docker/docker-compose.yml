@@ -12,6 +12,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME:-openfermi}"]
       interval: 10s
@@ -30,7 +31,7 @@ services:
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: ${DB_NAME:-openfermi}
-      DB_SCHEMA: ${DB_SCHEMA:-public}
+      DB_SCHEMA: ${DB_SCHEMA:-openfermi}
       POSTGRES_USERNAME: ${POSTGRES_USERNAME:-openfermi}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-openfermi123}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}

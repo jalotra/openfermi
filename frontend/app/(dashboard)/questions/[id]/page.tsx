@@ -22,9 +22,9 @@ export const dynamic = "force-dynamic";
 export default async function QuestionDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
 
   let question: QuestionDto | null = null;
 
