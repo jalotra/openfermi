@@ -23,7 +23,7 @@ export default async function SessionResultsPage({
   let session: SessionDto | null = null;
 
   try {
-    const response = await SessionController.sessionGet({
+    const response = await SessionController.get({
       client: backendClient,
       path: { id: sessionId },
     });
@@ -84,7 +84,7 @@ export default async function SessionResultsPage({
               Session Results
             </h1>
             <p className="text-muted-foreground mt-1">
-              {session.status === "COMPLETED"
+              {session.state === "ENDED"
                 ? "Here's how you did"
                 : "Session in progress"}
             </p>
