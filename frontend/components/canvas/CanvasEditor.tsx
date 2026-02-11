@@ -74,7 +74,7 @@ export function CanvasEditor({
   }, [saveSnapshot]);
 
   const handleMount = useCallback(
-    async (editor: any) => {
+    (editor: any) => {
       editorRef.current = editor;
       onEditorReady?.(editor);
 
@@ -85,22 +85,23 @@ export function CanvasEditor({
         scheduleSave();
       });
 
-      try {
-        const state = await fetchSessionState(sessionId, questionId);
-        if (state?.tldrawSnapshot) {
-          isApplyingSnapshotRef.current = true;
-          try {
-            loadSnapshot(editor.store, state.tldrawSnapshot);
-            lastSavedRef.current = JSON.stringify(state.tldrawSnapshot);
-          } finally {
-            isApplyingSnapshotRef.current = false;
+      fetchSessionState(sessionId, questionId)
+        .then((state) => {
+          if (state?.data?.tldrawSnapshot) {
+            isApplyingSnapshotRef.current = true;
+            try {
+              loadSnapshot(editor.store, state.data.tldrawSnapshot);
+              lastSavedRef.current = JSON.stringify(state.data.tldrawSnapshot);
+            } finally {
+              isApplyingSnapshotRef.current = false;
+            }
           }
-        }
-      } catch (err) {
-        console.error("Failed to load canvas state:", err);
-      }
+        })
+        .catch((err) => {
+          console.error("Failed to load canvas state:", err);
+        });
     },
-    [onEditorReady, questionId, sessionId],
+    [onEditorReady, questionId, sessionId, scheduleSave],
   );
 
   return (

@@ -19,8 +19,11 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-
-export default async function QuestionDetailsPage({ params }: { params: { id: string } }) {
+export default async function QuestionDetailsPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params;
 
   let question: QuestionDto | null = null;
@@ -34,7 +37,9 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
   } catch (err) {
     if (err instanceof AxiosError) {
       console.error(
-        err.response?.data?.message || err.message || "Failed to fetch question",
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to fetch question",
       );
       notFound();
     }
@@ -56,13 +61,20 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
 
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold tracking-tight">{question.questionText}</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {question.questionText}
+            </h1>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className={
-                question.difficulty === "EASY" ? "bg-green-100 text-green-700" :
-                question.difficulty === "MEDIUM" ? "bg-yellow-100 text-yellow-700" :
-                "bg-red-100 text-red-700"
-              }>
+              <Badge
+                variant="secondary"
+                className={
+                  question.difficulty === "EASY"
+                    ? "bg-green-100 text-green-700"
+                    : question.difficulty === "MEDIUM"
+                      ? "bg-yellow-100 text-yellow-700"
+                      : "bg-red-100 text-red-700"
+                }
+              >
                 {question.difficulty}
               </Badge>
               <span className="text-sm text-muted-foreground">
@@ -91,8 +103,8 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
               </CardHeader>
               <CardContent>
                 <div className="text-lg leading-relaxed text-gray-800">
-                  <LatexRenderer 
-                    content={question.questionText || ''} 
+                  <LatexRenderer
+                    content={question.questionText || ""}
                     displayMode={false}
                   />
                 </div>
@@ -105,9 +117,12 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
               </CardHeader>
               <CardContent className="grid gap-4">
                 {(question.options || []).map((option, index) => {
-                  const key = String.fromCharCode(65 + index) // A, B, C, D
+                  const key = String.fromCharCode(65 + index); // A, B, C, D
                   return (
-                    <div key={index} className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm">
+                    <div
+                      key={index}
+                      className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm"
+                    >
                       <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
                         {String.fromCharCode(65 + index)}
                       </span>
@@ -129,35 +144,55 @@ export default async function QuestionDetailsPage({ params }: { params: { id: st
               <CardContent className="space-y-4">
                 {question.subject && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Subject</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      Subject
+                    </label>
                     <p className="font-medium">{question.subject}</p>
                   </div>
                 )}
                 {question.topic && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Topic</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      Topic
+                    </label>
                     <p className="font-medium">{question.topic}</p>
                   </div>
                 )}
                 {question.examType && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Exam Type</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      Exam Type
+                    </label>
                     <p className="font-medium">{question.examType}</p>
                   </div>
                 )}
                 {question.year && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Year</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      Year
+                    </label>
                     <p className="font-medium">{question.year}</p>
                   </div>
                 )}
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Created</label>
-                  <p className="font-medium">{question.createdAt ? new Date(question.createdAt).toLocaleDateString() : 'Unknown'}</p>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Created
+                  </label>
+                  <p className="font-medium">
+                    {question.createdAt
+                      ? new Date(question.createdAt).toLocaleDateString()
+                      : "Unknown"}
+                  </p>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Last Modified</label>
-                  <p className="font-medium">{question.updatedAt ? new Date(question.updatedAt).toLocaleDateString() : 'Unknown'}</p>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    Last Modified
+                  </label>
+                  <p className="font-medium">
+                    {question.updatedAt
+                      ? new Date(question.updatedAt).toLocaleDateString()
+                      : "Unknown"}
+                  </p>
                 </div>
               </CardContent>
             </Card>

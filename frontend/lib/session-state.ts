@@ -1,16 +1,12 @@
 import { backendClient } from "@/lib/backend-client";
 import { AxiosError } from "axios";
-
-export type SessionStateDto = {
-  id?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  createdBy?: string;
-  updatedBy?: string;
-  sessionId?: string;
-  questionId?: string;
-  tldrawSnapshot?: unknown;
-};
+import { SessionStateController } from "./backend/sdk.gen";
+import {
+  SessionStateDto,
+  SessionstateGetStateResponse,
+  SessionstateUpsertStateData,
+  SessionstateUpsertStateResponse,
+} from "./backend/types.gen";
 
 type GenericResponse<T> = {
   data?: T;
@@ -20,14 +16,13 @@ type GenericResponse<T> = {
 export async function fetchSessionState(
   sessionId: string,
   questionId: string,
-): Promise<SessionStateDto | null> {
+): Promise<SessionstateGetStateResponse | null> {
   try {
-    const response = await backendClient.get<GenericResponse<SessionStateDto>>({
-      url: "/session-states",
+    const response = await SessionStateController.sessionstateGetState({
+      client: backendClient,
       query: { sessionId, questionId },
-      throwOnError: true,
     });
-    return response.data?.data ?? null;
+    return response.data ?? null;
   } catch (err) {
     if (err instanceof AxiosError && err.response?.status === 404) {
       return null;
@@ -38,11 +33,14 @@ export async function fetchSessionState(
 
 export async function upsertSessionState(
   payload: SessionStateDto,
-): Promise<SessionStateDto> {
-  const response = await backendClient.put<GenericResponse<SessionStateDto>>({
-    url: "/session-states",
-    body: payload,
-    throwOnError: true,
-  });
-  return response.data?.data ?? payload;
+): Promise<SessionstateUpsertStateResponse | null> {
+  try {
+    const response = await SessionStateController.sessionstateUpsertState({
+      client: backendClient,
+      body: payload,
+    });
+    return response.data ?? null;
+  } catch (err) {
+    throw err;
+  }
 }

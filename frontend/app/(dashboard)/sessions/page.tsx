@@ -33,7 +33,9 @@ export default async function SessionsPage({
   } catch (err) {
     if (err instanceof AxiosError) {
       error =
-        err.response?.data?.message || err.message || "Failed to fetch sessions";
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to fetch sessions";
     } else {
       error = err instanceof Error ? err.message : "Failed to fetch sessions";
     }

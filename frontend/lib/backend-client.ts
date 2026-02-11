@@ -8,7 +8,7 @@ export const backendClient = createClient({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
   headers: {
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
     ...(process.env.NEXT_PUBLIC_API_KEY && {
       "X-API-KEY": process.env.NEXT_PUBLIC_API_KEY,
     }),

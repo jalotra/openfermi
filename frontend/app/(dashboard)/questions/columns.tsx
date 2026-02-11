@@ -58,22 +58,27 @@ export const columns: ColumnDef<QuestionDto>[] = [
       );
     },
     cell: ({ row }) => {
-      const text = row.getValue("questionText") as string
-      return <span className="truncate max-w-md">{text?.substring(0, 100)}{text?.length > 100 ? '...' : ''}</span>
+      const text = row.getValue("questionText") as string;
+      return (
+        <span className="truncate max-w-md">
+          {text?.substring(0, 100)}
+          {text?.length > 100 ? "..." : ""}
+        </span>
+      );
     },
   },
   {
     accessorKey: "difficulty",
     header: "Difficulty",
     cell: ({ row }) => {
-      const difficulty = row.getValue("difficulty") as string
+      const difficulty = row.getValue("difficulty") as string;
       // Map backend enum to display format
       const displayMap: Record<string, string> = {
-        'EASY': 'Easy',
-        'MEDIUM': 'Medium',
-        'HARD': 'Hard'
-      }
-      const display = displayMap[difficulty] || difficulty
+        EASY: "Easy",
+        MEDIUM: "Medium",
+        HARD: "Hard",
+      };
+      const display = displayMap[difficulty] || difficulty;
       return (
         <Badge
           variant="secondary"
@@ -81,8 +86,8 @@ export const columns: ColumnDef<QuestionDto>[] = [
             difficulty === "EASY"
               ? "bg-green-100 text-green-700"
               : difficulty === "MEDIUM"
-              ? "bg-yellow-100 text-yellow-700"
-              : "bg-red-100 text-red-700"
+                ? "bg-yellow-100 text-yellow-700"
+                : "bg-red-100 text-red-700"
           }
         >
           {display}

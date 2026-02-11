@@ -4,17 +4,20 @@ import { nextCookies } from "better-auth/next-js";
 // Helper function to sync user data to Spring Boot backend
 async function syncUserToBackend(user: any) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/sync`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: user.email,
-        name: user.name,
-        avatarUrl: user.image,
-        provider: "google",
-        providerId: user.id,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users/sync`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: user.email,
+          name: user.name,
+          avatarUrl: user.image,
+          provider: "google",
+          providerId: user.id,
+        }),
+      },
+    );
 
     if (!response.ok) {
       console.error("Failed to sync user to backend:", await response.text());
@@ -53,8 +56,6 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
   },
-
-
 
   // Enable Next.js cookies plugin (must be last in plugins array)
   plugins: [nextCookies()],

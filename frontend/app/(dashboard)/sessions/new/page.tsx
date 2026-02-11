@@ -1,25 +1,25 @@
-import { backendClient } from "@/lib/backend-client"
-import { QuestionController, SessionController } from "@/lib/backend/sdk.gen"
-import type { QuestionDto, SessionDto } from "@/lib/backend/types.gen"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Play } from "lucide-react"
-import Link from "next/link"
-import { redirect } from "next/navigation"
-import { AxiosError } from "axios"
+import { backendClient } from "@/lib/backend-client";
+import { QuestionController, SessionController } from "@/lib/backend/sdk.gen";
+import type { QuestionDto, SessionDto } from "@/lib/backend/types.gen";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Play } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { AxiosError } from "axios";
 
 export const dynamic = "force-dynamic";
 
 // Server Action to create session
 async function createSession(formData: FormData) {
-  'use server'
-  
-  const questionIds = formData.get('questionIds') as string
-  const ids = questionIds.split(',').filter(Boolean)
-  
+  "use server";
+
+  const questionIds = formData.get("questionIds") as string;
+  const ids = questionIds.split(",").filter(Boolean);
+
   if (ids.length === 0) {
-    throw new Error('No questions selected')
+    throw new Error("No questions selected");
   }
 
   const body: SessionDto = {
@@ -30,37 +30,39 @@ async function createSession(formData: FormData) {
     totalQuestions: ids.length,
     examType: "MIXED",
     subject: "MIXED",
-  }
+  };
 
   try {
     const response = await SessionController.sessionUpsert({
       client: backendClient,
       body,
-    })
+    });
 
-    const session = response.data?.data
+    const session = response.data?.data;
     if (session?.id) {
-      redirect(`/sessions/${session.id}`)
+      redirect(`/sessions/${session.id}`);
     }
 
-    throw new Error("Failed to create session")
+    throw new Error("Failed to create session");
   } catch (err) {
     if (err instanceof AxiosError) {
       throw new Error(
-        err.response?.data?.message || err.message || "Failed to create session",
-      )
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to create session",
+      );
     }
-    throw err
+    throw err;
   }
 }
 
 export default async function NewSessionPage({
   searchParams,
 }: {
-  searchParams: { questionIds: string }
+  searchParams: { questionIds: string };
 }) {
-  const { questionIds } = await searchParams
-  const ids = questionIds?.split(',').filter(Boolean) || []
+  const { questionIds } = await searchParams;
+  const ids = questionIds?.split(",").filter(Boolean) || [];
 
   if (ids.length === 0) {
     return (
@@ -68,7 +70,8 @@ export default async function NewSessionPage({
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-2xl font-bold mb-4">No Questions Selected</h1>
           <p className="text-muted-foreground mb-6">
-            Please go back to the Questions page and select questions for your session.
+            Please go back to the Questions page and select questions for your
+            session.
           </p>
           <Link href="/questions">
             <Button>
@@ -78,7 +81,7 @@ export default async function NewSessionPage({
           </Link>
         </div>
       </div>
-    )
+    );
   }
 
   // Fetch selected questions
@@ -88,15 +91,15 @@ export default async function NewSessionPage({
         const response = await QuestionController.questionGet({
           client: backendClient,
           path: { id },
-        })
-        return response.data?.data || null
+        });
+        return response.data?.data || null;
       } catch {
-        return null
+        return null;
       }
     }),
-  )
+  );
 
-  const questions = questionResults.filter((q): q is QuestionDto => Boolean(q))
+  const questions = questionResults.filter((q): q is QuestionDto => Boolean(q));
 
   return (
     <div className="flex-1 flex flex-col min-h-screen bg-white">
@@ -129,13 +132,17 @@ export default async function NewSessionPage({
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subjects:</span>
                 <span className="font-semibold">
-                  {Array.from(new Set(questions.map(q => q.subject))).join(', ')}
+                  {Array.from(new Set(questions.map((q) => q.subject))).join(
+                    ", ",
+                  )}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Exam Types:</span>
                 <span className="font-semibold">
-                  {Array.from(new Set(questions.map(q => q.examType))).join(', ')}
+                  {Array.from(new Set(questions.map((q) => q.examType))).join(
+                    ", ",
+                  )}
                 </span>
               </div>
             </CardContent>
@@ -147,7 +154,9 @@ export default async function NewSessionPage({
               <Card key={q.id}>
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
-                    <span className="text-muted-foreground font-mono">{i + 1}.</span>
+                    <span className="text-muted-foreground font-mono">
+                      {i + 1}.
+                    </span>
                     <div className="flex-1">
                       <p className="text-sm line-clamp-2">{q.questionText}</p>
                       <div className="flex gap-2 mt-2">
@@ -175,5 +184,5 @@ export default async function NewSessionPage({
         </div>
       </div>
     </div>
-  )
+  );
 }

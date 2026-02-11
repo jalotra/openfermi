@@ -4,6 +4,24 @@ export type ClientOptions = {
   baseURL: "http://localhost:8080" | (string & {});
 };
 
+export type JsonNode = unknown;
+
+export type SessionStateDto = {
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  sessionId?: string;
+  questionId?: string;
+  tldrawSnapshot?: JsonNode;
+};
+
+export type GenericResponseSessionStateDto = {
+  data?: SessionStateDto;
+  message?: string;
+};
+
 export type SessionDto = {
   id?: string;
   createdAt?: string;
@@ -66,6 +84,33 @@ export type GenericResponseQuestionDto = {
   message?: string;
 };
 
+export type UserDto = {
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  email?: string;
+  name?: string;
+  avatarUrl?: string;
+  provider?: string;
+  providerId?: string;
+  lastLoginAt?: string;
+};
+
+export type GenericResponseUserDto = {
+  data?: UserDto;
+  message?: string;
+};
+
+export type UserSyncRequest = {
+  email?: string;
+  name?: string;
+  avatarUrl?: string;
+  provider?: string;
+  providerId?: string;
+};
+
 export type PresignUrlRequest = {
   bucket: string;
   key: string;
@@ -87,8 +132,6 @@ export type GenericResponseJsonNode = {
   message?: string;
 };
 
-export type JsonNode = unknown;
-
 export type GenericResponseLong = {
   data?: number;
   message?: string;
@@ -103,6 +146,43 @@ export type GenericResponseString = {
   data?: string;
   message?: string;
 };
+
+export type SessionstateGetStateData = {
+  body?: never;
+  path?: never;
+  query: {
+    sessionId: string;
+    questionId: string;
+  };
+  url: "/session-states";
+};
+
+export type SessionstateGetStateResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseSessionStateDto;
+};
+
+export type SessionstateGetStateResponse =
+  SessionstateGetStateResponses[keyof SessionstateGetStateResponses];
+
+export type SessionstateUpsertStateData = {
+  body: SessionStateDto;
+  path?: never;
+  query?: never;
+  url: "/session-states";
+};
+
+export type SessionstateUpsertStateResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseSessionStateDto;
+};
+
+export type SessionstateUpsertStateResponse =
+  SessionstateUpsertStateResponses[keyof SessionstateUpsertStateResponses];
 
 export type SessionReadData = {
   body?: never;
@@ -177,6 +257,39 @@ export type QuestionUpsertResponses = {
 
 export type QuestionUpsertResponse =
   QuestionUpsertResponses[keyof QuestionUpsertResponses];
+
+export type UserUpsertData = {
+  body: UserDto;
+  path?: never;
+  query?: never;
+  url: "/api/users";
+};
+
+export type UserUpsertResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseUserDto;
+};
+
+export type UserUpsertResponse = UserUpsertResponses[keyof UserUpsertResponses];
+
+export type UserSyncUserData = {
+  body: UserSyncRequest;
+  path?: never;
+  query?: never;
+  url: "/api/users/sync";
+};
+
+export type UserSyncUserResponses = {
+  /**
+   * OK
+   */
+  200: UserDto;
+};
+
+export type UserSyncUserResponse =
+  UserSyncUserResponses[keyof UserSyncUserResponses];
 
 export type PresignCreatePresignUrlData = {
   body: PresignUrlRequest;
@@ -398,3 +511,94 @@ export type HealthHealthResponses = {
 
 export type HealthHealthResponse =
   HealthHealthResponses[keyof HealthHealthResponses];
+
+export type UserDeleteData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/users/{id}";
+};
+
+export type UserDeleteResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseUserDto;
+};
+
+export type UserDeleteResponse = UserDeleteResponses[keyof UserDeleteResponses];
+
+export type UserGetData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/users/{id}";
+};
+
+export type UserGetResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseUserDto;
+};
+
+export type UserGetResponse = UserGetResponses[keyof UserGetResponses];
+
+export type UserGetSchemaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/users/schema";
+};
+
+export type UserGetSchemaResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseJsonNode;
+};
+
+export type UserGetSchemaResponse =
+  UserGetSchemaResponses[keyof UserGetSchemaResponses];
+
+export type UserGetByProviderIdData = {
+  body?: never;
+  path: {
+    providerId: string;
+  };
+  query?: never;
+  url: "/api/users/provider/{providerId}";
+};
+
+export type UserGetByProviderIdResponses = {
+  /**
+   * OK
+   */
+  200: UserDto;
+};
+
+export type UserGetByProviderIdResponse =
+  UserGetByProviderIdResponses[keyof UserGetByProviderIdResponses];
+
+export type UserGetByEmailData = {
+  body?: never;
+  path: {
+    email: string;
+  };
+  query?: never;
+  url: "/api/users/email/{email}";
+};
+
+export type UserGetByEmailResponses = {
+  /**
+   * OK
+   */
+  200: UserDto;
+};
+
+export type UserGetByEmailResponse =
+  UserGetByEmailResponses[keyof UserGetByEmailResponses];
