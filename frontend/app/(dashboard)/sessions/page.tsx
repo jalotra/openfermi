@@ -22,7 +22,7 @@ export default async function SessionsPage({
   let error: string | null = null;
 
   try {
-    const response = await SessionController.sessionRead({
+    const response = await SessionController.read({
       client: backendClient,
       query: {
         page: pageNumber,
@@ -76,7 +76,7 @@ export default async function SessionsPage({
           <DataTable<SessionDto, string>
             columns={columns}
             data={sessions}
-            filterColumn="status"
+            filterColumn="state"
           />
         )}
       </div>

@@ -12,6 +12,8 @@ import { SessionDto, QuestionDto } from "@/lib/backend/types.gen";
 import { backendClient } from "@/lib/backend-client";
 import { SessionController } from "@/lib/backend/sdk.gen";
 import { AxiosError } from "axios";
+import { Button } from "@/components/ui/button";
+import { Play } from "lucide-react";
 
 interface SessionPlayerProps {
   session: SessionDto;
@@ -23,6 +25,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   const { toggle } = useSidebar();
   const editorRef = useRef<any>(null);
 
+  const [sessionState, setSessionState] = useState(session.state || "DRAFT");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>(
     session.answers || {},
@@ -30,50 +33,99 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved">(
     "idle",
   );
-  const [startTime] = useState(Date.now());
+  const [timeLeft, setTimeLeft] = useState(session.timeLeftSeconds ?? 0);
+  const [transitioning, setTransitioning] = useState(false);
 
   const currentQuestion = questions[currentIndex];
   const totalQuestions = questions.length;
 
-  // Auto-save with debounce (2 seconds)
+  const triggerTransition = async (event: string) => {
+    if (!session.id || transitioning) return;
+    setTransitioning(true);
+    try {
+      const response = await SessionController.transition({
+        client: backendClient,
+        path: { id: session.id },
+        query: { event },
+      });
+      const updated = response.data?.data;
+      if (updated?.state) {
+        setSessionState(updated.state);
+        if (updated.timeLeftSeconds != null) {
+          setTimeLeft(updated.timeLeftSeconds);
+        }
+      }
+    } catch (err) {
+      const msg =
+        err instanceof AxiosError
+          ? err.response?.data?.message || err.message
+          : "Transition failed";
+      console.error(msg);
+    } finally {
+      setTransitioning(false);
+    }
+  };
+
+  // Countdown timer -- only ticks when LIVE
   useEffect(() => {
-    if (saveStatus === "idle") return;
+    if (sessionState !== "LIVE") return;
+
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          triggerTransition("END");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [sessionState]);
+
+  // Periodically persist timeLeftSeconds (every 10s while LIVE)
+  useEffect(() => {
+    if (sessionState !== "LIVE" || !session.id) return;
+
+    const interval = setInterval(async () => {
+      try {
+        await SessionController.upsert({
+          client: backendClient,
+          body: { id: session.id, answers, timeLeftSeconds: timeLeft },
+        });
+      } catch {
+        // best-effort
+      }
+    }, 10_000);
+
+    return () => clearInterval(interval);
+  }, [sessionState, timeLeft, answers, session.id]);
+
+  // Auto-save answers with debounce (2 seconds)
+  useEffect(() => {
+    if (saveStatus !== "saving" || !session.id) return;
 
     const timer = setTimeout(async () => {
-      if (saveStatus === "saving") {
-        await saveAnswers();
+      try {
+        await SessionController.upsert({
+          client: backendClient,
+          body: { id: session.id, answers, timeLeftSeconds: timeLeft },
+        });
+        setSaveStatus("saved");
+        setTimeout(() => setSaveStatus("idle"), 1000);
+      } catch (err) {
+        const msg =
+          err instanceof AxiosError
+            ? err.response?.data?.message || err.message
+            : "Failed to save answers";
+        console.error(msg);
+        setSaveStatus("idle");
       }
     }, 2000);
 
     return () => clearTimeout(timer);
   }, [answers, saveStatus]);
-
-  const saveAnswers = async () => {
-    if (!session.id) return;
-    try {
-      await SessionController.sessionUpsert({
-        client: backendClient,
-        body: {
-          id: session.id,
-          answers,
-          timeSpentSeconds: Math.floor((Date.now() - startTime) / 1000),
-        },
-      });
-      setSaveStatus("saved");
-      setTimeout(() => setSaveStatus("idle"), 1000);
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        console.error(
-          err.response?.data?.message ||
-            err.message ||
-            "Failed to save answers",
-        );
-      } else {
-        console.error("Failed to save answers:", err);
-      }
-      setSaveStatus("idle");
-    }
-  };
 
   const handleAnswerChange = useCallback(
     (questionId: string, answer: string) => {
@@ -84,19 +136,21 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   );
 
   const handlePreviousQuestion = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
+    if (currentIndex > 0) setCurrentIndex((prev) => prev - 1);
   };
 
   const handleNextQuestion = () => {
-    if (currentIndex < totalQuestions - 1) {
-      setCurrentIndex((prev) => prev + 1);
-    }
+    if (currentIndex < totalQuestions - 1) setCurrentIndex((prev) => prev + 1);
   };
 
-  const handleFinish = async () => {
-    // Calculate score
+  const handleStart = () => triggerTransition("START");
+  const handlePause = () => triggerTransition("PAUSE");
+  const handleResume = () => triggerTransition("RESUME");
+
+  const handleEnd = async () => {
+    if (!session.id) return;
+
+    // Save final answers before ending
     let correct = 0;
     let incorrect = 0;
     let unanswered = 0;
@@ -114,42 +168,38 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
 
     const score = totalQuestions > 0 ? (correct / totalQuestions) * 100 : 0;
 
-    if (!session.id) return;
-
     try {
-      await SessionController.sessionUpsert({
+      await SessionController.upsert({
         client: backendClient,
         body: {
           id: session.id,
-          status: "COMPLETED",
-          endTime: new Date().toISOString(),
+          answers,
           score,
           correctAnswers: correct,
           incorrectAnswers: incorrect,
           unanswered,
-          answers,
-          timeSpentSeconds: Math.floor((Date.now() - startTime) / 1000),
+          timeLeftSeconds: timeLeft,
         },
       });
-      router.push(`/sessions`);
-    } catch (err) {
-      if (err instanceof AxiosError) {
-        console.error(
-          err.response?.data?.message ||
-            err.message ||
-            "Failed to complete session",
-        );
-      } else {
-        console.error("Failed to complete session:", err);
-      }
+    } catch {
+      // best-effort save before transition
     }
+
+    await triggerTransition("END");
+    router.push("/sessions");
   };
 
-  // Convert QuestionDto to QuestionPanel format
+  // Redirect if already ended
+  useEffect(() => {
+    if (sessionState === "ENDED") {
+      router.push("/sessions");
+    }
+  }, [sessionState, router]);
+
   const questionPanelData = currentQuestion
     ? {
         question: currentQuestion.questionText || "",
-        latexQuestion: currentQuestion.questionText || "", // TODO: Add LaTeX support
+        latexQuestion: currentQuestion.questionText || "",
         options: {
           A: currentQuestion.options?.[0] || "",
           B: currentQuestion.options?.[1] || "",
@@ -178,6 +228,42 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
     );
   }
 
+  // DRAFT state: show start overlay
+  if (sessionState === "DRAFT") {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="text-center space-y-6 max-w-md">
+          <h1 className="text-3xl font-bold tracking-tight">Ready to Begin</h1>
+          <p className="text-muted-foreground">
+            This session has {totalQuestions} question
+            {totalQuestions !== 1 ? "s" : ""}.
+            {timeLeft > 0 && (
+              <>
+                {" "}
+                You have{" "}
+                <span className="font-semibold">
+                  {Math.floor(timeLeft / 60)}m {timeLeft % 60}s
+                </span>{" "}
+                to complete it.
+              </>
+            )}
+          </p>
+          <Button
+            size="lg"
+            onClick={handleStart}
+            disabled={transitioning}
+            className="w-full"
+          >
+            <Play className="mr-2 h-5 w-5" />
+            {transitioning ? "Starting..." : "Start Session"}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const isPaused = sessionState === "PAUSED";
+
   return (
     <>
       <HeaderBar
@@ -186,7 +272,19 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
         onPreviousQuestion={handlePreviousQuestion}
         onNextQuestion={handleNextQuestion}
         onSidebarToggle={toggle}
+        timeLeftSeconds={timeLeft}
+        isPaused={isPaused}
+        onPause={handlePause}
+        onResume={handleResume}
+        onEnd={handleEnd}
       />
+
+      {isPaused && (
+        <div className="bg-yellow-50 border-b border-yellow-200 px-6 py-2 text-center text-sm text-yellow-800 font-medium">
+          Session paused. Resume to continue the timer.
+        </div>
+      )}
+
       <QuestionPanel
         question={questionPanelData.question}
         latexQuestion={questionPanelData.latexQuestion}

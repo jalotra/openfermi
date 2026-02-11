@@ -25,15 +25,13 @@ async function createSession(formData: FormData) {
   const body: SessionDto = {
     userId: "anonymous",
     questionIds: ids,
-    status: "IN_PROGRESS",
-    startTime: new Date().toISOString(),
     totalQuestions: ids.length,
     examType: "MIXED",
     subject: "MIXED",
   };
 
   try {
-    const response = await SessionController.sessionUpsert({
+    const response = await SessionController.upsert({
       client: backendClient,
       body,
     });

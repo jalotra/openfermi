@@ -1,7 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Play } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Play, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,6 +15,13 @@ import {
 import Link from "next/link";
 import { SessionDto } from "@/lib/backend/types.gen";
 
+function formatTimeLeft(seconds?: number) {
+  if (seconds == null) return "-";
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}m ${secs}s`;
+}
+
 export const columns: ColumnDef<SessionDto>[] = [
   {
     accessorKey: "id",
@@ -25,28 +32,35 @@ export const columns: ColumnDef<SessionDto>[] = [
     },
   },
   {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "state",
+    header: "State",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <Badge
-          variant={
-            status === "IN_PROGRESS"
-              ? "default"
-              : status === "COMPLETED"
-                ? "secondary"
-                : "outline"
-          }
-        >
-          {status?.replace("_", " ")}
-        </Badge>
-      );
+      const state = row.getValue("state") as string;
+      const variant =
+        state === "LIVE"
+          ? "default"
+          : state === "PAUSED" || state === "ENDED"
+            ? "secondary"
+            : "outline";
+      return <Badge variant={variant}>{state}</Badge>;
     },
   },
   {
     accessorKey: "totalQuestions",
     header: "Questions",
+  },
+  {
+    accessorKey: "timeLeftSeconds",
+    header: "Time Left",
+    cell: ({ row }) => {
+      const timeLeft = row.getValue("timeLeftSeconds") as number | undefined;
+      return (
+        <span className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Clock className="h-3.5 w-3.5" />
+          {formatTimeLeft(timeLeft)}
+        </span>
+      );
+    },
   },
   {
     accessorKey: "score",
@@ -74,6 +88,7 @@ export const columns: ColumnDef<SessionDto>[] = [
     id: "actions",
     cell: ({ row }) => {
       const session = row.original;
+      const isEnded = session.state === "ENDED";
 
       return (
         <DropdownMenu>
@@ -88,7 +103,7 @@ export const columns: ColumnDef<SessionDto>[] = [
             <DropdownMenuItem asChild>
               <Link href={`/sessions/${session.id}`}>
                 <Play className="mr-2 h-4 w-4" />
-                {session.status === "IN_PROGRESS" ? "Continue" : "View"}
+                {isEnded ? "View" : "Continue"}
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

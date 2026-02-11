@@ -28,11 +28,12 @@ export type SessionDto = {
   updatedAt?: string;
   createdBy?: string;
   updatedBy?: string;
+  state?: string;
+  previousState?: string;
   userId?: string;
   questionIds?: Array<string>;
   startTime?: string;
   endTime?: string;
-  status?: "IN_PROGRESS" | "COMPLETED" | "ABANDONED";
   score?: number;
   totalQuestions?: number;
   correctAnswers?: number;
@@ -42,6 +43,7 @@ export type SessionDto = {
     [key: string]: string;
   };
   timeSpentSeconds?: number;
+  timeLeftSeconds?: number;
   examType?: "JEE_ADVANCED" | "JEE_MAIN" | "NEET" | "MIXED";
   subject?: "PHYSICS" | "CHEMISTRY" | "MATHEMATICS" | "BIOLOGY" | "MIXED";
 };
@@ -127,6 +129,16 @@ export type GenericResponseListSessionDto = {
   message?: string;
 };
 
+export type GenericResponseString = {
+  data?: string;
+  message?: string;
+};
+
+export type GenericResponseListString = {
+  data?: Array<string>;
+  message?: string;
+};
+
 export type GenericResponseJsonNode = {
   data?: JsonNode;
   message?: string;
@@ -139,11 +151,6 @@ export type GenericResponseLong = {
 
 export type GenericResponseListQuestionDto = {
   data?: Array<QuestionDto>;
-  message?: string;
-};
-
-export type GenericResponseString = {
-  data?: string;
   message?: string;
 };
 
@@ -184,7 +191,7 @@ export type SessionstateUpsertStateResponses = {
 export type SessionstateUpsertStateResponse =
   SessionstateUpsertStateResponses[keyof SessionstateUpsertStateResponses];
 
-export type SessionReadData = {
+export type ReadData = {
   body?: never;
   path?: never;
   query?: {
@@ -194,32 +201,50 @@ export type SessionReadData = {
   url: "/sessions";
 };
 
-export type SessionReadResponses = {
+export type ReadResponses = {
   /**
    * OK
    */
   200: GenericResponseListSessionDto;
 };
 
-export type SessionReadResponse =
-  SessionReadResponses[keyof SessionReadResponses];
+export type ReadResponse = ReadResponses[keyof ReadResponses];
 
-export type SessionUpsertData = {
+export type UpsertData = {
   body: SessionDto;
   path?: never;
   query?: never;
   url: "/sessions";
 };
 
-export type SessionUpsertResponses = {
+export type UpsertResponses = {
   /**
    * OK
    */
   200: GenericResponseSessionDto;
 };
 
-export type SessionUpsertResponse =
-  SessionUpsertResponses[keyof SessionUpsertResponses];
+export type UpsertResponse = UpsertResponses[keyof UpsertResponses];
+
+export type TransitionData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query: {
+    event: string;
+  };
+  url: "/sessions/{id}/transition";
+};
+
+export type TransitionResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseSessionDto;
+};
+
+export type TransitionResponse = TransitionResponses[keyof TransitionResponses];
 
 export type QuestionReadData = {
   body?: never;
@@ -308,7 +333,7 @@ export type PresignCreatePresignUrlResponses = {
 export type PresignCreatePresignUrlResponse =
   PresignCreatePresignUrlResponses[keyof PresignCreatePresignUrlResponses];
 
-export type SessionDeleteData = {
+export type DeleteData = {
   body?: never;
   path: {
     id: string;
@@ -317,17 +342,16 @@ export type SessionDeleteData = {
   url: "/sessions/{id}";
 };
 
-export type SessionDeleteResponses = {
+export type DeleteResponses = {
   /**
    * OK
    */
   200: GenericResponseSessionDto;
 };
 
-export type SessionDeleteResponse =
-  SessionDeleteResponses[keyof SessionDeleteResponses];
+export type DeleteResponse = DeleteResponses[keyof DeleteResponses];
 
-export type SessionGetData = {
+export type GetData = {
   body?: never;
   path: {
     id: string;
@@ -336,16 +360,53 @@ export type SessionGetData = {
   url: "/sessions/{id}";
 };
 
-export type SessionGetResponses = {
+export type GetResponses = {
   /**
    * OK
    */
   200: GenericResponseSessionDto;
 };
 
-export type SessionGetResponse = SessionGetResponses[keyof SessionGetResponses];
+export type GetResponse = GetResponses[keyof GetResponses];
 
-export type SessionReadWithSortingData = {
+export type DebugData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/sessions/{id}/debug";
+};
+
+export type DebugResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseString;
+};
+
+export type DebugResponse = DebugResponses[keyof DebugResponses];
+
+export type AvailableEventsData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/sessions/{id}/available-events";
+};
+
+export type AvailableEventsResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListString;
+};
+
+export type AvailableEventsResponse =
+  AvailableEventsResponses[keyof AvailableEventsResponses];
+
+export type ReadWithSortingData = {
   body?: never;
   path?: never;
   query: {
@@ -357,49 +418,47 @@ export type SessionReadWithSortingData = {
   url: "/sessions/sorted";
 };
 
-export type SessionReadWithSortingResponses = {
+export type ReadWithSortingResponses = {
   /**
    * OK
    */
   200: GenericResponseListSessionDto;
 };
 
-export type SessionReadWithSortingResponse =
-  SessionReadWithSortingResponses[keyof SessionReadWithSortingResponses];
+export type ReadWithSortingResponse =
+  ReadWithSortingResponses[keyof ReadWithSortingResponses];
 
-export type SessionGetSchemaData = {
+export type GetSchemaData = {
   body?: never;
   path?: never;
   query?: never;
   url: "/sessions/schema";
 };
 
-export type SessionGetSchemaResponses = {
+export type GetSchemaResponses = {
   /**
    * OK
    */
   200: GenericResponseJsonNode;
 };
 
-export type SessionGetSchemaResponse =
-  SessionGetSchemaResponses[keyof SessionGetSchemaResponses];
+export type GetSchemaResponse = GetSchemaResponses[keyof GetSchemaResponses];
 
-export type SessionCountData = {
+export type CountData = {
   body?: never;
   path?: never;
   query?: never;
   url: "/sessions/count";
 };
 
-export type SessionCountResponses = {
+export type CountResponses = {
   /**
    * OK
    */
   200: GenericResponseLong;
 };
 
-export type SessionCountResponse =
-  SessionCountResponses[keyof SessionCountResponses];
+export type CountResponse = CountResponses[keyof CountResponses];
 
 export type QuestionDeleteData = {
   body?: never;

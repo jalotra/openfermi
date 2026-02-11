@@ -3,6 +3,18 @@
 import type { Client, Options as Options2, TDataShape } from "./client";
 import { client } from "./client.gen";
 import type {
+  AvailableEventsData,
+  AvailableEventsResponses,
+  CountData,
+  CountResponses,
+  DebugData,
+  DebugResponses,
+  DeleteData,
+  DeleteResponses,
+  GetData,
+  GetResponses,
+  GetSchemaData,
+  GetSchemaResponses,
   HealthHealthData,
   HealthHealthResponses,
   PresignCreatePresignUrlData,
@@ -21,24 +33,18 @@ import type {
   QuestionReadWithSortingResponses,
   QuestionUpsertData,
   QuestionUpsertResponses,
-  SessionCountData,
-  SessionCountResponses,
-  SessionDeleteData,
-  SessionDeleteResponses,
-  SessionGetData,
-  SessionGetResponses,
-  SessionGetSchemaData,
-  SessionGetSchemaResponses,
-  SessionReadData,
-  SessionReadResponses,
-  SessionReadWithSortingData,
-  SessionReadWithSortingResponses,
+  ReadData,
+  ReadResponses,
+  ReadWithSortingData,
+  ReadWithSortingResponses,
   SessionstateGetStateData,
   SessionstateGetStateResponses,
   SessionstateUpsertStateData,
   SessionstateUpsertStateResponses,
-  SessionUpsertData,
-  SessionUpsertResponses,
+  TransitionData,
+  TransitionResponses,
+  UpsertData,
+  UpsertResponses,
   UserDeleteData,
   UserDeleteResponses,
   UserGetByEmailData,
@@ -102,21 +108,21 @@ export class SessionStateController {
 }
 
 export class SessionController {
-  public static sessionRead<ThrowOnError extends boolean = false>(
-    options?: Options<SessionReadData, ThrowOnError>,
+  public static read<ThrowOnError extends boolean = false>(
+    options?: Options<ReadData, ThrowOnError>,
   ) {
     return (options?.client ?? client).get<
-      SessionReadResponses,
+      ReadResponses,
       unknown,
       ThrowOnError
     >({ url: "/sessions", ...options });
   }
 
-  public static sessionUpsert<ThrowOnError extends boolean = false>(
-    options: Options<SessionUpsertData, ThrowOnError>,
+  public static upsert<ThrowOnError extends boolean = false>(
+    options: Options<UpsertData, ThrowOnError>,
   ) {
     return (options.client ?? client).post<
-      SessionUpsertResponses,
+      UpsertResponses,
       unknown,
       ThrowOnError
     >({
@@ -129,51 +135,80 @@ export class SessionController {
     });
   }
 
-  public static sessionDelete<ThrowOnError extends boolean = false>(
-    options: Options<SessionDeleteData, ThrowOnError>,
+  public static transition<ThrowOnError extends boolean = false>(
+    options: Options<TransitionData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      TransitionResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/sessions/{id}/transition", ...options });
+  }
+
+  public static delete<ThrowOnError extends boolean = false>(
+    options: Options<DeleteData, ThrowOnError>,
   ) {
     return (options.client ?? client).delete<
-      SessionDeleteResponses,
+      DeleteResponses,
       unknown,
       ThrowOnError
     >({ url: "/sessions/{id}", ...options });
   }
 
-  public static sessionGet<ThrowOnError extends boolean = false>(
-    options: Options<SessionGetData, ThrowOnError>,
+  public static get<ThrowOnError extends boolean = false>(
+    options: Options<GetData, ThrowOnError>,
   ) {
-    return (options.client ?? client).get<
-      SessionGetResponses,
-      unknown,
-      ThrowOnError
-    >({ url: "/sessions/{id}", ...options });
+    return (options.client ?? client).get<GetResponses, unknown, ThrowOnError>({
+      url: "/sessions/{id}",
+      ...options,
+    });
   }
 
-  public static sessionReadWithSorting<ThrowOnError extends boolean = false>(
-    options: Options<SessionReadWithSortingData, ThrowOnError>,
+  public static debug<ThrowOnError extends boolean = false>(
+    options: Options<DebugData, ThrowOnError>,
   ) {
     return (options.client ?? client).get<
-      SessionReadWithSortingResponses,
+      DebugResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/sessions/{id}/debug", ...options });
+  }
+
+  public static availableEvents<ThrowOnError extends boolean = false>(
+    options: Options<AvailableEventsData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      AvailableEventsResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/sessions/{id}/available-events", ...options });
+  }
+
+  public static readWithSorting<ThrowOnError extends boolean = false>(
+    options: Options<ReadWithSortingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      ReadWithSortingResponses,
       unknown,
       ThrowOnError
     >({ url: "/sessions/sorted", ...options });
   }
 
-  public static sessionGetSchema<ThrowOnError extends boolean = false>(
-    options?: Options<SessionGetSchemaData, ThrowOnError>,
+  public static getSchema<ThrowOnError extends boolean = false>(
+    options?: Options<GetSchemaData, ThrowOnError>,
   ) {
     return (options?.client ?? client).get<
-      SessionGetSchemaResponses,
+      GetSchemaResponses,
       unknown,
       ThrowOnError
     >({ url: "/sessions/schema", ...options });
   }
 
-  public static sessionCount<ThrowOnError extends boolean = false>(
-    options?: Options<SessionCountData, ThrowOnError>,
+  public static count<ThrowOnError extends boolean = false>(
+    options?: Options<CountData, ThrowOnError>,
   ) {
     return (options?.client ?? client).get<
-      SessionCountResponses,
+      CountResponses,
       unknown,
       ThrowOnError
     >({ url: "/sessions/count", ...options });

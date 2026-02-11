@@ -4,15 +4,14 @@ import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
-  ThumbsUp,
-  Bell,
-  HelpCircle,
+  Pause,
+  Play,
+  Square,
   Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
 
 interface HeaderBarProps {
   currentQuestion: number;
@@ -20,6 +19,18 @@ interface HeaderBarProps {
   onPreviousQuestion: () => void;
   onNextQuestion: () => void;
   onSidebarToggle?: () => void;
+  timeLeftSeconds?: number;
+  isPaused?: boolean;
+  onPause?: () => void;
+  onResume?: () => void;
+  onEnd?: () => void;
+}
+
+function formatCountdown(seconds: number) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
 export function HeaderBar({
@@ -28,24 +39,14 @@ export function HeaderBar({
   onPreviousQuestion,
   onNextQuestion,
   onSidebarToggle,
+  timeLeftSeconds = 0,
+  isPaused = false,
+  onPause,
+  onResume,
+  onEnd,
 }: HeaderBarProps) {
   const router = useRouter();
-  const [timer, setTimer] = useState(0); // Timer in seconds
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${String(hrs).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-  };
+  const isLowTime = timeLeftSeconds < 60;
 
   return (
     <header className="w-full bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
@@ -69,9 +70,18 @@ export function HeaderBar({
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="text-lg font-medium text-gray-900">
-          {formatTime(timer)}
+
+        <div
+          className={`text-lg font-mono font-medium tabular-nums ${isLowTime ? "text-red-600 animate-pulse" : "text-gray-900"}`}
+        >
+          {formatCountdown(timeLeftSeconds)}
         </div>
+
+        {isPaused && (
+          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+            PAUSED
+          </Badge>
+        )}
       </div>
 
       {/* Center section - Question navigation */}
@@ -99,24 +109,37 @@ export function HeaderBar({
         </Button>
       </div>
 
-      {/* Right section */}
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center">
-            <span className="text-xs font-medium text-gray-700">U</span>
-          </div>
-          <Badge variant="secondary" className="bg-blue-100 text-blue-700">
-            FREE TRIAL
-          </Badge>
-        </div>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
-          <ThumbsUp className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
-          <Bell className="h-5 w-5" />
-        </Button>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
-          <HelpCircle className="h-5 w-5" />
+      {/* Right section - Lifecycle controls */}
+      <div className="flex items-center gap-2">
+        {isPaused ? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onResume}
+            className="gap-1.5"
+          >
+            <Play className="h-4 w-4" />
+            Resume
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onPause}
+            className="gap-1.5"
+          >
+            <Pause className="h-4 w-4" />
+            Pause
+          </Button>
+        )}
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={onEnd}
+          className="gap-1.5"
+        >
+          <Square className="h-3.5 w-3.5" />
+          End Session
         </Button>
       </div>
     </header>
