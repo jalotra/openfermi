@@ -14,6 +14,7 @@ import { SessionController } from "@/lib/backend/sdk.gen";
 import { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { exportAs } from "tldraw";
 
 interface SessionPlayerProps {
   session: SessionDto;
@@ -181,8 +182,16 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           timeLeftSeconds: timeLeft,
         },
       });
-    } catch {
-      // best-effort save before transition
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        console.error(
+          err.response?.data?.message ||
+            err.message ||
+            "Failed to complete session",
+        );
+      } else {
+        console.error("Failed to complete session:", err);
+      }
     }
 
     await triggerTransition("END");
@@ -199,7 +208,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   const questionPanelData = currentQuestion
     ? {
         question: currentQuestion.questionText || "",
-        latexQuestion: currentQuestion.questionText || "",
+        latexQuestion: currentQuestion.latexQuestionText || currentQuestion.questionText || "",
         options: {
           A: currentQuestion.options?.[0] || "",
           B: currentQuestion.options?.[1] || "",
@@ -315,7 +324,19 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           }}
           onUndo={() => editorRef.current?.undo()}
           onRedo={() => editorRef.current?.redo()}
-          onExport={() => console.log("Export")}
+          onExport={async () => {
+            const editor = editorRef.current;
+            if (!editor) return;
+            const shapeIds = editor.getCurrentPageShapeIds();
+            if (shapeIds.size === 0) {
+              alert("Nothing to export — draw something first!");
+              return;
+            }
+            await exportAs(editor, [...shapeIds], {
+              format: "png",
+              name: `solution-q${currentIndex + 1}`,
+            });
+          }}
         />
         <CollaborationBar
           onMenuClick={() => console.log("Menu")}

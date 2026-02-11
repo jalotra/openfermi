@@ -8,6 +8,7 @@ import { ArrowLeft, Play } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AxiosError } from "axios";
+import { getServerUser } from "@/lib/auth-session";
 
 export const dynamic = "force-dynamic";
 
@@ -22,8 +23,11 @@ async function createSession(formData: FormData) {
     throw new Error("No questions selected");
   }
 
+  const user = await getServerUser();
+  const userId = user?.id || user?.email || "anonymous";
+
   const body: SessionDto = {
-    userId: "anonymous",
+    userId,
     questionIds: ids,
     totalQuestions: ids.length,
     examType: "MIXED",
