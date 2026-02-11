@@ -7,6 +7,7 @@ import { AxiosError } from "axios";
 import { SessionController } from "@/lib/backend/sdk.gen";
 import { backendClient } from "@/lib/backend-client";
 import type { SessionDto } from "@/lib/backend/types.gen";
+import { getServerUser } from "@/lib/auth-session";
 
 export const dynamic = "force-dynamic";
 
@@ -17,6 +18,9 @@ export default async function SessionsPage({
 }) {
   const pageNumber = searchParams.pageNumber as string | undefined;
   const pageSize = searchParams.pageSize as string | undefined;
+
+  const user = await getServerUser();
+  const userId = user?.id || user?.email || null;
 
   let sessions: SessionDto[] = [];
   let error: string | null = null;
@@ -29,7 +33,10 @@ export default async function SessionsPage({
         size: pageSize,
       },
     });
-    sessions = response.data?.data || [];
+    const allSessions = response.data?.data || [];
+    sessions = userId
+      ? allSessions.filter((s) => s.userId === userId)
+      : allSessions;
   } catch (err) {
     if (err instanceof AxiosError) {
       error =

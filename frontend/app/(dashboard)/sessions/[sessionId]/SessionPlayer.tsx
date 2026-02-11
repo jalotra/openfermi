@@ -12,6 +12,7 @@ import { SessionDto, QuestionDto } from "@/lib/backend/types.gen";
 import { backendClient } from "@/lib/backend-client";
 import { SessionController } from "@/lib/backend/sdk.gen";
 import { AxiosError } from "axios";
+import { exportAs } from "tldraw";
 
 interface SessionPlayerProps {
   session: SessionDto;
@@ -131,7 +132,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           timeSpentSeconds: Math.floor((Date.now() - startTime) / 1000),
         },
       });
-      router.push(`/sessions`);
+      router.push(`/sessions/${session.id}/results`);
     } catch (err) {
       if (err instanceof AxiosError) {
         console.error(
@@ -149,7 +150,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   const questionPanelData = currentQuestion
     ? {
         question: currentQuestion.questionText || "",
-        latexQuestion: currentQuestion.questionText || "", // TODO: Add LaTeX support
+        latexQuestion: currentQuestion.latexQuestionText || currentQuestion.questionText || "",
         options: {
           A: currentQuestion.options?.[0] || "",
           B: currentQuestion.options?.[1] || "",
@@ -217,7 +218,19 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           }}
           onUndo={() => editorRef.current?.undo()}
           onRedo={() => editorRef.current?.redo()}
-          onExport={() => console.log("Export")}
+          onExport={async () => {
+            const editor = editorRef.current;
+            if (!editor) return;
+            const shapeIds = editor.getCurrentPageShapeIds();
+            if (shapeIds.size === 0) {
+              alert("Nothing to export — draw something first!");
+              return;
+            }
+            await exportAs(editor, [...shapeIds], {
+              format: "png",
+              name: `solution-q${currentIndex + 1}`,
+            });
+          }}
         />
         <CollaborationBar
           onMenuClick={() => console.log("Menu")}
