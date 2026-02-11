@@ -33,8 +33,26 @@ import type {
   SessionReadResponses,
   SessionReadWithSortingData,
   SessionReadWithSortingResponses,
+  SessionstateGetStateData,
+  SessionstateGetStateResponses,
+  SessionstateUpsertStateData,
+  SessionstateUpsertStateResponses,
   SessionUpsertData,
   SessionUpsertResponses,
+  UserDeleteData,
+  UserDeleteResponses,
+  UserGetByEmailData,
+  UserGetByEmailResponses,
+  UserGetByProviderIdData,
+  UserGetByProviderIdResponses,
+  UserGetData,
+  UserGetResponses,
+  UserGetSchemaData,
+  UserGetSchemaResponses,
+  UserSyncUserData,
+  UserSyncUserResponses,
+  UserUpsertData,
+  UserUpsertResponses,
 } from "./types.gen";
 
 export type Options<
@@ -53,6 +71,35 @@ export type Options<
    */
   meta?: Record<string, unknown>;
 };
+
+export class SessionStateController {
+  public static sessionstateGetState<ThrowOnError extends boolean = false>(
+    options: Options<SessionstateGetStateData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      SessionstateGetStateResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/session-states", ...options });
+  }
+
+  public static sessionstateUpsertState<ThrowOnError extends boolean = false>(
+    options: Options<SessionstateUpsertStateData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).put<
+      SessionstateUpsertStateResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/session-states",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+}
 
 export class SessionController {
   public static sessionRead<ThrowOnError extends boolean = false>(
@@ -209,6 +256,92 @@ export class QuestionController {
       unknown,
       ThrowOnError
     >({ url: "/questions/count", ...options });
+  }
+}
+
+export class UserController {
+  public static userUpsert<ThrowOnError extends boolean = false>(
+    options: Options<UserUpsertData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UserUpsertResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/api/users",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static userSyncUser<ThrowOnError extends boolean = false>(
+    options: Options<UserSyncUserData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UserSyncUserResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/api/users/sync",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static userDelete<ThrowOnError extends boolean = false>(
+    options: Options<UserDeleteData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      UserDeleteResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/{id}", ...options });
+  }
+
+  public static userGet<ThrowOnError extends boolean = false>(
+    options: Options<UserGetData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      UserGetResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/{id}", ...options });
+  }
+
+  public static userGetSchema<ThrowOnError extends boolean = false>(
+    options?: Options<UserGetSchemaData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      UserGetSchemaResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/schema", ...options });
+  }
+
+  public static userGetByProviderId<ThrowOnError extends boolean = false>(
+    options: Options<UserGetByProviderIdData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      UserGetByProviderIdResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/provider/{providerId}", ...options });
+  }
+
+  public static userGetByEmail<ThrowOnError extends boolean = false>(
+    options: Options<UserGetByEmailData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      UserGetByEmailResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/email/{email}", ...options });
   }
 }
 

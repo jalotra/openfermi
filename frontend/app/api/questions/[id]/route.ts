@@ -8,10 +8,10 @@ import path from "path";
  */
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id: questionId } = await params
+    const { id: questionId } = await params;
 
     // Path to scripts/output directory
     const scriptsDir = path.join(process.cwd(), "..", "scripts");

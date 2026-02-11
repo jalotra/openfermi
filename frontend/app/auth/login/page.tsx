@@ -2,7 +2,13 @@
 
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Chrome } from "lucide-react";
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -37,8 +43,8 @@ function AuthPageContent() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full h-12"
             onClick={handleGoogleSignIn}
             disabled={isLoading}
@@ -46,7 +52,7 @@ function AuthPageContent() {
             <Chrome className="mr-2 h-5 w-5" />
             {isLoading ? "Connecting..." : "Continue with Google"}
           </Button>
-          
+
           <p className="text-xs text-center text-muted-foreground mt-4">
             By signing in, you agree to our Terms of Service and Privacy Policy
           </p>

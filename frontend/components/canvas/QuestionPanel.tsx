@@ -1,9 +1,9 @@
 "use client";
 
-import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { LatexRenderer } from "@/components/ui/latex-renderer"
-import { cn } from "@/lib/utils"
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { LatexRenderer } from "@/components/ui/latex-renderer";
+import { cn } from "@/lib/utils";
 
 interface QuestionPanelProps {
   question: string;
@@ -15,13 +15,13 @@ interface QuestionPanelProps {
     D: string;
   };
   latexOptions?: {
-    A?: string
-    B?: string
-    C?: string
-    D?: string
-  }
-  selectedAnswer?: string
-  onAnswerChange?: (answer: string) => void
+    A?: string;
+    B?: string;
+    C?: string;
+    D?: string;
+  };
+  selectedAnswer?: string;
+  onAnswerChange?: (answer: string) => void;
 }
 
 export function QuestionPanel({
@@ -30,7 +30,7 @@ export function QuestionPanel({
   options,
   latexOptions,
   selectedAnswer,
-  onAnswerChange
+  onAnswerChange,
 }: QuestionPanelProps) {
   // Use LaTeX version if available, otherwise fallback to plain text
   const questionContent = latexQuestion || question;
@@ -44,9 +44,9 @@ export function QuestionPanel({
           </div>
         </div>
         <div className="space-y-3">
-          {(['A', 'B', 'C', 'D'] as const).map((key) => {
-            const optionText = latexOptions?.[key] || options[key]
-            const isSelected = selectedAnswer === key
+          {(["A", "B", "C", "D"] as const).map((key) => {
+            const optionText = latexOptions?.[key] || options[key];
+            const isSelected = selectedAnswer === key;
             return (
               <button
                 key={key}
@@ -54,23 +54,28 @@ export function QuestionPanel({
                 className={cn(
                   "flex items-start gap-3 w-full text-left p-3 rounded-lg transition-colors",
                   "hover:bg-gray-50",
-                  isSelected && "bg-blue-50 border-2 border-blue-500 hover:bg-blue-50"
+                  isSelected &&
+                    "bg-blue-50 border-2 border-blue-500 hover:bg-blue-50",
                 )}
               >
-                <span className={cn(
-                  "font-medium min-w-[24px]",
-                  isSelected ? "text-blue-700" : "text-gray-700"
-                )}>
+                <span
+                  className={cn(
+                    "font-medium min-w-[24px]",
+                    isSelected ? "text-blue-700" : "text-gray-700",
+                  )}
+                >
                   {key}.
                 </span>
-                <div className={cn(
-                  "flex-1",
-                  isSelected ? "text-blue-900" : "text-gray-700"
-                )}>
+                <div
+                  className={cn(
+                    "flex-1",
+                    isSelected ? "text-blue-900" : "text-gray-700",
+                  )}
+                >
                   <LatexRenderer content={optionText} displayMode={false} />
                 </div>
               </button>
-            )
+            );
           })}
         </div>
       </Card>
