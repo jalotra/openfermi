@@ -1,13 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LatexRenderer } from "@/components/ui/latex-renderer";
 import { cn } from "@/lib/utils";
+import { ImageIcon, ChevronDown } from "lucide-react";
 
 interface QuestionPanelProps {
   question: string;
-  latexQuestion?: string; // LaTeX version of the question
+  latexQuestion?: string;
   options: {
     A: string;
     B: string;
@@ -20,6 +22,7 @@ interface QuestionPanelProps {
     C?: string;
     D?: string;
   };
+  imageUrls?: string[];
   selectedAnswer?: string;
   onAnswerChange?: (answer: string) => void;
 }
@@ -29,10 +32,11 @@ export function QuestionPanel({
   latexQuestion,
   options,
   latexOptions,
+  imageUrls,
   selectedAnswer,
   onAnswerChange,
 }: QuestionPanelProps) {
-  // Use LaTeX version if available, otherwise fallback to plain text
+  const [imageExpanded, setImageExpanded] = useState(false);
   const questionContent = latexQuestion || question;
 
   return (
@@ -43,6 +47,36 @@ export function QuestionPanel({
             <LatexRenderer content={questionContent} displayMode={false} />
           </div>
         </div>
+        {imageUrls && imageUrls.length > 0 && (
+          <div className="mb-4">
+            <button
+              type="button"
+              onClick={() => setImageExpanded((prev) => !prev)}
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ImageIcon className="h-4 w-4" />
+              <span>View Question Image{imageUrls.length > 1 ? "s" : ""}</span>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 transition-transform",
+                  imageExpanded && "rotate-180",
+                )}
+              />
+            </button>
+            {imageExpanded && (
+              <div className="mt-3 space-y-3">
+                {imageUrls.map((url, i) => (
+                  <img
+                    key={i}
+                    src={url}
+                    alt={`Question image ${i + 1}`}
+                    className="max-w-full rounded-lg border"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <div className="space-y-3">
           {(["A", "B", "C", "D"] as const).map((key) => {
             const optionText = latexOptions?.[key] || options[key];

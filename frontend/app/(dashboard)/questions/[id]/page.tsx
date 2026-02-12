@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LatexRenderer } from "@/components/ui/latex-renderer";
-import { Play, ArrowLeft } from "lucide-react";
+import { Play, ArrowLeft, ImageIcon, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { backendClient } from "@/lib/backend-client";
 import { QuestionDto } from "@/lib/backend/types.gen";
@@ -22,9 +22,12 @@ export const dynamic = "force-dynamic";
 export default async function QuestionDetailsPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
   const { id } = await params;
+  if (process.env.NODE_ENV === "development") {
+    console.log("id", id);
+  }
 
   let question: QuestionDto | null = null;
 
@@ -46,6 +49,10 @@ export default async function QuestionDetailsPage({
     throw err;
   }
 
+  if (process.env.NODE_ENV === "development") {
+    console.log("question", question);
+  }
+
   if (!question) notFound();
 
   return (
@@ -62,7 +69,7 @@ export default async function QuestionDetailsPage({
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <h1 className="text-3xl font-bold tracking-tight">
-              {question.questionText}
+              {question.topic}
             </h1>
             <div className="flex items-center gap-2">
               <Badge
@@ -78,7 +85,7 @@ export default async function QuestionDetailsPage({
                 {question.difficulty}
               </Badge>
               <span className="text-sm text-muted-foreground">
-                ID: {question.id}
+                Question Number: {question.questionNumber}
               </span>
             </div>
           </div>
@@ -97,19 +104,42 @@ export default async function QuestionDetailsPage({
             <Card>
               <CardHeader>
                 <CardTitle>Question Content</CardTitle>
-                <CardDescription>
-                  The primary problem statement for this question.
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="text-lg leading-relaxed text-gray-800">
                   <LatexRenderer
-                    content={question.questionText || ""}
+                    content={question.latexQuestionText || ""}
                     displayMode={false}
                   />
                 </div>
               </CardContent>
             </Card>
+
+            {question.imageUrls && question.imageUrls.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <details className="group">
+                    <summary className="flex items-center gap-2 cursor-pointer list-none">
+                      <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                      <CardTitle className="inline">
+                        Question Image{question.imageUrls.length > 1 ? "s" : ""}
+                      </CardTitle>
+                      <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-open:rotate-180 ml-auto" />
+                    </summary>
+                    <CardContent className="pt-4 px-0 space-y-4">
+                      {question.imageUrls.map((url, i) => (
+                        <img
+                          key={i}
+                          src={url}
+                          alt={`Question image ${i + 1}`}
+                          className="max-w-full rounded-lg border"
+                        />
+                      ))}
+                    </CardContent>
+                  </details>
+                </CardHeader>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>
@@ -196,7 +226,6 @@ export default async function QuestionDetailsPage({
                 </div>
               </CardContent>
             </Card>
-
           </div>
         </div>
       </div>

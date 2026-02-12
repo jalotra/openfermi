@@ -1,0 +1,9 @@
+s3:
+  bucket: "your-s3-bucket"
+  region: "ap-south-1"
+
+backends:
+  - url: "http://localhost:8080"
+    api_key: ""
+  - url: "https://your-app.onrender.com"
+    api_key: "your-render-api-key"

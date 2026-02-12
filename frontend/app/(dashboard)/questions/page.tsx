@@ -1,4 +1,4 @@
-import { columns } from "./columns";
+import { columns, cellRenderers } from "./columns";
 import { DataTable, SelectFilter } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -76,6 +76,8 @@ export default async function QuestionsPage({
             columns={columns}
             data={questions}
             filterColumn="questionText"
+            cellRenderers={cellRenderers}
+            rowLinkPrefix="/questions"
             selectFilters={[
               {
                 columnId: "subject",

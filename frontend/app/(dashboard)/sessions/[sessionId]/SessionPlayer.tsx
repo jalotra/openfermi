@@ -208,7 +208,10 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   const questionPanelData = currentQuestion
     ? {
         question: currentQuestion.questionText || "",
-        latexQuestion: currentQuestion.latexQuestionText || currentQuestion.questionText || "",
+        latexQuestion:
+          currentQuestion.latexQuestionText ||
+          currentQuestion.questionText ||
+          "",
         options: {
           A: currentQuestion.options?.[0] || "",
           B: currentQuestion.options?.[1] || "",
@@ -221,6 +224,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           C: currentQuestion.options?.[2],
           D: currentQuestion.options?.[3],
         },
+        imageUrls: currentQuestion.imageUrls,
       }
     : null;
 
@@ -299,6 +303,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
         latexQuestion={questionPanelData.latexQuestion}
         options={questionPanelData.options}
         latexOptions={questionPanelData.latexOptions}
+        imageUrls={questionPanelData.imageUrls}
         selectedAnswer={answers[currentQuestion.id || ""]}
         onAnswerChange={(answer) =>
           handleAnswerChange(currentQuestion.id || "", answer)

@@ -84,6 +84,7 @@ export default async function SessionsPage({
             columns={columns}
             data={sessions}
             filterColumn="state"
+            rowLinkPrefix="/sessions"
           />
         )}
       </div>

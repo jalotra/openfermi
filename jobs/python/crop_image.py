@@ -114,7 +114,9 @@ def main(argv: list[str]) -> int:
         with Image.open(input_path) as im:
             im.load()
             width, height = im.size
-            x0, y0, x1, y1 = normalized_to_pixels(width, height, left, top, right, bottom, pad_pct)
+            x0, y0, x1, y1 = normalized_to_pixels(
+                width, height, left, top, right, bottom, pad_pct
+            )
             cropped = im.crop((x0, y0, x1, y1))
             ensure_parent_dir(output_path)
             cropped.save(output_path, format="PNG")

@@ -12,7 +12,7 @@ export default async function SessionPage({
 }: {
   params: { sessionId: string };
 }) {
-  const { sessionId } = params;
+  const { sessionId } = await params;
 
   let session: SessionDto | null = null;
   let error: string | null = null;
@@ -64,6 +64,7 @@ export default async function SessionPage({
   );
 
   const questions = questionResults.filter((q): q is QuestionDto => Boolean(q));
+  
 
   return <SessionPlayer session={session} questions={questions} />;
 }

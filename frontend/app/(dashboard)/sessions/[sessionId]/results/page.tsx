@@ -8,7 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { LatexRenderer } from "@/components/ui/latex-renderer";
-import { ArrowLeft, CheckCircle2, XCircle, MinusCircle, Clock, Target, BarChart3 } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  MinusCircle,
+  Clock,
+  Target,
+  BarChart3,
+} from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
