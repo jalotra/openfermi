@@ -64,7 +64,6 @@ export default async function SessionPage({
   );
 
   const questions = questionResults.filter((q): q is QuestionDto => Boolean(q));
-  
 
   return <SessionPlayer session={session} questions={questions} />;
 }

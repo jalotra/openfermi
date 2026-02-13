@@ -277,26 +277,30 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
 
   const isPaused = sessionState === "PAUSED";
 
-  return (
-    <>
-      <HeaderBar
-        currentQuestion={currentIndex + 1}
-        totalQuestions={totalQuestions}
-        onPreviousQuestion={handlePreviousQuestion}
-        onNextQuestion={handleNextQuestion}
-        onSidebarToggle={toggle}
-        timeLeftSeconds={timeLeft}
-        isPaused={isPaused}
-        onPause={handlePause}
-        onResume={handleResume}
-        onEnd={handleEnd}
-      />
+  const CANVAS_HEIGHT_PX = 5000;
 
-      {isPaused && (
-        <div className="bg-yellow-50 border-b border-yellow-200 px-6 py-2 text-center text-sm text-yellow-800 font-medium">
-          Session paused. Resume to continue the timer.
-        </div>
-      )}
+  return (
+    <div className="flex flex-col h-full overflow-y-auto">
+      <div className="sticky top-0 z-30">
+        <HeaderBar
+          currentQuestion={currentIndex + 1}
+          totalQuestions={totalQuestions}
+          onPreviousQuestion={handlePreviousQuestion}
+          onNextQuestion={handleNextQuestion}
+          onSidebarToggle={toggle}
+          timeLeftSeconds={timeLeft}
+          isPaused={isPaused}
+          onPause={handlePause}
+          onResume={handleResume}
+          onEnd={handleEnd}
+        />
+
+        {isPaused && (
+          <div className="bg-yellow-50 border-b border-yellow-200 px-6 py-2 text-center text-sm text-yellow-800 font-medium">
+            Session paused. Resume to continue the timer.
+          </div>
+        )}
+      </div>
 
       <QuestionPanel
         question={questionPanelData.question}
@@ -309,7 +313,7 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           handleAnswerChange(currentQuestion.id || "", answer)
         }
       />
-      <div className="flex-1 relative overflow-hidden">
+      <div className="relative" style={{ height: `${CANVAS_HEIGHT_PX}px` }}>
         <CanvasEditor
           key={`${session.id}-${currentQuestion.id}`}
           sessionId={session.id}
@@ -350,6 +354,6 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           onSpeakerClick={() => console.log("Speaker")}
         />
       </div>
-    </>
+    </div>
   );
 }

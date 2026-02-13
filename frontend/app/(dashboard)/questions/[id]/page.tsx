@@ -56,7 +56,7 @@ export default async function QuestionDetailsPage({
   if (!question) notFound();
 
   return (
-    <div className="flex-1 bg-gray-50/50 p-8 overflow-y-auto">
+    <div className="flex-1 min-h-0 overflow-auto bg-gray-50/50 p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/questions"

@@ -13,7 +13,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <header className="flex h-10 shrink-0 items-center gap-2 border-b border-sidebar-border px-2 bg-background">
             <SidebarTrigger />
           </header>
-          <div className="flex-1 min-w-0 overflow-auto">{children}</div>
+          <div className="flex flex-1 min-w-0 flex-col overflow-hidden">
+            {children}
+          </div>
         </main>
       </SidebarProvider>
     </SidebarContextProvider>
