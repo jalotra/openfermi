@@ -780,12 +780,6 @@ public record PaginationRequest(
     <version>2.11.0</version>
 </dependency>
 
-<!-- Background Jobs -->
-<dependency>
-    <groupId>org.jobrunr</groupId>
-    <artifactId>jobrunr-spring-boot-3-starter</artifactId>
-    <version>7.4.1</version>
-</dependency>
 
 <!-- AI/LLM Integration -->
 <dependency>

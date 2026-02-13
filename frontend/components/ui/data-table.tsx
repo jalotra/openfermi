@@ -31,6 +31,7 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 export interface SelectFilter {
   columnId: string;
@@ -43,6 +44,8 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   filterColumn?: string;
   selectFilters?: SelectFilter[];
+  cellRenderers?: Record<string, React.ComponentType<{ value: unknown }>>;
+  rowLinkPrefix?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,6 +53,8 @@ export function DataTable<TData, TValue>({
   data,
   filterColumn,
   selectFilters,
+  cellRenderers,
+  rowLinkPrefix,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -58,6 +63,7 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const router = useRouter();
 
   const table = useReactTable({
     data,
@@ -168,15 +174,31 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={
+                    rowLinkPrefix
+                      ? () =>
+                          router.push(
+                            `${rowLinkPrefix}/${(row.original as Record<string, unknown>).id}`,
+                          )
+                      : undefined
+                  }
+                  className={rowLinkPrefix ? "cursor-pointer" : undefined}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row.getVisibleCells().map((cell) => {
+                    const Renderer = cellRenderers?.[cell.column.id];
+                    return (
+                      <TableCell key={cell.id}>
+                        {Renderer ? (
+                          <Renderer value={cell.getValue()} />
+                        ) : (
+                          flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )
+                        )}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
               ))
             ) : (

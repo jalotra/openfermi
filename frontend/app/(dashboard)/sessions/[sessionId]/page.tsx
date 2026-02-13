@@ -12,13 +12,13 @@ export default async function SessionPage({
 }: {
   params: { sessionId: string };
 }) {
-  const { sessionId } = params;
+  const { sessionId } = await params;
 
   let session: SessionDto | null = null;
   let error: string | null = null;
 
   try {
-    const response = await SessionController.sessionGet({
+    const response = await SessionController.get({
       client: backendClient,
       path: { id: sessionId },
     });

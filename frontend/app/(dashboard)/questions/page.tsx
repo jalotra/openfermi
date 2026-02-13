@@ -1,4 +1,4 @@
-import { columns } from "./columns";
+import { columns, cellRenderers } from "./columns";
 import { DataTable, SelectFilter } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -40,7 +40,7 @@ export default async function QuestionsPage({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
       <div className="p-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
@@ -76,6 +76,8 @@ export default async function QuestionsPage({
             columns={columns}
             data={questions}
             filterColumn="questionText"
+            cellRenderers={cellRenderers}
+            rowLinkPrefix="/questions"
             selectFilters={[
               {
                 columnId: "subject",

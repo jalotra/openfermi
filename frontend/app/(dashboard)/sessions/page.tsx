@@ -26,7 +26,7 @@ export default async function SessionsPage({
   let error: string | null = null;
 
   try {
-    const response = await SessionController.sessionRead({
+    const response = await SessionController.read({
       client: backendClient,
       query: {
         page: pageNumber,
@@ -49,7 +49,7 @@ export default async function SessionsPage({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
       <div className="p-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
@@ -83,7 +83,8 @@ export default async function SessionsPage({
           <DataTable<SessionDto, string>
             columns={columns}
             data={sessions}
-            filterColumn="status"
+            filterColumn="state"
+            rowLinkPrefix="/sessions"
           />
         )}
       </div>

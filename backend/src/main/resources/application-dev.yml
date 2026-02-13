@@ -8,6 +8,6 @@ spring:
   jpa:
     properties:
       hibernate:
-        default_schema: ${DB_SCHEMA:public}
+        default_schema: ${DB_SCHEMA:openfermi}
 app:
   allowedOrigins: ${ALLOWED_ORIGINS:http://localhost:3000}

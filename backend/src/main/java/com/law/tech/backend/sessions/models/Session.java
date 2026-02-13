@@ -1,6 +1,6 @@
 package com.law.tech.backend.sessions.models;
 
-import com.law.tech.backend.base.models.BaseEntity;
+import com.law.tech.backend.base.statemachine.StatefulEntity;
 import com.law.tech.backend.base.converters.StringListConverter;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "sessions")
-public class Session extends BaseEntity {
+public class Session extends StatefulEntity {
 
     @Column(name = "user_id", nullable = false)
     private String userId;
@@ -35,10 +35,6 @@ public class Session extends BaseEntity {
 
     @Column(name = "end_time")
     private LocalDateTime endTime;
-
-    @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private SessionStatus status;
 
     @Column(name = "score")
     private Double score;
@@ -57,10 +53,13 @@ public class Session extends BaseEntity {
 
     @Column(name = "answers", columnDefinition = "TEXT")
     @Convert(converter = SessionAnswerConverter.class)
-    private Map<UUID, String> answers; // Map of questionId -> user's answer
+    private Map<UUID, String> answers;
 
     @Column(name = "time_spent_seconds")
     private Long timeSpentSeconds;
+
+    @Column(name = "time_left_seconds")
+    private Long timeLeftSeconds;
 
     @Column(name = "exam_type")
     @Enumerated(EnumType.STRING)
@@ -69,12 +68,6 @@ public class Session extends BaseEntity {
     @Column(name = "subject")
     @Enumerated(EnumType.STRING)
     private Subject subject;
-
-    public enum SessionStatus {
-        IN_PROGRESS,
-        COMPLETED,
-        ABANDONED
-    }
 
     public enum ExamType {
         JEE_ADVANCED,

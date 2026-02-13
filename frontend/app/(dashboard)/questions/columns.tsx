@@ -1,7 +1,8 @@
 "use client";
 
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, ExternalLink } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { QuestionDto } from "@/lib/backend";
+import { LatexRenderer } from "@/components/ui/latex-renderer";
 
 export const columns: ColumnDef<QuestionDto>[] = [
   {
@@ -44,7 +46,7 @@ export const columns: ColumnDef<QuestionDto>[] = [
     header: "ID",
   },
   {
-    accessorKey: "questionText",
+    accessorKey: "latexQuestionText",
     header: ({ column }) => {
       return (
         <Button
@@ -55,15 +57,6 @@ export const columns: ColumnDef<QuestionDto>[] = [
           Question
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const text = row.getValue("questionText") as string;
-      return (
-        <span className="truncate max-w-md">
-          {text?.substring(0, 100)}
-          {text?.length > 100 ? "..." : ""}
-        </span>
       );
     },
   },
@@ -175,3 +168,20 @@ export const columns: ColumnDef<QuestionDto>[] = [
     },
   },
 ];
+
+export const cellRenderers: Record<
+  string,
+  React.ComponentType<{ value: unknown }>
+> = {
+  latexQuestionText: ({ value }) => {
+    const text = value as string;
+    if (!text) return <span className="text-muted-foreground">-</span>;
+    return (
+      <div className="max-w-md">
+        <LatexRenderer
+          content={text.substring(0, 100) + (text.length > 100 ? "..." : "")}
+        />
+      </div>
+    );
+  },
+};

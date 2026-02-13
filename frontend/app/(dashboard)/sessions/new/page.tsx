@@ -1,7 +1,13 @@
 import { backendClient } from "@/lib/backend-client";
 import { QuestionController, SessionController } from "@/lib/backend/sdk.gen";
 import type { QuestionDto, SessionDto } from "@/lib/backend/types.gen";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Play } from "lucide-react";
@@ -9,12 +15,16 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AxiosError } from "axios";
 import { getServerUser } from "@/lib/auth-session";
+import { LatexRenderer } from "@/components/ui/latex-renderer";
+import { DurationPicker } from "@/components/ui/DurationPicker";
 
 export const dynamic = "force-dynamic";
 
-// Server Action to create session
 async function createSession(formData: FormData) {
   "use server";
+  if (process.env.NODE_ENV === "development") {
+    console.log("formdata", formData);
+  }
 
   const questionIds = formData.get("questionIds") as string;
   const ids = questionIds.split(",").filter(Boolean);
@@ -23,21 +33,23 @@ async function createSession(formData: FormData) {
     throw new Error("No questions selected");
   }
 
+  const durationMinutes = Number(formData.get("durationMinutes") || 0);
+  const timeLeftSeconds = durationMinutes > 0 ? durationMinutes * 60 : 0;
+
   const user = await getServerUser();
   const userId = user?.id || user?.email || "anonymous";
 
   const body: SessionDto = {
     userId,
     questionIds: ids,
-    status: "IN_PROGRESS",
-    startTime: new Date().toISOString(),
     totalQuestions: ids.length,
     examType: "MIXED",
     subject: "MIXED",
+    ...(timeLeftSeconds > 0 && { timeLeftSeconds }),
   };
 
   try {
-    const response = await SessionController.sessionUpsert({
+    const response = await SessionController.upsert({
       client: backendClient,
       body,
     });
@@ -70,7 +82,7 @@ export default async function NewSessionPage({
 
   if (ids.length === 0) {
     return (
-      <div className="flex-1 flex flex-col min-h-screen bg-white p-8">
+      <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white p-8">
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-2xl font-bold mb-4">No Questions Selected</h1>
           <p className="text-muted-foreground mb-6">
@@ -106,7 +118,7 @@ export default async function NewSessionPage({
   const questions = questionResults.filter((q): q is QuestionDto => Boolean(q));
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
       <div className="p-8 space-y-8 max-w-4xl mx-auto w-full">
         <div className="flex items-center justify-between">
           <div>
@@ -123,7 +135,8 @@ export default async function NewSessionPage({
           </Link>
         </div>
 
-        <div className="grid gap-4">
+        <form action={createSession} className="grid gap-4">
+          <input type="hidden" name="questionIds" value={questionIds} />
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Session Summary</CardTitle>
@@ -150,6 +163,9 @@ export default async function NewSessionPage({
                 </span>
               </div>
             </CardContent>
+            <CardFooter className="w-full">
+              <DurationPicker />
+            </CardFooter>
           </Card>
 
           <div className="space-y-2">
@@ -162,7 +178,12 @@ export default async function NewSessionPage({
                       {i + 1}.
                     </span>
                     <div className="flex-1">
-                      <p className="text-sm line-clamp-2">{q.questionText}</p>
+                      <p className="text-sm line-clamp-2">
+                        <LatexRenderer
+                          content={q.latexQuestionText || ""}
+                          displayMode={false}
+                        />
+                      </p>
                       <div className="flex gap-2 mt-2">
                         <Badge variant="outline" className="text-xs">
                           {q.subject}
@@ -178,14 +199,11 @@ export default async function NewSessionPage({
             ))}
           </div>
 
-          <form action={createSession} className="pt-4">
-            <input type="hidden" name="questionIds" value={questionIds} />
-            <Button type="submit" size="lg" className="w-full">
-              <Play className="mr-2 h-4 w-4" />
-              Start Session
-            </Button>
-          </form>
-        </div>
+          <Button type="submit" size="lg" className="w-full">
+            <Play className="mr-2 h-4 w-4" />
+            Start Session
+          </Button>
+        </form>
       </div>
     </div>
   );

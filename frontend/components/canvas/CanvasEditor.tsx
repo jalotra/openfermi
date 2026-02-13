@@ -78,6 +78,13 @@ export function CanvasEditor({
       editorRef.current = editor;
       onEditorReady?.(editor);
 
+      editor.setCameraOptions({
+        wheelBehavior: "none",
+        isLocked: true,
+        zoomSteps: [1],
+      });
+      editor.setCamera({ x: 0, y: 0, z: 1 });
+
       editor.setCurrentTool(TOOL_MAP.pen);
       unsubscribeRef.current?.();
       unsubscribeRef.current = editor.store.listen(() => {
@@ -105,17 +112,8 @@ export function CanvasEditor({
   );
 
   return (
-    <div className="flex-1 w-full h-full relative bg-gray-50">
-      <div
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `radial-gradient(circle, #d1d5db 1px, transparent 1px)`,
-          backgroundSize: "20px 20px",
-        }}
-      />
-      <div className="absolute inset-0 z-10">
-        <Tldraw hideUi onMount={handleMount} />
-      </div>
+    <div className="w-full h-full">
+      <Tldraw hideUi onMount={handleMount} />
     </div>
   );
 }
