@@ -16,8 +16,9 @@ export default async function SessionsPage({
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const pageNumber = searchParams.pageNumber as string | undefined;
-  const pageSize = searchParams.pageSize as string | undefined;
+  const { pageNumber, pageSize } = await searchParams;
+  const page = (pageNumber as string) || "0";
+  const size = (pageSize as string) || "10";
 
   const user = await getServerUser();
   const userId = user?.id || user?.email || null;
@@ -29,8 +30,8 @@ export default async function SessionsPage({
     const response = await SessionController.read({
       client: backendClient,
       query: {
-        page: pageNumber,
-        size: pageSize,
+        page,
+        size,
       },
     });
     const allSessions = response.data?.data || [];
@@ -83,6 +84,17 @@ export default async function SessionsPage({
           <DataTable<SessionDto, string>
             columns={columns}
             data={sessions}
+            serverPaginated
+            previousPageUrl={
+              Number(page) > 0
+                ? `/sessions?pageNumber=${Number(page) - 1}&pageSize=${size}`
+                : undefined
+            }
+            nextPageUrl={
+              sessions.length >= Number(size)
+                ? `/sessions?pageNumber=${Number(page) + 1}&pageSize=${size}`
+                : undefined
+            }
             filterColumn="state"
             rowLinkPrefix="/sessions"
           />

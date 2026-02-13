@@ -30,14 +30,6 @@ function formatTimeLeft(seconds?: number) {
 
 export const columns: ColumnDef<SessionDto>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
-    cell: ({ row }) => {
-      const id = row.getValue("id") as string;
-      return <span className="font-mono text-xs">{id?.slice(0, 8)}...</span>;
-    },
-  },
-  {
     accessorKey: "state",
     header: "State",
     cell: ({ row }) => {

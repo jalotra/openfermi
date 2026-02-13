@@ -15,6 +15,8 @@ export default async function QuestionsPage({
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
   const { pageNumber, pageSize } = await searchParams;
+  const page = (pageNumber as string) || "0";
+  const size = (pageSize as string) || "10";
 
   let questions: QuestionDto[] = [];
   let error: string | null = null;
@@ -22,10 +24,7 @@ export default async function QuestionsPage({
   try {
     const response = await QuestionController.questionRead({
       client: backendClient,
-      query: {
-        page: pageNumber as string,
-        size: pageSize as string,
-      },
+      query: { page, size },
     });
     questions = response.data?.data || [];
   } catch (err) {
@@ -47,8 +46,8 @@ export default async function QuestionsPage({
             <h1 className="text-3xl font-bold tracking-tight">Questions</h1>
             <p className="text-muted-foreground">
               {questions.length > 0
-                ? `${questions.length} questions loaded from extracted JSON files`
-                : "Manage and browse through your educational questions."}
+                ? `${questions.length} questions found`
+                : "No questions found"}
             </p>
           </div>
           <div className="flex gap-2">
@@ -75,7 +74,18 @@ export default async function QuestionsPage({
           <DataTable<QuestionDto, string>
             columns={columns}
             data={questions}
-            filterColumn="questionText"
+            serverPaginated
+            previousPageUrl={
+              Number(page) > 0
+                ? `/questions?pageNumber=${Number(page) - 1}&pageSize=${size}`
+                : undefined
+            }
+            nextPageUrl={
+              questions.length >= Number(size)
+                ? `/questions?pageNumber=${Number(page) + 1}&pageSize=${size}`
+                : undefined
+            }
+            filterColumn="latexQuestionText"
             cellRenderers={cellRenderers}
             rowLinkPrefix="/questions"
             selectFilters={[
