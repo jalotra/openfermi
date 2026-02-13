@@ -46,6 +46,9 @@ interface DataTableProps<TData, TValue> {
   selectFilters?: SelectFilter[];
   cellRenderers?: Record<string, React.ComponentType<{ value: unknown }>>;
   rowLinkPrefix?: string;
+  previousPageUrl?: string;
+  nextPageUrl?: string;
+  serverPaginated?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -55,6 +58,9 @@ export function DataTable<TData, TValue>({
   selectFilters,
   cellRenderers,
   rowLinkPrefix,
+  previousPageUrl,
+  nextPageUrl,
+  serverPaginated,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -64,6 +70,11 @@ export function DataTable<TData, TValue>({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const router = useRouter();
+  const useServerPagination = !!serverPaginated;
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: useServerPagination ? data.length : 10,
+  });
 
   const table = useReactTable({
     data,
@@ -76,11 +87,13 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
   });
 
@@ -223,16 +236,30 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
+            onClick={() =>
+              useServerPagination
+                ? previousPageUrl && router.push(previousPageUrl)
+                : table.previousPage()
+            }
+            disabled={
+              useServerPagination
+                ? !previousPageUrl
+                : !table.getCanPreviousPage()
+            }
           >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
+            onClick={() =>
+              useServerPagination
+                ? nextPageUrl && router.push(nextPageUrl)
+                : table.nextPage()
+            }
+            disabled={
+              useServerPagination ? !nextPageUrl : !table.getCanNextPage()
+            }
           >
             Next
           </Button>

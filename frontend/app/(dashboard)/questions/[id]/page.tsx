@@ -140,30 +140,33 @@ export default async function QuestionDetailsPage({
                 </CardHeader>
               </Card>
             )}
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Options</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-4">
-                {(question.options || []).map((option, index) => {
-                  const key = String.fromCharCode(65 + index); // A, B, C, D
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm"
-                    >
-                      <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
-                        {String.fromCharCode(65 + index)}
-                      </span>
-                      <div className="text-gray-700 flex-1">
-                        <LatexRenderer content={option} displayMode={false} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </CardContent>
-            </Card>
+            {
+              question.options && question.options.length > 0 && question.options.every(option => option.length > 0) && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Options</CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid gap-4">
+                    {(question.options || []).map((option, index) => {
+                      const key = String.fromCharCode(65 + index); // A, B, C, D
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm"
+                        >
+                          <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
+                            {key}
+                          </span>
+                          <div className="text-gray-700 flex-1">
+                            <LatexRenderer content={option} displayMode={false} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              )
+            }
           </div>
 
           <div className="space-y-6">

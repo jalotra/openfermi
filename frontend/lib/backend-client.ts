@@ -5,7 +5,10 @@ import { createClient } from "@/lib/backend/client";
  * Uses environment variable NEXT_PUBLIC_API_URL or defaults to http://localhost:8080
  */
 export const backendClient = createClient({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080",
+  baseURL: (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080").replace(
+    /\/+$/,
+    "",
+  ),
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
