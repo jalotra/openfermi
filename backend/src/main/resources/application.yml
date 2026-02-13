@@ -21,7 +21,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        default_schema: ${DB_SCHEMA:public}
+        default_schema: ${DB_SCHEMA:openfermi}
+        hbm2ddl:
+          create_namespaces: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 management:
   endpoints:

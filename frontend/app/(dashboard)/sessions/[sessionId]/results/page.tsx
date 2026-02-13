@@ -8,7 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { LatexRenderer } from "@/components/ui/latex-renderer";
-import { ArrowLeft, CheckCircle2, XCircle, MinusCircle, Clock, Target, BarChart3 } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  XCircle,
+  MinusCircle,
+  Clock,
+  Target,
+  BarChart3,
+} from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -23,7 +31,7 @@ export default async function SessionResultsPage({
   let session: SessionDto | null = null;
 
   try {
-    const response = await SessionController.sessionGet({
+    const response = await SessionController.get({
       client: backendClient,
       path: { id: sessionId },
     });
@@ -76,7 +84,7 @@ export default async function SessionResultsPage({
         : "text-red-600";
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
       <div className="p-8 space-y-8 max-w-4xl mx-auto w-full">
         <div className="flex items-center justify-between">
           <div>
@@ -84,7 +92,7 @@ export default async function SessionResultsPage({
               Session Results
             </h1>
             <p className="text-muted-foreground mt-1">
-              {session.status === "COMPLETED"
+              {session.state === "ENDED"
                 ? "Here's how you did"
                 : "Session in progress"}
             </p>
