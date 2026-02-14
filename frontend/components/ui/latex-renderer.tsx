@@ -62,26 +62,7 @@ export function LatexRenderer({
 
         containerRef.current.innerHTML = html;
       } else {
-        // No LaTeX delimiters, render as plain text or try to render entire content
-        if (displayMode) {
-          try {
-            containerRef.current.innerHTML = katex.renderToString(content, {
-              displayMode: true,
-              throwOnError: false,
-            });
-          } catch {
-            containerRef.current.textContent = content;
-          }
-        } else {
-          try {
-            containerRef.current.innerHTML = katex.renderToString(content, {
-              displayMode: false,
-              throwOnError: false,
-            });
-          } catch {
-            containerRef.current.textContent = content;
-          }
-        }
+        containerRef.current.textContent = content;
       }
     } catch (error) {
       // Fallback to plain text if rendering fails
