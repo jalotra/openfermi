@@ -228,7 +228,6 @@ export default async function SessionResultsPage({
                             content={
                               q.latexQuestionText || q.questionText || ""
                             }
-                            displayMode={false}
                           />
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
@@ -254,10 +253,7 @@ export default async function SessionResultsPage({
                                 <span className="font-medium flex-shrink-0">
                                   {label}.
                                 </span>
-                                <LatexRenderer
-                                  content={option}
-                                  displayMode={false}
-                                />
+                                <LatexRenderer content={option} />
                               </div>
                             );
                           })}
@@ -273,10 +269,7 @@ export default async function SessionResultsPage({
                             <p className="font-medium text-blue-800 mb-1">
                               Explanation
                             </p>
-                            <LatexRenderer
-                              content={q.explanation}
-                              displayMode={false}
-                            />
+                            <LatexRenderer content={q.explanation} />
                           </div>
                         )}
                       </div>

@@ -22,6 +22,22 @@ export type GenericResponseSessionStateDto = {
   message?: string;
 };
 
+export type SolutionDto = {
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  questionId?: string;
+  hints?: string;
+  solution?: string;
+};
+
+export type GenericResponseSolutionDto = {
+  data?: SolutionDto;
+  message?: string;
+};
+
 export type SessionDto = {
   id?: string;
   createdAt?: string;
@@ -124,6 +140,21 @@ export type PresignUrlResponse = {
   expiration?: string;
 };
 
+export type GenericResponseListSolutionDto = {
+  data?: Array<SolutionDto>;
+  message?: string;
+};
+
+export type GenericResponseJsonNode = {
+  data?: JsonNode;
+  message?: string;
+};
+
+export type GenericResponseLong = {
+  data?: number;
+  message?: string;
+};
+
 export type GenericResponseListSessionDto = {
   data?: Array<SessionDto>;
   message?: string;
@@ -136,16 +167,6 @@ export type GenericResponseString = {
 
 export type GenericResponseListString = {
   data?: Array<string>;
-  message?: string;
-};
-
-export type GenericResponseJsonNode = {
-  data?: JsonNode;
-  message?: string;
-};
-
-export type GenericResponseLong = {
-  data?: number;
   message?: string;
 };
 
@@ -190,6 +211,43 @@ export type SessionstateUpsertStateResponses = {
 
 export type SessionstateUpsertStateResponse =
   SessionstateUpsertStateResponses[keyof SessionstateUpsertStateResponses];
+
+export type SolutionReadData = {
+  body?: never;
+  path?: never;
+  query?: {
+    page?: string;
+    size?: string;
+  };
+  url: "/solutions";
+};
+
+export type SolutionReadResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListSolutionDto;
+};
+
+export type SolutionReadResponse =
+  SolutionReadResponses[keyof SolutionReadResponses];
+
+export type SolutionUpsertData = {
+  body: SolutionDto;
+  path?: never;
+  query?: never;
+  url: "/solutions";
+};
+
+export type SolutionUpsertResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseSolutionDto;
+};
+
+export type SolutionUpsertResponse =
+  SolutionUpsertResponses[keyof SolutionUpsertResponses];
 
 export type ReadData = {
   body?: never;
@@ -332,6 +390,119 @@ export type PresignCreatePresignUrlResponses = {
 
 export type PresignCreatePresignUrlResponse =
   PresignCreatePresignUrlResponses[keyof PresignCreatePresignUrlResponses];
+
+export type SolutionDeleteData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/solutions/{id}";
+};
+
+export type SolutionDeleteResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseSolutionDto;
+};
+
+export type SolutionDeleteResponse =
+  SolutionDeleteResponses[keyof SolutionDeleteResponses];
+
+export type SolutionGetData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/solutions/{id}";
+};
+
+export type SolutionGetResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseSolutionDto;
+};
+
+export type SolutionGetResponse =
+  SolutionGetResponses[keyof SolutionGetResponses];
+
+export type SolutionReadWithSortingData = {
+  body?: never;
+  path?: never;
+  query: {
+    direction: string;
+    sortBy: string;
+    page: string;
+    size: string;
+  };
+  url: "/solutions/sorted";
+};
+
+export type SolutionReadWithSortingResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListSolutionDto;
+};
+
+export type SolutionReadWithSortingResponse =
+  SolutionReadWithSortingResponses[keyof SolutionReadWithSortingResponses];
+
+export type SolutionGetSchemaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/solutions/schema";
+};
+
+export type SolutionGetSchemaResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseJsonNode;
+};
+
+export type SolutionGetSchemaResponse =
+  SolutionGetSchemaResponses[keyof SolutionGetSchemaResponses];
+
+export type SolutionGetByQuestionIdData = {
+  body?: never;
+  path: {
+    questionId: string;
+  };
+  query?: never;
+  url: "/solutions/question/{questionId}";
+};
+
+export type SolutionGetByQuestionIdResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseSolutionDto;
+};
+
+export type SolutionGetByQuestionIdResponse =
+  SolutionGetByQuestionIdResponses[keyof SolutionGetByQuestionIdResponses];
+
+export type SolutionCountData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/solutions/count";
+};
+
+export type SolutionCountResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLong;
+};
+
+export type SolutionCountResponse =
+  SolutionCountResponses[keyof SolutionCountResponses];
 
 export type DeleteData = {
   body?: never;

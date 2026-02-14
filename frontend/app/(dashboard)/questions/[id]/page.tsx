@@ -9,7 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LatexRenderer } from "@/components/ui/latex-renderer";
-import { Play, ArrowLeft, ImageIcon, ChevronDown } from "lucide-react";
+import {
+  Play,
+  ArrowLeft,
+  ImageIcon,
+  ChevronDown,
+  Lightbulb,
+} from "lucide-react";
 import Link from "next/link";
 import { backendClient } from "@/lib/backend-client";
 import { QuestionDto } from "@/lib/backend/types.gen";
@@ -89,12 +95,20 @@ export default async function QuestionDetailsPage({
               </span>
             </div>
           </div>
-          <Link href={`/sessions/new?questionIds=${question.id || id}`}>
-            <Button size="lg" className="shadow-lg shadow-primary/20">
-              <Play className="mr-2 h-4 w-4 fill-current" />
-              Start Session
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href={`/questions/${question.id || id}/solution`}>
+              <Button size="lg" variant="outline">
+                <Lightbulb className="mr-2 h-4 w-4" />
+                View Solution
+              </Button>
+            </Link>
+            <Link href={`/sessions/new?questionIds=${question.id || id}`}>
+              <Button size="lg" className="shadow-lg shadow-primary/20">
+                <Play className="mr-2 h-4 w-4 fill-current" />
+                Start Session
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <Separator />
@@ -107,10 +121,7 @@ export default async function QuestionDetailsPage({
               </CardHeader>
               <CardContent>
                 <div className="text-lg leading-relaxed text-gray-800">
-                  <LatexRenderer
-                    content={question.latexQuestionText || ""}
-                    displayMode={false}
-                  />
+                  <LatexRenderer content={question.latexQuestionText || ""} />
                 </div>
               </CardContent>
             </Card>
@@ -140,8 +151,9 @@ export default async function QuestionDetailsPage({
                 </CardHeader>
               </Card>
             )}
-            {
-              question.options && question.options.length > 0 && question.options.every(option => option.length > 0) && (
+            {question.options &&
+              question.options.length > 0 &&
+              question.options.every((option) => option.length > 0) && (
                 <Card>
                   <CardHeader>
                     <CardTitle>Options</CardTitle>
@@ -158,15 +170,14 @@ export default async function QuestionDetailsPage({
                             {key}
                           </span>
                           <div className="text-gray-700 flex-1">
-                            <LatexRenderer content={option} displayMode={false} />
+                            <LatexRenderer content={option} />
                           </div>
                         </div>
                       );
                     })}
                   </CardContent>
                 </Card>
-              )
-            }
+              )}
           </div>
 
           <div className="space-y-6">

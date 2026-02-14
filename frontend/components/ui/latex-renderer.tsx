@@ -3,40 +3,26 @@
 import { useEffect, useRef } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
+import { cn } from "@/lib/utils";
 
 interface LatexRendererProps {
   content: string;
-  displayMode?: boolean;
   className?: string;
 }
 
-/**
- * Renders LaTeX content using KaTeX
- * Supports both inline ($...$) and display ($$...$$) math
- */
-export function LatexRenderer({
-  content,
-  displayMode = false,
-  className = "",
-}: LatexRendererProps) {
+export function LatexRenderer({ content, className }: LatexRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
-
-    // Clear previous content
     containerRef.current.innerHTML = "";
 
     try {
-      // Check if content contains LaTeX delimiters
       const hasInlineMath = /\$[^$]+\$/.test(content);
       const hasDisplayMath = /\$\$[^$]+\$\$/.test(content);
 
       if (hasInlineMath || hasDisplayMath) {
-        // Parse and render LaTeX with mixed content
         let html = content;
-
-        // Render display math ($$...$$)
         html = html.replace(/\$\$([^$]+)\$\$/g, (_, math) => {
           try {
             return katex.renderToString(math.trim(), {
@@ -48,7 +34,6 @@ export function LatexRenderer({
           }
         });
 
-        // Render inline math ($...$)
         html = html.replace(/\$([^$]+)\$/g, (_, math) => {
           try {
             return katex.renderToString(math.trim(), {
@@ -59,61 +44,21 @@ export function LatexRenderer({
             return `$${math}$`;
           }
         });
-
         containerRef.current.innerHTML = html;
       } else {
         containerRef.current.textContent = content;
       }
-    } catch (error) {
-      // Fallback to plain text if rendering fails
+    } catch {
       if (containerRef.current) {
         containerRef.current.textContent = content;
       }
     }
-  }, [content, displayMode]);
+  }, [content]);
 
   return (
     <div
       ref={containerRef}
-      className={className}
-      style={{
-        lineHeight: displayMode ? "1.6" : "inherit",
-        overflowX: "auto",
-      }}
+      className={cn("leading-relaxed overflow-x-auto", className)}
     />
-  );
-}
-
-/**
- * Simple inline LaTeX renderer for short math expressions
- */
-export function InlineLatex({
-  content,
-  className = "",
-}: {
-  content: string;
-  className?: string;
-}) {
-  return (
-    <LatexRenderer
-      content={content}
-      displayMode={false}
-      className={className}
-    />
-  );
-}
-
-/**
- * Display LaTeX renderer for equations and formulas
- */
-export function DisplayLatex({
-  content,
-  className = "",
-}: {
-  content: string;
-  className?: string;
-}) {
-  return (
-    <LatexRenderer content={content} displayMode={true} className={className} />
   );
 }
