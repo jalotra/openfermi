@@ -179,10 +179,7 @@ export default async function NewSessionPage({
                     </span>
                     <div className="flex-1">
                       <p className="text-sm line-clamp-2">
-                        <LatexRenderer
-                          content={q.latexQuestionText || ""}
-                          displayMode={false}
-                        />
+                        <LatexRenderer content={q.latexQuestionText || ""} />
                       </p>
                       <div className="flex gap-2 mt-2">
                         <Badge variant="outline" className="text-xs">

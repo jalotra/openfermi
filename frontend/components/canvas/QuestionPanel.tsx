@@ -44,7 +44,7 @@ export function QuestionPanel({
       <Card className="p-6 bg-white rounded-lg shadow-sm">
         <div className="mb-6">
           <div className="text-base text-gray-900 leading-relaxed">
-            <LatexRenderer content={questionContent} displayMode={false} />
+            <LatexRenderer content={questionContent} />
           </div>
         </div>
         {imageUrls && imageUrls.length > 0 && (
@@ -106,7 +106,7 @@ export function QuestionPanel({
                     isSelected ? "text-blue-900" : "text-gray-700",
                   )}
                 >
-                  <LatexRenderer content={optionText} displayMode={false} />
+                  <LatexRenderer content={optionText} />
                 </div>
               </button>
             );

@@ -41,6 +41,22 @@ import type {
   SessionstateGetStateResponses,
   SessionstateUpsertStateData,
   SessionstateUpsertStateResponses,
+  SolutionCountData,
+  SolutionCountResponses,
+  SolutionDeleteData,
+  SolutionDeleteResponses,
+  SolutionGetByQuestionIdData,
+  SolutionGetByQuestionIdResponses,
+  SolutionGetData,
+  SolutionGetResponses,
+  SolutionGetSchemaData,
+  SolutionGetSchemaResponses,
+  SolutionReadData,
+  SolutionReadResponses,
+  SolutionReadWithSortingData,
+  SolutionReadWithSortingResponses,
+  SolutionUpsertData,
+  SolutionUpsertResponses,
   TransitionData,
   TransitionResponses,
   UpsertData,
@@ -104,6 +120,95 @@ export class SessionStateController {
         ...options.headers,
       },
     });
+  }
+}
+
+export class SolutionController {
+  public static solutionRead<ThrowOnError extends boolean = false>(
+    options?: Options<SolutionReadData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      SolutionReadResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/solutions", ...options });
+  }
+
+  public static solutionUpsert<ThrowOnError extends boolean = false>(
+    options: Options<SolutionUpsertData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      SolutionUpsertResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/solutions",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static solutionDelete<ThrowOnError extends boolean = false>(
+    options: Options<SolutionDeleteData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      SolutionDeleteResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/solutions/{id}", ...options });
+  }
+
+  public static solutionGet<ThrowOnError extends boolean = false>(
+    options: Options<SolutionGetData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      SolutionGetResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/solutions/{id}", ...options });
+  }
+
+  public static solutionReadWithSorting<ThrowOnError extends boolean = false>(
+    options: Options<SolutionReadWithSortingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      SolutionReadWithSortingResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/solutions/sorted", ...options });
+  }
+
+  public static solutionGetSchema<ThrowOnError extends boolean = false>(
+    options?: Options<SolutionGetSchemaData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      SolutionGetSchemaResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/solutions/schema", ...options });
+  }
+
+  public static solutionGetByQuestionId<ThrowOnError extends boolean = false>(
+    options: Options<SolutionGetByQuestionIdData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      SolutionGetByQuestionIdResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/solutions/question/{questionId}", ...options });
+  }
+
+  public static solutionCount<ThrowOnError extends boolean = false>(
+    options?: Options<SolutionCountData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      SolutionCountResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/solutions/count", ...options });
   }
 }
 
