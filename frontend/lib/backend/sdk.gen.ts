@@ -17,6 +17,24 @@ import type {
   GetSchemaResponses,
   HealthHealthData,
   HealthHealthResponses,
+  LearningsessionCountData,
+  LearningsessionCountResponses,
+  LearningsessionDeleteData,
+  LearningsessionDeleteResponses,
+  LearningsessionGetByQuestionAndTutorData,
+  LearningsessionGetByQuestionAndTutorResponses,
+  LearningsessionGetByUserIdData,
+  LearningsessionGetByUserIdResponses,
+  LearningsessionGetData,
+  LearningsessionGetResponses,
+  LearningsessionGetSchemaData,
+  LearningsessionGetSchemaResponses,
+  LearningsessionReadData,
+  LearningsessionReadResponses,
+  LearningsessionReadWithSortingData,
+  LearningsessionReadWithSortingResponses,
+  LearningsessionUpsertData,
+  LearningsessionUpsertResponses,
   PresignCreatePresignUrlData,
   PresignCreatePresignUrlResponses,
   QuestionCountData,
@@ -59,6 +77,22 @@ import type {
   SolutionUpsertResponses,
   TransitionData,
   TransitionResponses,
+  TutorCountData,
+  TutorCountResponses,
+  TutorDeleteData,
+  TutorDeleteResponses,
+  TutorGetActiveTutorsData,
+  TutorGetActiveTutorsResponses,
+  TutorGetData,
+  TutorGetResponses,
+  TutorGetSchemaData,
+  TutorGetSchemaResponses,
+  TutorReadData,
+  TutorReadResponses,
+  TutorReadWithSortingData,
+  TutorReadWithSortingResponses,
+  TutorUpsertData,
+  TutorUpsertResponses,
   UpsertData,
   UpsertResponses,
   UserDeleteData,
@@ -120,6 +154,95 @@ export class SessionStateController {
         ...options.headers,
       },
     });
+  }
+}
+
+export class TutorController {
+  public static tutorRead<ThrowOnError extends boolean = false>(
+    options?: Options<TutorReadData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorReadResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors", ...options });
+  }
+
+  public static tutorUpsert<ThrowOnError extends boolean = false>(
+    options: Options<TutorUpsertData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      TutorUpsertResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/tutors",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static tutorDelete<ThrowOnError extends boolean = false>(
+    options: Options<TutorDeleteData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      TutorDeleteResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/{id}", ...options });
+  }
+
+  public static tutorGet<ThrowOnError extends boolean = false>(
+    options: Options<TutorGetData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      TutorGetResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/{id}", ...options });
+  }
+
+  public static tutorReadWithSorting<ThrowOnError extends boolean = false>(
+    options: Options<TutorReadWithSortingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      TutorReadWithSortingResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/sorted", ...options });
+  }
+
+  public static tutorGetSchema<ThrowOnError extends boolean = false>(
+    options?: Options<TutorGetSchemaData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorGetSchemaResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/schema", ...options });
+  }
+
+  public static tutorCount<ThrowOnError extends boolean = false>(
+    options?: Options<TutorCountData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorCountResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/count", ...options });
+  }
+
+  public static tutorGetActiveTutors<ThrowOnError extends boolean = false>(
+    options?: Options<TutorGetActiveTutorsData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorGetActiveTutorsResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/active", ...options });
   }
 }
 
@@ -396,6 +519,108 @@ export class QuestionController {
       unknown,
       ThrowOnError
     >({ url: "/questions/count", ...options });
+  }
+}
+
+export class LearningSessionController {
+  public static learningsessionRead<ThrowOnError extends boolean = false>(
+    options?: Options<LearningsessionReadData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      LearningsessionReadResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions", ...options });
+  }
+
+  public static learningsessionUpsert<ThrowOnError extends boolean = false>(
+    options: Options<LearningsessionUpsertData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      LearningsessionUpsertResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/learning-sessions",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static learningsessionDelete<ThrowOnError extends boolean = false>(
+    options: Options<LearningsessionDeleteData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      LearningsessionDeleteResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions/{id}", ...options });
+  }
+
+  public static learningsessionGet<ThrowOnError extends boolean = false>(
+    options: Options<LearningsessionGetData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      LearningsessionGetResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions/{id}", ...options });
+  }
+
+  public static learningsessionGetByUserId<
+    ThrowOnError extends boolean = false,
+  >(options: Options<LearningsessionGetByUserIdData, ThrowOnError>) {
+    return (options.client ?? client).get<
+      LearningsessionGetByUserIdResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions/user/{userId}", ...options });
+  }
+
+  public static learningsessionReadWithSorting<
+    ThrowOnError extends boolean = false,
+  >(options: Options<LearningsessionReadWithSortingData, ThrowOnError>) {
+    return (options.client ?? client).get<
+      LearningsessionReadWithSortingResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions/sorted", ...options });
+  }
+
+  public static learningsessionGetSchema<ThrowOnError extends boolean = false>(
+    options?: Options<LearningsessionGetSchemaData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      LearningsessionGetSchemaResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions/schema", ...options });
+  }
+
+  public static learningsessionGetByQuestionAndTutor<
+    ThrowOnError extends boolean = false,
+  >(options: Options<LearningsessionGetByQuestionAndTutorData, ThrowOnError>) {
+    return (options.client ?? client).get<
+      LearningsessionGetByQuestionAndTutorResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/learning-sessions/question/{questionId}/tutor/{tutorId}",
+      ...options,
+    });
+  }
+
+  public static learningsessionCount<ThrowOnError extends boolean = false>(
+    options?: Options<LearningsessionCountData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      LearningsessionCountResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions/count", ...options });
   }
 }
 
