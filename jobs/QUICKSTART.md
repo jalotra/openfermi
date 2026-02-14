@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-cd scripts
+cd jobs
 npm install
 pip install -r requirements.txt
 ```
@@ -34,6 +34,12 @@ Get your API key from: https://openrouter.ai/
 npm run extract papers/2025/jee_advanced_2025.pdf --source "JEE Advanced 2025"
 ```
 
+If you want to explicitly control the output folder (and avoid relying on year parsing from `--source`), pass `--year` and `--exam`:
+
+```bash
+npm run extract papers/2008/jee_advanced_2008.pdf --exam "JEE Advanced" --year 2008
+```
+
 ### From Single Image:
 ```bash
 npm run extract output/temp_images/page_001.png --source "JEE Advanced 2025"
@@ -44,8 +50,8 @@ The script automatically detects PDF vs image files by extension. Supported imag
 ## Output
 
 The script will create:
-- `output/2025/jee-advanced-2025-{date}.json` - Questions in JSON format
-- `output/{year}/images/{sourceSlug}/` - Per-question cropped PNG images
+- `output/{year}/{sourceSlug}-{date}.json` - Questions in JSON format
+- `output/{year}/images/{examSlug}/` - Per-question cropped PNG images
 
 ## Upload to S3 + ingest into backend
 
@@ -53,7 +59,7 @@ Once you have a JSON + cropped images on disk, upload images to S3 (deduped by S
 
 ```bash
 python3 python/upload_images_and_ingest.py \
-  --json output/2026/jee-advanced-2025-YYYY-MM-DD.json \
+  --json output/2025/jee-advanced-2025-YYYY-MM-DD.json \
   --bucket your-s3-bucket \
   --backend-url http://localhost:8080
 ```
@@ -61,6 +67,7 @@ python3 python/upload_images_and_ingest.py \
 Optional:
 - `--api-key <key>` if your backend has API key auth enabled.
 - `--exam-type JEE_ADVANCED|JEE_MAIN|NEET` if it can’t be inferred from the JSON `metadata.source`.
+- `--year <yyyy>` if the year can’t be inferred (or you want to override).
 
 ## JSON Structure
 

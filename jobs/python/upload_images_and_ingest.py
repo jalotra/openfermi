@@ -155,6 +155,16 @@ def extract_year(text: str) -> Optional[int]:
     return int(m.group(0)) if m else None
 
 
+def parse_year(value: Any) -> Optional[int]:
+    if value is None:
+        return None
+    try:
+        y = int(str(value).strip())
+    except Exception:
+        return None
+    return y if 1900 <= y <= 2100 else None
+
+
 def options_to_list(opts: Optional[Dict[str, Any]]) -> List[str]:
     if not isinstance(opts, dict):
         return ["", "", "", ""]
@@ -228,7 +238,11 @@ def main(argv: List[str]) -> int:
         )
         return 1
 
-    year_value = args.year if args.year is not None else extract_year(source)
+    year_value = (
+        args.year
+        if args.year is not None
+        else (parse_year(metadata.get("year")) or extract_year(source))
+    )
     default_subject = (
         args.default_subject.strip().upper() if args.default_subject else None
     )
@@ -338,7 +352,14 @@ def main(argv: List[str]) -> int:
             paperNumber=q_meta.get("page"),
             questionNumber=q_meta.get("questionNumber"),
             topic=q_meta.get("topic"),
-            metadata={"source": source},
+            metadata={
+                "source": source,
+                **(
+                    {"exam": str(metadata.get("exam"))}
+                    if metadata.get("exam") is not None
+                    else {}
+                ),
+            },
         )
 
         # --- Step 3: POST to backend ---

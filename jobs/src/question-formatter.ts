@@ -147,7 +147,8 @@ export function formatQuestion(
 
 export function saveQuestionsToJSON(
   questions: FormattedQuestion[],
-  outputPath: string
+  outputPath: string,
+  extraMetadata: { exam?: string; year?: number } = {}
 ): void {
   const outputDir = path.dirname(outputPath);
   if (!fs.existsSync(outputDir)) {
@@ -159,6 +160,8 @@ export function saveQuestionsToJSON(
       extractedAt: new Date().toISOString(),
       totalQuestions: questions.length,
       source: questions[0]?.metadata.source || 'Unknown',
+      ...(extraMetadata.exam ? { exam: extraMetadata.exam } : {}),
+      ...(typeof extraMetadata.year === 'number' ? { year: extraMetadata.year } : {}),
     },
     questions,
   };

@@ -18,6 +18,8 @@ interface ExtractionOptions {
   inputPath: string;
   outputDir?: string;
   source?: string;
+  exam?: string;
+  year?: string;
   extractionModel?: string;
   latexModel?: string;
   isImage?: boolean;
@@ -28,6 +30,36 @@ const SUPPORTED_IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp'] as const;
 const DEFAULT_MODEL = 'google/gemini-3-flash-preview';
 const DEFAULT_SOURCE = 'JEE Advanced 2025';
 const DEFAULT_DPI = 300;
+
+function toSlug(text: string): string {
+  const slug = text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+  return slug || 'unknown';
+}
+
+function normalizeYear(year: string | undefined): string | undefined {
+  if (!year) return undefined;
+  const y = year.trim();
+  return /^\d{4}$/.test(y) ? y : undefined;
+}
+
+function extractYear(text: string | undefined): string | undefined {
+  if (!text) return undefined;
+  const m = text.match(/\b(19|20)\d{2}\b/);
+  return m?.[0];
+}
+
+function deriveExamName(source: string | undefined): string | undefined {
+  if (!source) return undefined;
+  const withoutYear = source
+    .replace(/\b(19|20)\d{2}\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return withoutYear || undefined;
+}
 
 function validateApiKey(): void {
   if (!process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY === 'your_openrouter_api_key_here') {
@@ -60,7 +92,9 @@ async function extractQuestions(options: ExtractionOptions) {
   const {
     inputPath,
     outputDir = path.join(__dirname, '../output'),
-    source = DEFAULT_SOURCE,
+    source: sourceArg,
+    exam: examArg,
+    year: yearArg,
     extractionModel = process.env.EXTRACTION_MODEL || DEFAULT_MODEL,
     latexModel = process.env.LATEX_MODEL || DEFAULT_MODEL,
     isImage = false,
@@ -69,12 +103,19 @@ async function extractQuestions(options: ExtractionOptions) {
 
   validateApiKey();
 
+  const year = normalizeYear(yearArg) ?? extractYear(sourceArg) ?? new Date().getFullYear().toString();
+  const examName = (examArg?.trim() || deriveExamName(sourceArg) || sourceArg || DEFAULT_SOURCE).trim();
+  const source = (sourceArg?.trim() || (examArg ? `${examName} ${year}` : DEFAULT_SOURCE)).trim();
+
   const { isImage: isImageFile, isPdf: isPdfFile } = detectFileType(inputPath, isImage);
   validateInputFile(inputPath, isImageFile, isPdfFile);
 
   console.log(' Starting Question Extraction Pipeline\n');
   console.log(` Input: ${inputPath} (${isImageFile ? 'Image' : 'PDF'})`);
   console.log(` Output: ${outputDir}`);
+  console.log(` Year: ${year}`);
+  console.log(` Exam: ${examName}`);
+  console.log(` Source: ${source}`);
   console.log(` Extraction Model: ${extractionModel}`);
   console.log(` LaTeX Model: ${latexModel}\n`);
 
@@ -104,9 +145,9 @@ async function extractQuestions(options: ExtractionOptions) {
     return;
   }
 
-  const sourceSlug = source.toLowerCase().replace(/\s+/g, '-');
-  const year = new Date().getFullYear().toString();
-  const imagesDir = path.join(outputDir, year, 'images', sourceSlug);
+  const sourceSlug = toSlug(source);
+  const examSlug = toSlug(examName);
+  const imagesDir = path.join(outputDir, year, 'images', examSlug);
 
   console.log(' Step 3: Cropping per-question images...');
   let croppedCount = 0;
@@ -144,7 +185,11 @@ async function extractQuestions(options: ExtractionOptions) {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').split('T')[0];
   const outputFilename = `${sourceSlug}-${timestamp}.json`;
   const outputPath = path.join(yearDir, outputFilename);
-  saveQuestionsToJSON(formattedQuestions, outputPath);
+  const yearValue = Number.parseInt(year, 10);
+  saveQuestionsToJSON(formattedQuestions, outputPath, {
+    exam: examName,
+    year: Number.isFinite(yearValue) ? yearValue : undefined,
+  });
 
   console.log('\n Extraction Complete!\n');
   console.log('Summary:');
@@ -181,6 +226,12 @@ function parseCliArgs(args: string[]): ExtractionOptions {
       case '--source':
         options.source = value;
         break;
+      case '--exam':
+        options.exam = value;
+        break;
+      case '--year':
+        options.year = value;
+        break;
       case '--extraction-model':
         options.extractionModel = value;
         break;
@@ -205,6 +256,8 @@ function printUsage(): void {
   console.log('Usage: npm run extract [pdf-path|image-path] [options]');
   console.log('\nOptions:');
   console.log('  --output-dir <dir>    Output directory (default: ./output)');
+  console.log('  --year <yyyy>         Output year folder (default: inferred from --source, else current year)');
+  console.log('  --exam <name>         Exam name used for images folder (default: inferred from --source)');
   console.log('  --source <name>       Source name (default: "JEE Advanced 2025")');
   console.log('  --extraction-model <model>  Model for extraction (default: google/gemini-3-flash-preview)');
   console.log('  --latex-model <model>       Model for LaTeX conversion (default: google/gemini-3-flash-preview)');
@@ -212,6 +265,7 @@ function printUsage(): void {
   console.log('  --embed-images         Embed question images as base64 data URIs in the output JSON');
   console.log('\nExamples:');
   console.log('  npm run extract papers/2025/jee_advanced_2025.pdf --source "JEE Advanced 2025"');
+  console.log('  npm run extract papers/2008/jee_advanced_2008.pdf --exam "JEE Advanced" --year 2008');
   console.log('  npm run extract output/temp_images/page_001.png --source "JEE Advanced 2025"');
 }
 
