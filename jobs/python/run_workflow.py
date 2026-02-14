@@ -62,11 +62,21 @@ def load_config(config_path: Path) -> Dict[str, Any]:
     return cfg
 
 
-def run_extraction(input_path: str, source: str | None, embed_images: bool) -> Path:
+def run_extraction(
+    input_path: str,
+    source: str | None,
+    embed_images: bool,
+    year: int | None,
+    exam: str | None,
+) -> Path:
     """Run npm run extract and return the path to the output JSON."""
     cmd = ["npm", "run", "extract", "--", input_path]
     if source:
         cmd += ["--source", source]
+    if exam:
+        cmd += ["--exam", exam]
+    if year is not None:
+        cmd += ["--year", str(year)]
     if embed_images:
         cmd += ["--embed-images"]
 
@@ -101,6 +111,7 @@ def run_ingest(
     json_path: Path,
     cfg: Dict[str, Any],
     dry_run: bool,
+    year: int | None,
 ) -> int:
     """Upload to S3 + ingest into each configured backend. Returns failure count."""
     s3 = cfg["s3"]
@@ -127,6 +138,8 @@ def run_ingest(
         ]
         if api_key:
             argv += ["--api-key", api_key]
+        if year is not None:
+            argv += ["--year", str(year)]
         if dry_run:
             argv += ["--dry-run"]
 
@@ -155,6 +168,8 @@ def main() -> int:
     )
 
     parser.add_argument("--source", help="Source name (e.g. 'JEE Advanced 2025')")
+    parser.add_argument("--exam", help="Exam name for output folder (e.g. 'JEE Advanced')")
+    parser.add_argument("--year", type=int, help="Exam year for output folder (e.g. 2008)")
     parser.add_argument(
         "--config",
         default=str(SCRIPT_DIR / "workflow.config.yaml"),
@@ -183,9 +198,11 @@ def main() -> int:
         print(f"Skipping extraction (using provided JSON: {json_path})\n")
     else:
         input_file = args.pdf or args.image
-        json_path = run_extraction(input_file, args.source, args.embed_images)
+        json_path = run_extraction(
+            input_file, args.source, args.embed_images, args.year, args.exam
+        )
 
-    fail_count = run_ingest(json_path, cfg, args.dry_run)
+    fail_count = run_ingest(json_path, cfg, args.dry_run, args.year)
 
     print("=== Workflow Complete ===")
     print(f"  JSON: {json_path}")
