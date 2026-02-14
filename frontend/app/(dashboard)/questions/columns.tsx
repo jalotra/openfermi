@@ -8,6 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { QuestionDto } from "@/lib/backend";
 import { LatexRenderer } from "@/components/ui/latex-renderer";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 export const columns: ColumnDef<QuestionDto>[] = [
   {
@@ -126,12 +128,17 @@ export const cellRenderers: Record<
 > = {
   latexQuestionText: ({ value }) => {
     const text = value as string;
-    if (!text) return <span className="text-muted-foreground">-</span>;
+    const isMobile = useIsMobile();
+    if (!text)
+      return <span className="text-muted-foreground">No question text</span>;
     return (
-      <div className="max-w-md">
-        <LatexRenderer
-          content={text.substring(0, 100) + (text.length > 100 ? "..." : "")}
-        />
+      <div
+        className={cn(
+          "max-w-xs whitespace-normal break-words",
+          isMobile ? "max-w-xs" : "max-w-xl",
+        )}
+      >
+        <LatexRenderer content={text} className="overflow-x-hidden" />
       </div>
     );
   },
