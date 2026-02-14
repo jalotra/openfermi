@@ -18,42 +18,83 @@ const latexConversionSchema = z.object({
     label: z.string().describe('Option label (A, B, C, D)'),
     latexText: z.string().describe('Option text in LaTeX format'),
   })).describe('Answer options converted to LaTeX format'),
-  latexParts: z.array(z.object({
-    partLabel: z.string(),
-    latexText: z.string(),
-  })).optional().describe('Multi-part question parts in LaTeX format if applicable'),
 });
 
 export interface LaTeXQuestion {
   questionText: string;
   latexQuestion: string;
   options: Array<{ label: string; text: string; latexText: string }>;
-  parts?: Array<{ partLabel: string; partText: string; latexText: string }>;
 }
 
-const LATEX_CONVERSION_PROMPT = (question: ExtractedQuestion) => `You are an expert at converting mathematical text to LaTeX format. 
+const LATEX_CONVERSION_PROMPT = (question: ExtractedQuestion) => {
+  const optionsText = question.options.map(opt => `${opt.label}. ${opt.text}`).join('\n');
 
-Convert the following JEE question to LaTeX format. Preserve all mathematical notation, equations, symbols, and formatting.
-Use the provided image as the source of truth for equations and symbols; use the provided text mainly for structure.
+  return `You are an expert at converting mathematical exam questions from images into LaTeX format. You will be given an image of a JEE (Joint Entrance Examination) question and its OCR-extracted text for structural reference.
 
-Instructions:
-1. Convert all mathematical expressions to proper LaTeX syntax
-2. Use appropriate LaTeX environments: $...$ for inline math, $$...$$ or \\[...\\] for display math
-3. Preserve text formatting (bold, italics) using LaTeX commands
-4. Convert fractions, integrals, summations, limits, matrices, etc. to proper LaTeX
-5. Keep the question structure intact
-6. Convert all answer options to LaTeX as well
-${question.isMultiPart ? '7. Convert all parts of the multi-part question to LaTeX' : ''}
+The image is the **source of truth** for all equations, symbols, and notation — use the provided text only for structural guidance (question number, option labels, part labels).
+
+## LaTeX Formatting Rules
+
+### Math Delimiters
+- Use \`$...$\` for inline math (variables, short expressions within a sentence).
+- Use \`$$...$$\` for display math (standalone equations, long expressions that should be centered on their own line).
+- The output is rendered by **KaTeX**, so only use KaTeX-supported commands.
+
+### What to Convert
+- Fractions: \`\\frac{a}{b}\`
+- Superscripts/subscripts: \`x^{2}\`, \`a_{n}\`
+- Greek letters: \`\\alpha\`, \`\\beta\`, \`\\theta\`, \`\\omega\`, etc.
+- Integrals: \`\\int_{a}^{b} f(x)\\,dx\`
+- Summations: \`\\sum_{i=1}^{n} a_i\`
+- Limits: \`\\lim_{x \\to 0}\`
+- Square roots: \`\\sqrt{x}\`, \`\\sqrt[n]{x}\`
+- Vectors: \`\\vec{v}\`, \`\\hat{n}\`
+- Matrices: \`\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}\`
+- Trigonometric functions: \`\\sin\`, \`\\cos\`, \`\\tan\`, \`\\log\`, \`\\ln\`
+- Absolute values: \`|x|\` or \`\\left| x \\right|\`
+- Binomial coefficients: \`\\binom{n}{k}\`
+- Set notation: \`\\in\`, \`\\subset\`, \`\\cup\`, \`\\cap\`, \`\\emptyset\`
+- Arrows: \`\\to\`, \`\\rightarrow\`, \`\\Rightarrow\`, \`\\implies\`
+- Inequalities: \`\\leq\`, \`\\geq\`, \`\\neq\`
+- Infinity: \`\\infty\`
+- Dots: \`\\cdots\`, \`\\ldots\`, \`\\vdots\`
+
+### Text Within Math
+- Use \`\\text{...}\` for words inside math mode: \`$x \\text{ is even}$\`
+- Use \`\\textbf{...}\` for bold text, \`\\textit{...}\` for italics outside math mode.
+
+### Units
+- Always wrap units in \`\\text{...}\`: \`$10\\,\\text{m/s}$\`, \`$5\\,\\text{kg}$\`
+- Use \`\\,\` for a thin space before units.
+
+### Chemical Notation
+- Use \`\\rightarrow\` for reaction arrows.
+- Use subscripts for molecular formulas: \`$H_2O$\`, \`$CO_2$\`.
+
+### Formatting Principles
+- Preserve the exact mathematical meaning from the image. Do not simplify or alter expressions.
+- Keep plain-text portions (non-math sentences) outside of \`$...$\` delimiters.
+- Each option's LaTeX text should be self-contained and renderable on its own.
+- Do NOT include the option label (A, B, C, D) inside the option's LaTeX text — labels are handled separately.
+- Do NOT include the question number in the question's LaTeX text.
+- If a question references a diagram/figure in the image, mention it as "as shown in the figure" — the image will be displayed alongside the rendered LaTeX.
+- Use \`\\,\` for thin spaces before \`dx\` in integrals: \`\\int f(x)\\,dx\`.
+
+### Common Pitfalls to Avoid
+- Do NOT use \`\\[...\\]\` — use \`$$...$$\` instead (KaTeX compatibility).
+- Do NOT use \`\\begin{equation}\`, \`\\begin{align}\`, or other LaTeX-only environments.
+- Do NOT leave math delimiters unbalanced.
+- Do NOT wrap entire plain-text sentences in \`$...$\`.
+- Escape special characters in text mode: \`\\%\`, \`\\&\`, \`\\#\`.
+
+Now convert the following question from the provided image.
 
 Question Number: ${question.questionNumber}
 Question Text: ${question.questionText}
 
 Options:
-${question.options.map(opt => `${opt.label}. ${opt.text}`).join('\n')}
-
-${question.isMultiPart && question.parts ? `\nMulti-part question parts:\n${question.parts.map(p => `${p.partLabel}. ${p.partText}`).join('\n')}` : ''}
-
-Please provide the LaTeX version of this question and all its components.`;
+${optionsText}`;
+};
 
 function createFallbackLaTeX(question: ExtractedQuestion): LaTeXQuestion {
   return {
@@ -63,11 +104,6 @@ function createFallbackLaTeX(question: ExtractedQuestion): LaTeXQuestion {
       label: opt.label,
       text: opt.text,
       latexText: opt.text,
-    })),
-    parts: question.parts?.map(part => ({
-      partLabel: part.partLabel,
-      partText: part.partText,
-      latexText: part.partText,
     })),
   };
 }
@@ -121,13 +157,6 @@ export async function convertQuestionToLaTeX(
         text: opt.text,
         latexText: object.latexOptions[idx]?.latexText || opt.text,
       })),
-      parts: question.parts && object.latexParts
-        ? question.parts.map((part, idx) => ({
-            partLabel: part.partLabel,
-            partText: part.partText,
-            latexText: object.latexParts?.[idx]?.latexText || part.partText,
-          }))
-        : undefined,
     };
   } catch (error) {
     console.error(`Error converting question ${question.questionNumber} to LaTeX:`, error);

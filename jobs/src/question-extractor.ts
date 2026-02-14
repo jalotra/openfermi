@@ -32,11 +32,6 @@ const questionSchema = z.object({
   questionBbox: bboxSchema.optional().describe('Normalized bounding box covering the entire question region on the page'),
   subject: z.string().optional().describe('Subject area if identifiable (e.g., Mathematics, Physics, Chemistry)'),
   topic: z.string().optional().describe('Topic or chapter if identifiable'),
-  isMultiPart: z.boolean().describe('Whether this is a multi-part question'),
-  parts: z.array(z.object({
-    partLabel: z.string().describe('Part label (e.g., "a", "b", "i", "ii")'),
-    partText: z.string().describe('Part question text'),
-  })).optional().describe('Sub-parts if this is a multi-part question'),
 });
 
 const extractionSchema = z.object({
@@ -53,8 +48,6 @@ export interface ExtractedQuestion {
   questionBbox?: NormalizedBBox;
   subject?: string;
   topic?: string;
-  isMultiPart: boolean;
-  parts?: Array<{ partLabel: string; partText: string }>;
   pageNumber: number;
   pageImagePath?: string;
   questionImagePath?: string;
@@ -75,15 +68,14 @@ Instructions:
 1. Look at the entire page image carefully
 2. Identify each distinct question on the page
 3. Extract the question number, question text/stem, and all answer options (A, B, C, D, etc.)
-4. If a question has multiple parts (like a(i), a(ii), b(i), etc.), mark it as multi-part and extract each part
-5. Note any diagrams, graphs, or figures that belong to each question
-6. Provide a tight bounding box for each question region as "questionBbox" in NORMALIZED coordinates:
+4. Note any diagrams, graphs, or figures that belong to each question
+5. Provide a tight bounding box for each question region as "questionBbox" in NORMALIZED coordinates:
    - (0,0) is the top-left corner of the image; (1,1) is the bottom-right
    - It must cover: question number + stem + all options + any associated figure/diagram
    - Return tight boxes; avoid including neighboring questions
-7. Try to identify the subject (Mathematics, Physics, Chemistry) and topic if possible
-8. Preserve all mathematical notation and equations exactly as they appear in the image
-9. Extract text exactly as shown, including any special formatting
+6. Try to identify the subject (Mathematics, Physics, Chemistry) and topic if possible
+7. Preserve all mathematical notation and equations exactly as they appear in the image
+8. Extract text exactly as shown, including any special formatting
 
 Be thorough and extract all questions visible on this page.`;
 
@@ -132,8 +124,6 @@ export async function extractQuestionsFromPageImage(
       questionBbox: q.questionBbox,
       subject: q.subject,
       topic: q.topic,
-      isMultiPart: q.isMultiPart,
-      parts: q.parts,
       pageNumber: pageImage.pageNumber,
       pageImagePath: pageImage.imagePath,
     }));

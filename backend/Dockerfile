@@ -30,7 +30,7 @@ RUN chmod +x /app/startup.sh
 
 WORKDIR /app
 
-ENV PORT=8080
-EXPOSE 8080
+ARG PORT=8080
+EXPOSE ${PORT}
 
 ENTRYPOINT ["/app/startup.sh"]

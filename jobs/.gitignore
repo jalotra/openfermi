@@ -6,3 +6,4 @@ output/
 .DS_Store
 workflow.config.yaml
 venv/
+__pycache__/

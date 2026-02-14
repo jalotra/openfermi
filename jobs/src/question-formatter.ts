@@ -33,12 +33,6 @@ export interface FormattedQuestion {
     questionNumber: number;
     subject?: string;
     topic?: string;
-    isMultiPart: boolean;
-    parts?: Array<{
-      partLabel: string;
-      partText: string;
-      latexText: string;
-    }>;
   };
 }
 
@@ -147,12 +141,6 @@ export function formatQuestion(
       questionNumber: extracted.questionNumber,
       subject: extracted.subject,
       topic: extracted.topic,
-      isMultiPart: extracted.isMultiPart,
-      parts: latex.parts?.map(p => ({
-        partLabel: p.partLabel,
-        partText: p.partText,
-        latexText: p.latexText,
-      })),
     },
   };
 }
