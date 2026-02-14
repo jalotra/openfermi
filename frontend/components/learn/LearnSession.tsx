@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -22,6 +22,7 @@ import {
   Search,
   Volume2,
 } from "lucide-react";
+import { SolutionController } from "@/lib/backend";
 
 interface TutorDto {
   id: string;
@@ -44,6 +45,23 @@ interface QuestionDto {
   options?: string[];
 }
 
+interface Segment {
+  stepNumber: number;
+  stepTitle: string;
+  solutionContent: string;
+  spokenText: string;
+  startTime: number;
+  endTime: number;
+  wordStartIdx: number;
+  wordEndIdx: number;
+}
+
+interface WordTimestamps {
+  words: string[];
+  start: number[];
+  end: number[];
+}
+
 interface LearnSessionProps {
   tutors: TutorDto[];
   questions: QuestionDto[];
@@ -54,13 +72,24 @@ type Step = "pick-tutor" | "pick-question" | "loading" | "playing";
 export function LearnSession({ tutors, questions }: LearnSessionProps) {
   const [step, setStep] = useState<Step>("pick-tutor");
   const [selectedTutor, setSelectedTutor] = useState<TutorDto | null>(null);
-  const [selectedQuestion, setSelectedQuestion] = useState<QuestionDto | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<QuestionDto | null>(
+    null,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [audioSrc, setAudioSrc] = useState<string | null>(null);
-  const [transcript, setTranscript] = useState<string | null>(null);
+  const [segments, setSegments] = useState<Segment[]>([]);
+  const [wordTimestamps, setWordTimestamps] = useState<WordTimestamps | null>(
+    null,
+  );
+  const [solution, setSolution] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [activeSegmentIdx, setActiveSegmentIdx] = useState(-1);
+  const [activeWordIdx, setActiveWordIdx] = useState(-1);
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const animFrameRef = useRef<number>(0);
+  const segmentRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const wordRefs = useRef<Map<number, HTMLSpanElement>>(new Map());
 
   const filteredQuestions = questions.filter((q) => {
     if (!searchQuery) return true;
@@ -72,6 +101,84 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
     );
   });
 
+  const findActiveWord = useCallback(
+    (currentTime: number): number => {
+      if (!wordTimestamps || wordTimestamps.start.length === 0) return -1;
+      let lo = 0;
+      let hi = wordTimestamps.start.length - 1;
+      let result = -1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (wordTimestamps.start[mid] <= currentTime) {
+          result = mid;
+          lo = mid + 1;
+        } else {
+          hi = mid - 1;
+        }
+      }
+      if (
+        result >= 0 &&
+        result < wordTimestamps.end.length &&
+        currentTime <= wordTimestamps.end[result]
+      ) {
+        return result;
+      }
+      return result >= 0 ? result : -1;
+    },
+    [wordTimestamps],
+  );
+
+  const findActiveSegment = useCallback(
+    (wordIdx: number): number => {
+      for (let i = 0; i < segments.length; i++) {
+        if (wordIdx >= segments[i].wordStartIdx && wordIdx <= segments[i].wordEndIdx) {
+          return i;
+        }
+      }
+      return -1;
+    },
+    [segments],
+  );
+
+  const syncPlayback = useCallback(() => {
+    if (!audioRef.current || !wordTimestamps) return;
+    const currentTime = audioRef.current.currentTime;
+    const wordIdx = findActiveWord(currentTime);
+    const segIdx = findActiveSegment(wordIdx);
+
+    setActiveWordIdx(wordIdx);
+    setActiveSegmentIdx(segIdx);
+
+    if (audioRef.current && !audioRef.current.paused) {
+      animFrameRef.current = requestAnimationFrame(syncPlayback);
+    }
+  }, [findActiveWord, findActiveSegment, wordTimestamps]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      animFrameRef.current = requestAnimationFrame(syncPlayback);
+    }
+    return () => {
+      if (animFrameRef.current) {
+        cancelAnimationFrame(animFrameRef.current);
+      }
+    };
+  }, [isPlaying, syncPlayback]);
+
+  useEffect(() => {
+    if (activeSegmentIdx >= 0) {
+      const el = segmentRefs.current.get(activeSegmentIdx);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [activeSegmentIdx]);
+
+  useEffect(() => {
+    if (activeWordIdx >= 0) {
+      const el = wordRefs.current.get(activeWordIdx);
+      el?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+  }, [activeWordIdx]);
+
   const handleTutorSelect = (tutor: TutorDto) => {
     setSelectedTutor(tutor);
     setStep("pick-question");
@@ -82,6 +189,7 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
     setSelectedQuestion(question);
     setStep("loading");
     setError(null);
+    
 
     try {
       const response = await fetch("/api/tts/speak", {
@@ -101,8 +209,11 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
       }
 
       const data = await response.json();
-      setAudioSrc(`data:audio/mp3;base64,${data.audio}`);
-      setTranscript(data.transcript);
+      setAudioSrc(`data:audio/wav;base64,${data.audio}`);
+      setSegments(data.segments || []);
+      setWordTimestamps(data.wordTimestamps || null);
+      setActiveSegmentIdx(-1);
+      setActiveWordIdx(-1);
       setStep("playing");
     } catch (err) {
       setError(
@@ -111,6 +222,26 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
       setStep("pick-question");
     }
   };
+
+  const getSolution = async () => {
+    const solution = await SolutionController.solutionGetByQuestionId({
+    path: {
+      questionId: selectedQuestion?.id || "",
+    },
+    });
+    if (!solution) {
+      setError("Failed to fetch solution");
+      setStep("pick-question");
+      return;
+    }
+    setSolution(solution.data?.data?.solution || null);
+  };
+
+  useEffect(() => {
+    if (selectedQuestion) {
+      getSolution();
+    }
+  }, [selectedQuestion]);
 
   const togglePlayback = () => {
     if (!audioRef.current) return;
@@ -122,19 +253,34 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
     setIsPlaying(!isPlaying);
   };
 
+  const seekToSegment = (idx: number) => {
+    if (!audioRef.current || idx < 0 || idx >= segments.length) return;
+    audioRef.current.currentTime = segments[idx].startTime;
+    if (!isPlaying) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   const handleReset = () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     setStep("pick-tutor");
     setSelectedTutor(null);
     setSelectedQuestion(null);
     setAudioSrc(null);
-    setTranscript(null);
+    setSegments([]);
+    setWordTimestamps(null);
     setIsPlaying(false);
+    setActiveSegmentIdx(-1);
+    setActiveWordIdx(-1);
     setError(null);
     setSearchQuery("");
+    segmentRefs.current.clear();
+    wordRefs.current.clear();
   };
 
   const handleBack = () => {
@@ -145,6 +291,7 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
     }
   };
 
+  // --- LOADING ---
   if (step === "loading") {
     return (
       <Card>
@@ -158,8 +305,8 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Generating a personalized explanation and synthesizing voice. This
-            may take a moment.
+            Generating a personalized step-by-step explanation and synthesizing
+            voice. This may take a moment.
           </p>
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-3/4" />
@@ -170,71 +317,67 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
     );
   }
 
+  // --- PLAYING ---
   if (step === "playing" && selectedTutor && selectedQuestion) {
     return (
-      <div className="space-y-6">
-        <Button variant="outline" size="sm" onClick={handleReset}>
-          <RotateCcw className="mr-2 h-4 w-4" />
-          Start Over
-        </Button>
+      <div className="space-y-4">
+        {/* Top bar: tutor + controls */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden border-2 border-primary/20 shrink-0">
+              {selectedTutor.avatarUrl ? (
+                <img
+                  src={selectedTutor.avatarUrl}
+                  alt={selectedTutor.name}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <GraduationCap className="h-6 w-6 text-primary/60" />
+              )}
+            </div>
+            <div>
+              <h3 className="font-semibold">{selectedTutor.name}</h3>
+              <p className="text-xs text-muted-foreground">
+                {selectedTutor.title}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              onClick={togglePlayback}
+              className="rounded-full h-10 w-10 p-0 ml-2"
+            >
+              {isPlaying ? (
+                <Pause className="h-4 w-4" />
+              ) : (
+                <Play className="h-4 w-4 ml-0.5" />
+              )}
+            </Button>
+          </div>
+          <Button variant="outline" size="sm" onClick={handleReset}>
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Start Over
+          </Button>
+        </div>
+
+        {audioSrc && (
+          <audio
+            ref={audioRef}
+            src={audioSrc}
+            onEnded={() => setIsPlaying(false)}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          />
+        )}
 
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="md:col-span-1">
-            <Card>
-              <CardContent className="flex flex-col items-center py-8 space-y-4">
-                <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden border-2 border-primary/20">
-                  {selectedTutor.avatarUrl ? (
-                    <img
-                      src={selectedTutor.avatarUrl}
-                      alt={selectedTutor.name}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <GraduationCap className="h-12 w-12 text-primary/60" />
-                  )}
-                </div>
-                <div className="text-center">
-                  <h3 className="text-lg font-semibold">{selectedTutor.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedTutor.title}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3 pt-2">
-                  <Button
-                    size="lg"
-                    onClick={togglePlayback}
-                    className="rounded-full h-14 w-14 p-0"
-                  >
-                    {isPlaying ? (
-                      <Pause className="h-6 w-6" />
-                    ) : (
-                      <Play className="h-6 w-6 ml-0.5" />
-                    )}
-                  </Button>
-                </div>
-
-                {audioSrc && (
-                  <audio
-                    ref={audioRef}
-                    src={audioSrc}
-                    onEnded={() => setIsPlaying(false)}
-                    onPlay={() => setIsPlaying(true)}
-                    onPause={() => setIsPlaying(false)}
-                  />
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="md:col-span-2 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Question
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+          <Card className="w-full md:col-span-1">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-center">
+                Question
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-center">
                 <LatexRenderer
                   content={
                     selectedQuestion.latexQuestionText ||
@@ -242,32 +385,138 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
                     ""
                   }
                 />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="w-full md:col-span-2">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider text-center">
+                Solution
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-sm text-muted-foreground">
+                <LatexRenderer content={solution || ""} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Solution Steps (1fr) + Transcript (2fr) below */}
+        <div
+          className="grid gap-6"
+          style={{
+            gridTemplateColumns: "1fr 2fr",
+            height: "calc(100vh - 340px)",
+          }}
+        >
+          {/* Left: Solution Steps */}
+          <div className="overflow-auto pr-2 space-y-3">
+            <div className="flex items-center gap-2 mb-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm py-2 z-10">
+              <Volume2 className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Solution Steps
+              </h3>
+            </div>
+            {segments.map((seg, i) => (
+              <div
+                key={seg.stepNumber}
+                ref={(el) => {
+                  if (el) segmentRefs.current.set(i, el);
+                }}
+                onClick={() => seekToSegment(i)}
+                className={`rounded-lg border p-4 cursor-pointer transition-all ${
+                  activeSegmentIdx === i
+                    ? "border-primary bg-primary/5 shadow-sm"
+                    : "border-gray-200 bg-white hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <span
+                    className={`flex items-center justify-center h-7 w-7 rounded-full text-sm font-bold shrink-0 ${
+                      activeSegmentIdx === i
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-gray-100 text-gray-600"
+                    }`}
+                  >
+                    {seg.stepNumber}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <h4
+                      className={`font-medium text-sm ${
+                        activeSegmentIdx === i
+                          ? "text-primary"
+                          : "text-gray-900"
+                      }`}
+                    >
+                      {seg.stepTitle}
+                    </h4>
+                    <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                      {seg.solutionContent}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Right: Transcript with word highlighting */}
+          <div className="overflow-auto pl-2">
+            <div className="flex items-center gap-2 mb-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm py-2 z-10">
+              <GraduationCap className="h-4 w-4 text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                Transcript
+              </h3>
+            </div>
+            <Card>
+              <CardContent className="p-5">
+                {wordTimestamps && wordTimestamps.words.length > 0 ? (
+                  <p className="text-sm leading-loose">
+                    {wordTimestamps.words.map((word, i) => {
+                      const isActive = i === activeWordIdx;
+                      const isInActiveSegment =
+                        activeSegmentIdx >= 0 &&
+                        i >= segments[activeSegmentIdx]?.wordStartIdx &&
+                        i <= segments[activeSegmentIdx]?.wordEndIdx;
+                      const isPast =
+                        activeWordIdx >= 0 && i < activeWordIdx;
+
+                      return (
+                        <span
+                          key={i}
+                          ref={(el) => {
+                            if (el) wordRefs.current.set(i, el);
+                          }}
+                          className={`inline transition-colors duration-150 ${
+                            isActive
+                              ? "bg-primary/20 text-primary font-semibold rounded px-0.5"
+                              : isInActiveSegment
+                                ? "text-gray-900"
+                                : isPast
+                                  ? "text-gray-400"
+                                  : "text-gray-500"
+                          }`}
+                        >
+                          {word}{" "}
+                        </span>
+                      );
+                    })}
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {segments.map((s) => s.spokenText).join(" ")}
+                  </p>
+                )}
               </CardContent>
             </Card>
-
-            {transcript && (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center gap-2">
-                    <Volume2 className="h-4 w-4 text-muted-foreground" />
-                    <CardTitle className="text-sm font-medium text-muted-foreground">
-                      Transcript
-                    </CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                    {transcript}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
           </div>
         </div>
       </div>
     );
   }
 
+  // --- PICK QUESTION ---
   if (step === "pick-question") {
     return (
       <div className="space-y-4">
@@ -361,7 +610,7 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
     );
   }
 
-  // Step: pick-tutor
+  // --- PICK TUTOR ---
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Choose Your Tutor</h2>
