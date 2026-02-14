@@ -22,6 +22,26 @@ export type GenericResponseSessionStateDto = {
   message?: string;
 };
 
+export type TutorDto = {
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  avatarUrl?: string;
+  voiceId?: string;
+  personaPrompt?: string;
+  active?: boolean;
+};
+
+export type GenericResponseTutorDto = {
+  data?: TutorDto;
+  message?: string;
+};
+
 export type SolutionDto = {
   id?: string;
   createdAt?: string;
@@ -140,8 +160,8 @@ export type PresignUrlResponse = {
   expiration?: string;
 };
 
-export type GenericResponseListSolutionDto = {
-  data?: Array<SolutionDto>;
+export type GenericResponseListTutorDto = {
+  data?: Array<TutorDto>;
   message?: string;
 };
 
@@ -152,6 +172,11 @@ export type GenericResponseJsonNode = {
 
 export type GenericResponseLong = {
   data?: number;
+  message?: string;
+};
+
+export type GenericResponseListSolutionDto = {
+  data?: Array<SolutionDto>;
   message?: string;
 };
 
@@ -211,6 +236,42 @@ export type SessionstateUpsertStateResponses = {
 
 export type SessionstateUpsertStateResponse =
   SessionstateUpsertStateResponses[keyof SessionstateUpsertStateResponses];
+
+export type TutorReadData = {
+  body?: never;
+  path?: never;
+  query?: {
+    page?: string;
+    size?: string;
+  };
+  url: "/tutors";
+};
+
+export type TutorReadResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListTutorDto;
+};
+
+export type TutorReadResponse = TutorReadResponses[keyof TutorReadResponses];
+
+export type TutorUpsertData = {
+  body: TutorDto;
+  path?: never;
+  query?: never;
+  url: "/tutors";
+};
+
+export type TutorUpsertResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseTutorDto;
+};
+
+export type TutorUpsertResponse =
+  TutorUpsertResponses[keyof TutorUpsertResponses];
 
 export type SolutionReadData = {
   body?: never;
@@ -390,6 +451,115 @@ export type PresignCreatePresignUrlResponses = {
 
 export type PresignCreatePresignUrlResponse =
   PresignCreatePresignUrlResponses[keyof PresignCreatePresignUrlResponses];
+
+export type TutorDeleteData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/tutors/{id}";
+};
+
+export type TutorDeleteResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseTutorDto;
+};
+
+export type TutorDeleteResponse =
+  TutorDeleteResponses[keyof TutorDeleteResponses];
+
+export type TutorGetData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/tutors/{id}";
+};
+
+export type TutorGetResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseTutorDto;
+};
+
+export type TutorGetResponse = TutorGetResponses[keyof TutorGetResponses];
+
+export type TutorReadWithSortingData = {
+  body?: never;
+  path?: never;
+  query: {
+    direction: string;
+    sortBy: string;
+    page: string;
+    size: string;
+  };
+  url: "/tutors/sorted";
+};
+
+export type TutorReadWithSortingResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListTutorDto;
+};
+
+export type TutorReadWithSortingResponse =
+  TutorReadWithSortingResponses[keyof TutorReadWithSortingResponses];
+
+export type TutorGetSchemaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/tutors/schema";
+};
+
+export type TutorGetSchemaResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseJsonNode;
+};
+
+export type TutorGetSchemaResponse =
+  TutorGetSchemaResponses[keyof TutorGetSchemaResponses];
+
+export type TutorCountData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/tutors/count";
+};
+
+export type TutorCountResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLong;
+};
+
+export type TutorCountResponse = TutorCountResponses[keyof TutorCountResponses];
+
+export type TutorGetActiveTutorsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/tutors/active";
+};
+
+export type TutorGetActiveTutorsResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListTutorDto;
+};
+
+export type TutorGetActiveTutorsResponse =
+  TutorGetActiveTutorsResponses[keyof TutorGetActiveTutorsResponses];
 
 export type SolutionDeleteData = {
   body?: never;

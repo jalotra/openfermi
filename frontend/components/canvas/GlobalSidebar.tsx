@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Clock, Home, ListTodo, Settings } from "lucide-react";
+import { Clock, GraduationCap, Home, ListTodo, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -19,6 +19,7 @@ const navItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Questions", url: "/questions", icon: ListTodo },
   { title: "Sessions", url: "/sessions", icon: Clock },
+  { title: "Learn", url: "/learn", icon: GraduationCap },
   { title: "Settings", url: "#", icon: Settings },
 ];
 

@@ -59,6 +59,22 @@ import type {
   SolutionUpsertResponses,
   TransitionData,
   TransitionResponses,
+  TutorCountData,
+  TutorCountResponses,
+  TutorDeleteData,
+  TutorDeleteResponses,
+  TutorGetActiveTutorsData,
+  TutorGetActiveTutorsResponses,
+  TutorGetData,
+  TutorGetResponses,
+  TutorGetSchemaData,
+  TutorGetSchemaResponses,
+  TutorReadData,
+  TutorReadResponses,
+  TutorReadWithSortingData,
+  TutorReadWithSortingResponses,
+  TutorUpsertData,
+  TutorUpsertResponses,
   UpsertData,
   UpsertResponses,
   UserDeleteData,
@@ -120,6 +136,95 @@ export class SessionStateController {
         ...options.headers,
       },
     });
+  }
+}
+
+export class TutorController {
+  public static tutorRead<ThrowOnError extends boolean = false>(
+    options?: Options<TutorReadData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorReadResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors", ...options });
+  }
+
+  public static tutorUpsert<ThrowOnError extends boolean = false>(
+    options: Options<TutorUpsertData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      TutorUpsertResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/tutors",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static tutorDelete<ThrowOnError extends boolean = false>(
+    options: Options<TutorDeleteData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      TutorDeleteResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/{id}", ...options });
+  }
+
+  public static tutorGet<ThrowOnError extends boolean = false>(
+    options: Options<TutorGetData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      TutorGetResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/{id}", ...options });
+  }
+
+  public static tutorReadWithSorting<ThrowOnError extends boolean = false>(
+    options: Options<TutorReadWithSortingData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      TutorReadWithSortingResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/sorted", ...options });
+  }
+
+  public static tutorGetSchema<ThrowOnError extends boolean = false>(
+    options?: Options<TutorGetSchemaData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorGetSchemaResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/schema", ...options });
+  }
+
+  public static tutorCount<ThrowOnError extends boolean = false>(
+    options?: Options<TutorCountData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorCountResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/count", ...options });
+  }
+
+  public static tutorGetActiveTutors<ThrowOnError extends boolean = false>(
+    options?: Options<TutorGetActiveTutorsData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      TutorGetActiveTutorsResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/tutors/active", ...options });
   }
 }
 

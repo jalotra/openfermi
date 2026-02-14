@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.1.0",
+    "@cartesia/cartesia-js": "^2.2.9",
     "@openrouter/ai-sdk-provider": "^2.2.3",
     "@tanstack/react-table": "^8.21.3",
     "@tldraw/tldraw": "^4.3.0",
