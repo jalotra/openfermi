@@ -1,4 +1,5 @@
 import { CartesiaClient } from "@cartesia/cartesia-js";
+import { WaveFile } from "wavefile";
 
 const client = new CartesiaClient({
   apiKey: process.env.CARTESIA_API_KEY || "",
@@ -37,32 +38,15 @@ export interface SpeechWithTimestamps {
   wordTimestamps: WordTimestamps;
 }
 
-function writeWavHeader(
-  pcmData: Buffer,
-  sampleRate: number,
-  numChannels: number,
-  bitsPerSample: number,
-): Buffer {
-  const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
-  const blockAlign = (numChannels * bitsPerSample) / 8;
-  const dataSize = pcmData.length;
-  const header = Buffer.alloc(44);
-
-  header.write("RIFF", 0);
-  header.writeUInt32LE(36 + dataSize, 4);
-  header.write("WAVE", 8);
-  header.write("fmt ", 12);
-  header.writeUInt32LE(16, 16);
-  header.writeUInt16LE(1, 20); // format = PCM integer
-  header.writeUInt16LE(numChannels, 22);
-  header.writeUInt32LE(sampleRate, 24);
-  header.writeUInt32LE(byteRate, 28);
-  header.writeUInt16LE(blockAlign, 30);
-  header.writeUInt16LE(bitsPerSample, 32);
-  header.write("data", 36);
-  header.writeUInt32LE(dataSize, 40);
-
-  return Buffer.concat([header, pcmData]);
+function pcmToWav(rawPcm: Buffer, sampleRate: number): Buffer {
+  const samples = new Int16Array(
+    rawPcm.buffer,
+    rawPcm.byteOffset,
+    rawPcm.length / 2,
+  );
+  const wav = new WaveFile();
+  wav.fromScratch(1, sampleRate, "16", samples);
+  return Buffer.from(wav.toBuffer());
 }
 
 export async function synthesizeSpeechWithTimestamps(
@@ -93,9 +77,7 @@ export async function synthesizeSpeechWithTimestamps(
         audioChunks.push(Buffer.from(pcmBase64, "base64"));
       }
     } else if (event.type === "timestamps") {
-      const ts = (event as any).wordTimestamps as
-        | WordTimestamps
-        | undefined;
+      const ts = (event as any).wordTimestamps as WordTimestamps | undefined;
       if (ts) {
         allWords.push(...ts.words);
         allStarts.push(...ts.start);
@@ -105,7 +87,7 @@ export async function synthesizeSpeechWithTimestamps(
   }
 
   const rawPcm = Buffer.concat(audioChunks);
-  const wavBuffer = writeWavHeader(rawPcm, 44100, 1, 16);
+  const wavBuffer = pcmToWav(rawPcm, 44100);
 
   return {
     audioBuffer: wavBuffer,

@@ -6,6 +6,7 @@ import {
   synthesizeSpeechWithTimestamps,
   type WordTimestamps,
 } from "@/lib/cartesia";
+import { uploadAudioToS3 } from "@/lib/s3";
 
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
@@ -62,7 +63,12 @@ function countWords(text: string): number {
 function mapTimestampsToSegments(
   segments: Array<{ spokenText: string }>,
   wordTimestamps: WordTimestamps,
-): Array<{ startTime: number; endTime: number; wordStartIdx: number; wordEndIdx: number }> {
+): Array<{
+  startTime: number;
+  endTime: number;
+  wordStartIdx: number;
+  wordEndIdx: number;
+}> {
   const result: Array<{
     startTime: number;
     endTime: number;
@@ -75,7 +81,10 @@ function mapTimestampsToSegments(
   for (const segment of segments) {
     const segWordCount = countWords(segment.spokenText);
     const startIdx = wordIdx;
-    const endIdx = Math.min(wordIdx + segWordCount - 1, wordTimestamps.words.length - 1);
+    const endIdx = Math.min(
+      wordIdx + segWordCount - 1,
+      wordTimestamps.words.length - 1,
+    );
 
     const startTime =
       startIdx < wordTimestamps.start.length
@@ -86,17 +95,34 @@ function mapTimestampsToSegments(
         ? wordTimestamps.end[endIdx]
         : wordTimestamps.end[wordTimestamps.end.length - 1] || 0;
 
-    result.push({ startTime, endTime, wordStartIdx: startIdx, wordEndIdx: endIdx });
+    result.push({
+      startTime,
+      endTime,
+      wordStartIdx: startIdx,
+      wordEndIdx: endIdx,
+    });
     wordIdx += segWordCount;
   }
 
   return result;
 }
 
+const BACKEND_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
+).replace(/\/+$/, "");
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { voiceId, personaPrompt, questionText, latexQuestionText } = body;
+    const {
+      voiceId,
+      personaPrompt,
+      questionText,
+      latexQuestionText,
+      questionId,
+      tutorId,
+      userId,
+    } = body;
 
     if (!voiceId || (!questionText && !latexQuestionText)) {
       return NextResponse.json(
@@ -151,12 +177,63 @@ IMPORTANT RULES:
       wordEndIdx: timingMap[i]?.wordEndIdx ?? 0,
     }));
 
-    const audioBase64 = audioBuffer.toString("base64");
+    let audioUrl: string | null = null;
+    try {
+      audioUrl = await uploadAudioToS3(audioBuffer);
+    } catch (s3Err) {
+      console.error(
+        "Failed to upload audio to S3, falling back to base64:",
+        s3Err,
+      );
+    }
+
+    let learningSessionId: string | null = null;
+    if (questionId && tutorId && audioUrl) {
+      try {
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        };
+        if (process.env.NEXT_PUBLIC_API_KEY) {
+          headers["X-API-KEY"] = process.env.NEXT_PUBLIC_API_KEY;
+        }
+
+        const persistResponse = await fetch(
+          `${BACKEND_URL}/learning-sessions`,
+          {
+            method: "POST",
+            headers,
+            body: JSON.stringify({
+              questionId,
+              tutorId,
+              userId: userId || "anonymous",
+              audioUrl,
+              transcript: fullTranscript,
+              segments: JSON.stringify(enrichedSegments),
+            }),
+          },
+        );
+
+        if (persistResponse.ok) {
+          const persistedData = await persistResponse.json();
+          learningSessionId = persistedData.data?.id || null;
+        } else {
+          console.error(
+            "Failed to persist learning session:",
+            await persistResponse.text(),
+          );
+        }
+      } catch (persistErr) {
+        console.error("Error persisting learning session:", persistErr);
+      }
+    }
 
     return NextResponse.json({
-      audio: audioBase64,
+      audioUrl,
+      audio: audioUrl ? undefined : audioBuffer.toString("base64"),
       segments: enrichedSegments,
       wordTimestamps,
+      learningSessionId,
     });
   } catch (error) {
     console.error("Error in TTS speak route:", error);

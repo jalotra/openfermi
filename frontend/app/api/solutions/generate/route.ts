@@ -3,8 +3,6 @@ import { generateObject } from "ai";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { z } from "zod";
 
-console.log("OPENROUTER_API_KEY", process.env.OPENROUTER_API_KEY);
-
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
   headers: {
@@ -37,7 +35,6 @@ const solutionResponseSchema = z.object({
       "One complete way to solve the question, in LaTeX format. Use $...$ for inline math and $$...$$ for display math. Show all working steps clearly.",
     ),
 });
-
 
 const LATEX_PROMPT = `You are an expert at converting mathematical exam questions from images into LaTeX format.
  You will be given an image of a JEE (Joint Entrance Examination) question and its OCR-extracted text for structural reference.

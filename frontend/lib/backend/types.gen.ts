@@ -122,6 +122,25 @@ export type GenericResponseQuestionDto = {
   message?: string;
 };
 
+export type LearningSessionDto = {
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  questionId?: string;
+  tutorId?: string;
+  userId?: string;
+  audioUrl?: string;
+  transcript?: string;
+  segments?: string;
+};
+
+export type GenericResponseLearningSessionDto = {
+  data?: LearningSessionDto;
+  message?: string;
+};
+
 export type UserDto = {
   id?: string;
   createdAt?: string;
@@ -197,6 +216,11 @@ export type GenericResponseListString = {
 
 export type GenericResponseListQuestionDto = {
   data?: Array<QuestionDto>;
+  message?: string;
+};
+
+export type GenericResponseListLearningSessionDto = {
+  data?: Array<LearningSessionDto>;
   message?: string;
 };
 
@@ -401,6 +425,43 @@ export type QuestionUpsertResponses = {
 
 export type QuestionUpsertResponse =
   QuestionUpsertResponses[keyof QuestionUpsertResponses];
+
+export type LearningsessionReadData = {
+  body?: never;
+  path?: never;
+  query?: {
+    page?: string;
+    size?: string;
+  };
+  url: "/learning-sessions";
+};
+
+export type LearningsessionReadResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListLearningSessionDto;
+};
+
+export type LearningsessionReadResponse =
+  LearningsessionReadResponses[keyof LearningsessionReadResponses];
+
+export type LearningsessionUpsertData = {
+  body: LearningSessionDto;
+  path?: never;
+  query?: never;
+  url: "/learning-sessions";
+};
+
+export type LearningsessionUpsertResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLearningSessionDto;
+};
+
+export type LearningsessionUpsertResponse =
+  LearningsessionUpsertResponses[keyof LearningsessionUpsertResponses];
 
 export type UserUpsertData = {
   body: UserDto;
@@ -894,6 +955,139 @@ export type QuestionCountResponses = {
 
 export type QuestionCountResponse =
   QuestionCountResponses[keyof QuestionCountResponses];
+
+export type LearningsessionDeleteData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/learning-sessions/{id}";
+};
+
+export type LearningsessionDeleteResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLearningSessionDto;
+};
+
+export type LearningsessionDeleteResponse =
+  LearningsessionDeleteResponses[keyof LearningsessionDeleteResponses];
+
+export type LearningsessionGetData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/learning-sessions/{id}";
+};
+
+export type LearningsessionGetResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLearningSessionDto;
+};
+
+export type LearningsessionGetResponse =
+  LearningsessionGetResponses[keyof LearningsessionGetResponses];
+
+export type LearningsessionGetByUserIdData = {
+  body?: never;
+  path: {
+    userId: string;
+  };
+  query?: never;
+  url: "/learning-sessions/user/{userId}";
+};
+
+export type LearningsessionGetByUserIdResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListLearningSessionDto;
+};
+
+export type LearningsessionGetByUserIdResponse =
+  LearningsessionGetByUserIdResponses[keyof LearningsessionGetByUserIdResponses];
+
+export type LearningsessionReadWithSortingData = {
+  body?: never;
+  path?: never;
+  query: {
+    direction: string;
+    sortBy: string;
+    page: string;
+    size: string;
+  };
+  url: "/learning-sessions/sorted";
+};
+
+export type LearningsessionReadWithSortingResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListLearningSessionDto;
+};
+
+export type LearningsessionReadWithSortingResponse =
+  LearningsessionReadWithSortingResponses[keyof LearningsessionReadWithSortingResponses];
+
+export type LearningsessionGetSchemaData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/learning-sessions/schema";
+};
+
+export type LearningsessionGetSchemaResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseJsonNode;
+};
+
+export type LearningsessionGetSchemaResponse =
+  LearningsessionGetSchemaResponses[keyof LearningsessionGetSchemaResponses];
+
+export type LearningsessionGetByQuestionAndTutorData = {
+  body?: never;
+  path: {
+    questionId: string;
+    tutorId: string;
+  };
+  query?: never;
+  url: "/learning-sessions/question/{questionId}/tutor/{tutorId}";
+};
+
+export type LearningsessionGetByQuestionAndTutorResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLearningSessionDto;
+};
+
+export type LearningsessionGetByQuestionAndTutorResponse =
+  LearningsessionGetByQuestionAndTutorResponses[keyof LearningsessionGetByQuestionAndTutorResponses];
+
+export type LearningsessionCountData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/learning-sessions/count";
+};
+
+export type LearningsessionCountResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLong;
+};
+
+export type LearningsessionCountResponse =
+  LearningsessionCountResponses[keyof LearningsessionCountResponses];
 
 export type HealthHealthData = {
   body?: never;
