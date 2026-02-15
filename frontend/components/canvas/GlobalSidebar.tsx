@@ -88,7 +88,7 @@ export function GlobalSidebar({
       <SidebarHeader></SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>OpenFermi</SidebarGroupLabel>
+          <SidebarGroupLabel>Tars</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (

@@ -6,8 +6,8 @@ import { PageImage } from './image-processor.js';
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
   headers: {
-    'HTTP-Referer': 'https://github.com/openfermi',
-    'X-Title': 'OpenFermi Question Extractor',
+    'HTTP-Referer': 'https://github.com/Tars',
+    'X-Title': 'Tars Question Extractor',
   },
 });
 

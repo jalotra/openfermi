@@ -102,7 +102,7 @@ function WaitlistFormContent() {
               Request Received
             </h2>
             <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Thanks for your interest in OpenFermi and Tars! We&apos;ve
+              Thanks for your interest in Tars and Tars! We&apos;ve
               received your request and you&apos;ll be onboarded shortly after
               review.
             </p>
@@ -126,7 +126,7 @@ function WaitlistFormContent() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Request Access</CardTitle>
           <CardDescription>
-            Thanks for your interest in OpenFermi and Tars! Please fill in your
+            Thanks for your interest in Tars and Tars! Please fill in your
             details below and we&apos;ll get back to you shortly.
             <b>Team is small right now, with limited resources.</b> We&apos;ll
             do our best to get back to you as soon as possible.
@@ -162,7 +162,7 @@ function WaitlistFormContent() {
                 id="message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="What are you studying? Why are you interested in OpenFermi?"
+                placeholder="What are you studying? Why are you interested in Tars?"
                 rows={4}
                 required
               />

@@ -29,7 +29,7 @@ export function ApproveEmail({ name, loginUrl }: ApproveEmailProps) {
             <Text style={paragraph}>{greeting},</Text>
 
             <Text style={paragraph}>
-              Hello trailblazer! Welcome to <strong>OpenFermi</strong> and <strong>Tars</strong>!
+              Hello trailblazer! Welcome to <strong>Tars</strong> and <strong>Tars</strong>!
               We are a small team of engineers, designers and educators who want to make you succeed in STEM and as a 1st step to your future.
               We distill knowledge out from past papers and a world class LLMs (large language models) 
               to create a platform that is as close to a real teacher as possible.
@@ -50,7 +50,7 @@ export function ApproveEmail({ name, loginUrl }: ApproveEmailProps) {
 
             <Section style={buttonContainer}>
               <Button style={button} href={loginUrl}>
-                Log in to OpenFermi
+                Log in to Tars
               </Button>
             </Section>
 
@@ -62,7 +62,7 @@ export function ApproveEmail({ name, loginUrl }: ApproveEmailProps) {
             <Hr style={hr} />
 
             <Text style={footer}>
-              — Shivam, OpenFermi
+              — Shivam, Tars
             </Text>
           </Section>
         </Container>

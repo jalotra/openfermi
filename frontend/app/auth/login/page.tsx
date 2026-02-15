@@ -38,7 +38,7 @@ function AuthPageContent() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Welcome to OpenFermi</CardTitle>
+          <CardTitle className="text-2xl">Welcome to Tars</CardTitle>
           <CardDescription>
             Sign in to access your practice sessions and track your progress
           </CardDescription>
