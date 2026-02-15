@@ -84,9 +84,7 @@ function WaitlistFormContent() {
 
       setSubmitted(true);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Something went wrong",
-      );
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setIsLoading(false);
     }
@@ -104,12 +102,17 @@ function WaitlistFormContent() {
               Request Received
             </h2>
             <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Thanks for your interest in OpenFermi! We&apos;ve received your
-              request and you&apos;ll be onboarded shortly after review.
+              Thanks for your interest in OpenFermi and Tars! We&apos;ve
+              received your request and you&apos;ll be onboarded shortly after
+              review.
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
               <Clock className="h-3.5 w-3.5" />
-              <span>You&apos;ll receive access once approved</span>
+              <span>
+                You&apos;ll receive access once approved.
+                <br />
+                We would send out an email to you once you are approved.
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -123,8 +126,10 @@ function WaitlistFormContent() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Request Access</CardTitle>
           <CardDescription>
-            You haven&apos;t been invited yet. Fill in your details below and
-            we&apos;ll review your request.
+            Thanks for your interest in OpenFermi and Tars! Please fill in your
+            details below and we&apos;ll get back to you shortly.
+            <b>Team is small right now, with limited resources.</b> We&apos;ll
+            do our best to get back to you as soon as possible.
           </CardDescription>
         </CardHeader>
         <CardContent>

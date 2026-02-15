@@ -82,7 +82,7 @@ export const auth = betterAuth({
     session: {
       create: {
         after: async (session) => {
-          // Session created -- sync happens on user create
+          // we don't need to sync user to backend on session create
         },
       },
     },

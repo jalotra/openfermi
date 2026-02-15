@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -68,9 +63,7 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
       toast.success(`Invited ${inviteEmail}`);
       setInviteEmail("");
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Failed to invite user",
-      );
+      toast.error(err instanceof Error ? err.message : "Failed to invite user");
     } finally {
       setIsInviting(false);
     }
@@ -79,10 +72,13 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
   const handleApprove = async (id: string) => {
     setProcessingIds((prev) => new Set(prev).add(id));
     try {
-      const res = await fetch(`${BACKEND_URL}/api/users/waitlist/${id}/approve`, {
-        method: "PUT",
-        headers: getHeaders(),
-      });
+      const res = await fetch(
+        `${BACKEND_URL}/api/users/waitlist/${id}/approve`,
+        {
+          method: "PUT",
+          headers: getHeaders(),
+        },
+      );
 
       if (!res.ok) throw new Error("Failed to approve");
 
@@ -104,10 +100,13 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
   const handleReject = async (id: string) => {
     setProcessingIds((prev) => new Set(prev).add(id));
     try {
-      const res = await fetch(`${BACKEND_URL}/api/users/waitlist/${id}/reject`, {
-        method: "PUT",
-        headers: getHeaders(),
-      });
+      const res = await fetch(
+        `${BACKEND_URL}/api/users/waitlist/${id}/reject`,
+        {
+          method: "PUT",
+          headers: getHeaders(),
+        },
+      );
 
       if (!res.ok) throw new Error("Failed to reject");
 
@@ -163,7 +162,9 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
           <CardTitle className="flex items-center gap-2">
             Waitlist Requests
             {pendingRequests.length > 0 && (
-              <Badge variant="secondary">{pendingRequests.length} pending</Badge>
+              <Badge variant="secondary">
+                {pendingRequests.length} pending
+              </Badge>
             )}
           </CardTitle>
         </CardHeader>
@@ -207,11 +208,14 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
                     )}
                     {item.createdAt && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        {new Date(item.createdAt).toLocaleDateString(undefined, {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
+                        {new Date(item.createdAt).toLocaleDateString(
+                          undefined,
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          },
+                        )}
                       </p>
                     )}
                   </div>

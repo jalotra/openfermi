@@ -38,10 +38,13 @@ export default async function AdminInvitePage() {
 
   let waitlistRequests: any[] = [];
   try {
-    const wlRes = await fetch(`${BACKEND_URL}/api/users/waitlist?status=PENDING`, {
-      headers,
-      cache: "no-store",
-    });
+    const wlRes = await fetch(
+      `${BACKEND_URL}/api/users/waitlist?status=PENDING`,
+      {
+        headers,
+        cache: "no-store",
+      },
+    );
     if (wlRes.ok) {
       const wlJson = await wlRes.json();
       waitlistRequests = wlJson.data || [];
@@ -54,9 +57,7 @@ export default async function AdminInvitePage() {
     <div className="flex-1 min-h-0 overflow-auto bg-gray-50/50 p-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Invite Users
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Invite Users</h1>
           <p className="text-muted-foreground mt-1">
             Invite new users by email or approve waitlist requests.
           </p>

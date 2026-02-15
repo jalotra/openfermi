@@ -36,5 +36,14 @@ export default async function Layout({
   const user = await getServerUser();
   const isAdmin = user?.email ? await checkIsAdmin(user.email) : false;
 
-  return <DashboardLayout isAdmin={isAdmin}>{children}</DashboardLayout>;
+  return (
+    <DashboardLayout
+      isAdmin={isAdmin}
+      userName={user?.name || undefined}
+      userAvatarUrl={user?.image || undefined}
+      userEmail={user?.email || undefined}
+    >
+      {children}
+    </DashboardLayout>
+  );
 }
