@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
@@ -35,9 +36,11 @@ public class User extends BaseEntity {
     private String providerId;
 
     @Column(name = "is_approved", nullable = false)
+    @Builder.Default
     private boolean isApproved = false;
 
     @Column(name = "is_admin", nullable = false)
+    @Builder.Default
     private boolean isAdmin = false;
 
     @Column(name = "last_login_at")
