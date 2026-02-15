@@ -5,8 +5,10 @@ import com.law.tech.backend.users.mapper.UserMapper;
 import com.law.tech.backend.users.models.User;
 import com.law.tech.backend.users.models.dtos.UserDto;
 import com.law.tech.backend.users.repositories.UserRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,7 +34,6 @@ public class UserService extends BaseCrudService<UserDto, User, UserRepository> 
 
     @Override
     protected void validateBeforeDelete(User entity) {
-        // No special validation needed for deletion
     }
 
     @Transactional(readOnly = true)
@@ -45,38 +46,42 @@ public class UserService extends BaseCrudService<UserDto, User, UserRepository> 
         return repository.findByProviderId(providerId).map(mapper::toDto);
     }
 
-    /**
-     * Sync user from OAuth provider (Better Auth).
-     * Creates new user if doesn't exist, or updates existing user.
-     */
     public UserDto syncUser(String email, String name, String avatarUrl, String provider, String providerId) {
-        Optional<User> existingUser = repository.findByProviderId(providerId);
+        Optional<User> existingUser = repository.findByEmail(email);
 
-        User user;
         if (existingUser.isPresent()) {
-            // Update existing user
-            user = existingUser.get();
-            user.setName(name);
-            user.setAvatarUrl(avatarUrl);
-            user.setLastLoginAt(LocalDateTime.now());
-        } else {
-            // Check if email already exists with different provider
-            Optional<User> emailUser = repository.findByEmail(email);
-            if (emailUser.isPresent()) {
-                throw new IllegalArgumentException("Email already registered with different provider");
+            User user = existingUser.get();
+
+            if (!user.isApproved()) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User is not approved");
             }
 
-            // Create new user
-            user = User.builder()
-                .email(email)
-                .name(name)
-                .avatarUrl(avatarUrl)
-                .provider(provider)
-                .providerId(providerId)
-                .lastLoginAt(LocalDateTime.now())
-                .build();
+            user.setName(name);
+            user.setAvatarUrl(avatarUrl);
+            user.setProvider(provider);
+            user.setProviderId(providerId);
+            user.setLastLoginAt(LocalDateTime.now());
+            User saved = save(user);
+            return mapper.toDto(saved);
         }
 
+        throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User not invited. Please request access.");
+    }
+
+    public UserDto inviteUser(String email) {
+        Optional<User> existing = repository.findByEmail(email);
+        if (existing.isPresent()) {
+            User user = existing.get();
+            user.setApproved(true);
+            User saved = save(user);
+            return mapper.toDto(saved);
+        }
+
+        User user = User.builder()
+                .email(email)
+                .isApproved(true)
+                .isAdmin(false)
+                .build();
         User saved = save(user);
         return mapper.toDto(saved);
     }

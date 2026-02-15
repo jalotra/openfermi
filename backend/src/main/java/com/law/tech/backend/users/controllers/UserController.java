@@ -1,6 +1,7 @@
 package com.law.tech.backend.users.controllers;
 
 import com.law.tech.backend.base.controllers.BaseController;
+import com.law.tech.backend.base.models.GenericResponse;
 import com.law.tech.backend.users.mapper.UserMapper;
 import com.law.tech.backend.users.models.User;
 import com.law.tech.backend.users.models.dtos.UserDto;
@@ -8,8 +9,6 @@ import com.law.tech.backend.users.repositories.UserRepository;
 import com.law.tech.backend.users.services.crud.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,12 +23,8 @@ public class UserController extends BaseController<UserDto, User, UserRepository
         this.userMapper = userMapper;
     }
 
-    /**
-     * Sync user data from OAuth provider (Better Auth).
-     * Creates new user if doesn't exist, updates if exists.
-     */
     @PostMapping("/sync")
-    public ResponseEntity<UserDto> syncUser(@RequestBody UserSyncRequest request) {
+    public ResponseEntity<GenericResponse<UserDto>> syncUser(@RequestBody UserSyncRequest request) {
         UserDto user = userService.syncUser(
             request.getEmail(),
             request.getName(),
@@ -37,24 +32,44 @@ public class UserController extends BaseController<UserDto, User, UserRepository
             request.getProvider(),
             request.getProviderId()
         );
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(
+                GenericResponse.<UserDto>builder().data(user).message("Success").build());
+    }
+
+    @PostMapping("/invite")
+    public ResponseEntity<GenericResponse<UserDto>> inviteUser(@RequestBody InviteRequest request) {
+        UserDto user = userService.inviteUser(request.getEmail());
+        return ResponseEntity.ok(
+                GenericResponse.<UserDto>builder().data(user).message("User invited").build());
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<GenericResponse<UserDto>> getMe(@RequestParam String email) {
+        return userService.findByEmail(email)
+            .map(dto -> ResponseEntity.ok(
+                    GenericResponse.<UserDto>builder().data(dto).message("Success").build()))
+            .orElse(ResponseEntity.status(404).body(
+                    GenericResponse.<UserDto>builder().data(null).message("User not found").build()));
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserDto> getByEmail(@PathVariable String email) {
+    public ResponseEntity<GenericResponse<UserDto>> getByEmail(@PathVariable String email) {
         return userService.findByEmail(email)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+            .map(dto -> ResponseEntity.ok(
+                    GenericResponse.<UserDto>builder().data(dto).message("Success").build()))
+            .orElse(ResponseEntity.status(404).body(
+                    GenericResponse.<UserDto>builder().data(null).message("User not found").build()));
     }
 
     @GetMapping("/provider/{providerId}")
-    public ResponseEntity<UserDto> getByProviderId(@PathVariable String providerId) {
+    public ResponseEntity<GenericResponse<UserDto>> getByProviderId(@PathVariable String providerId) {
         return userService.findByProviderId(providerId)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+            .map(dto -> ResponseEntity.ok(
+                    GenericResponse.<UserDto>builder().data(dto).message("Success").build()))
+            .orElse(ResponseEntity.status(404).body(
+                    GenericResponse.<UserDto>builder().data(null).message("User not found").build()));
     }
 
-    // DTO for user sync request
     public static class UserSyncRequest {
         private String email;
         private String name;
@@ -62,7 +77,6 @@ public class UserController extends BaseController<UserDto, User, UserRepository
         private String provider;
         private String providerId;
 
-        // Getters and Setters
         public String getEmail() { return email; }
         public void setEmail(String email) { this.email = email; }
         public String getName() { return name; }
@@ -73,5 +87,12 @@ public class UserController extends BaseController<UserDto, User, UserRepository
         public void setProvider(String provider) { this.provider = provider; }
         public String getProviderId() { return providerId; }
         public void setProviderId(String providerId) { this.providerId = providerId; }
+    }
+
+    public static class InviteRequest {
+        private String email;
+
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
     }
 }

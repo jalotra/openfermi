@@ -4,11 +4,16 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { SidebarProvider as SidebarContextProvider } from "@/components/canvas/SidebarContext";
 import { GlobalSidebar } from "@/components/canvas/GlobalSidebar";
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  isAdmin?: boolean;
+}
+
+export function DashboardLayout({ children, isAdmin = false }: DashboardLayoutProps) {
   return (
     <SidebarContextProvider>
       <SidebarProvider className="h-screen">
-        <GlobalSidebar />
+        <GlobalSidebar isAdmin={isAdmin} />
         <main className="flex flex-1 min-w-0 flex-col relative overflow-hidden">
           <header className="flex h-10 shrink-0 items-center gap-2 border-b border-sidebar-border px-2 bg-background">
             <SidebarTrigger />

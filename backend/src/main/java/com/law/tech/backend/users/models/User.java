@@ -34,6 +34,12 @@ public class User extends BaseEntity {
     @Column(name = "provider_id")
     private String providerId;
 
+    @Column(name = "is_approved", nullable = false)
+    private boolean isApproved = false;
+
+    @Column(name = "is_admin", nullable = false)
+    private boolean isAdmin = false;
+
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 

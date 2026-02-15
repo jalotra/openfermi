@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Clock, GraduationCap, Home, ListTodo, Settings } from "lucide-react";
+import {
+  BookOpen,
+  Clock,
+  GraduationCap,
+  Home,
+  ListTodo,
+  Settings,
+  UserPlus,
+} from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -24,7 +32,15 @@ const navItems = [
   { title: "Settings", url: "#", icon: Settings },
 ];
 
-export function GlobalSidebar() {
+const adminNavItems = [
+  { title: "Invite Users", url: "/admin/invite", icon: UserPlus },
+];
+
+interface GlobalSidebarProps {
+  isAdmin?: boolean;
+}
+
+export function GlobalSidebar({ isAdmin = false }: GlobalSidebarProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader></SidebarHeader>
@@ -46,6 +62,25 @@ export function GlobalSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {adminNavItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <Link href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

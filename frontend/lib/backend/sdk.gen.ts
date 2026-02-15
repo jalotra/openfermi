@@ -104,13 +104,27 @@ import type {
   UserGetByProviderIdData,
   UserGetByProviderIdResponses,
   UserGetData,
+  UserGetMeData,
+  UserGetMeResponses,
   UserGetResponses,
   UserGetSchemaData,
   UserGetSchemaResponses,
+  UserInviteUserData,
+  UserInviteUserResponses,
   UserSyncUserData,
   UserSyncUserResponses,
   UserUpsertData,
   UserUpsertResponses,
+  WaitlistrequestApproveData,
+  WaitlistrequestApproveResponses,
+  WaitlistrequestGetByEmailData,
+  WaitlistrequestGetByEmailResponses,
+  WaitlistrequestListData,
+  WaitlistrequestListResponses,
+  WaitlistrequestRejectData,
+  WaitlistrequestRejectResponses,
+  WaitlistrequestSubmitData,
+  WaitlistrequestSubmitResponses,
 } from "./types.gen";
 
 export type Options<
@@ -156,6 +170,65 @@ export class SessionStateController {
         ...options.headers,
       },
     });
+  }
+}
+
+export class WaitlistRequestController {
+  public static waitlistrequestReject<ThrowOnError extends boolean = false>(
+    options: Options<WaitlistrequestRejectData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).put<
+      WaitlistrequestRejectResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/waitlist/{id}/reject", ...options });
+  }
+
+  public static waitlistrequestApprove<ThrowOnError extends boolean = false>(
+    options: Options<WaitlistrequestApproveData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).put<
+      WaitlistrequestApproveResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/waitlist/{id}/approve", ...options });
+  }
+
+  public static waitlistrequestList<ThrowOnError extends boolean = false>(
+    options?: Options<WaitlistrequestListData, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      WaitlistrequestListResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/waitlist", ...options });
+  }
+
+  public static waitlistrequestSubmit<ThrowOnError extends boolean = false>(
+    options: Options<WaitlistrequestSubmitData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      WaitlistrequestSubmitResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/api/users/waitlist",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static waitlistrequestGetByEmail<ThrowOnError extends boolean = false>(
+    options: Options<WaitlistrequestGetByEmailData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      WaitlistrequestGetByEmailResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/waitlist/email/{email}", ...options });
   }
 }
 
@@ -671,6 +744,23 @@ export class UserController {
     });
   }
 
+  public static userInviteUser<ThrowOnError extends boolean = false>(
+    options: Options<UserInviteUserData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      UserInviteUserResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/api/users/invite",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
   public static userDelete<ThrowOnError extends boolean = false>(
     options: Options<UserDeleteData, ThrowOnError>,
   ) {
@@ -709,6 +799,16 @@ export class UserController {
       unknown,
       ThrowOnError
     >({ url: "/api/users/provider/{providerId}", ...options });
+  }
+
+  public static userGetMe<ThrowOnError extends boolean = false>(
+    options: Options<UserGetMeData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      UserGetMeResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/users/me", ...options });
   }
 
   public static userGetByEmail<ThrowOnError extends boolean = false>(

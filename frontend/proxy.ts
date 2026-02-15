@@ -4,29 +4,28 @@ import { getSessionCookie } from "better-auth/cookies";
 export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
 
-  // Define protected routes that require authentication
   const protectedPaths = [
     "/dashboard",
     "/questions",
     "/sessions",
-    "/api/questions", // Protect API routes if needed
+    "/learn",
+    "/learning-sessions",
+    "/admin",
+    "/api/questions",
   ];
 
-  // Check if current path is protected
   const isProtectedPath = protectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path),
   );
 
-  // If accessing protected route without session, redirect to login
   if (isProtectedPath && !sessionCookie) {
     const loginUrl = new URL("/auth/login", request.url);
     loginUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // If accessing auth pages with valid session, redirect to dashboard
   if (request.nextUrl.pathname.startsWith("/auth/login") && sessionCookie) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
@@ -37,6 +36,9 @@ export const config = {
     "/dashboard/:path*",
     "/questions/:path*",
     "/sessions/:path*",
+    "/learn/:path*",
+    "/learning-sessions/:path*",
+    "/admin/:path*",
     "/auth/login",
   ],
 };

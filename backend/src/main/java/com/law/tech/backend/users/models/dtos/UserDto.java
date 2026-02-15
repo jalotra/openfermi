@@ -20,5 +20,7 @@ public class UserDto extends BaseDto {
     private String avatarUrl;
     private String provider;
     private String providerId;
+    private boolean isApproved;
+    private boolean isAdmin;
     private LocalDateTime lastLoginAt;
 }
