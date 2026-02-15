@@ -27,6 +27,7 @@ interface LearningSessionData {
   audioUrl: string;
   transcript: string;
   segments: string;
+  wordTimestamps: { words: string[]; start: number[]; end: number[] } | null;
 }
 
 interface TutorData {
@@ -105,6 +106,7 @@ export default async function LearnSessionPage({
           }}
           audioUrl={session.audioUrl}
           segments={segments}
+          wordTimestamps={session.wordTimestamps || null}
           sessionId={id}
         />
       </div>

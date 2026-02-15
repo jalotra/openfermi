@@ -1,6 +1,7 @@
 package com.law.tech.backend.learningsessions.models.dtos;
 
 import com.law.tech.backend.base.models.dtos.BaseDto;
+import com.law.tech.backend.learningsessions.models.WordTimestamps;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -21,4 +22,5 @@ public class LearningSessionDto extends BaseDto {
     private String audioUrl;
     private String transcript;
     private String segments;
+    private WordTimestamps wordTimestamps;
 }

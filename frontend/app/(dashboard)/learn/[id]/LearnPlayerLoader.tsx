@@ -15,6 +15,7 @@ interface LearnPlayerLoaderProps {
   question: QuestionDto;
   audioUrl: string;
   segments: Segment[];
+  wordTimestamps: WordTimestamps | null;
   sessionId: string;
 }
 
@@ -23,6 +24,7 @@ export function LearnPlayerLoader({
   question,
   audioUrl,
   segments,
+  wordTimestamps,
   sessionId,
 }: LearnPlayerLoaderProps) {
   const loadSession = useLearnStore((s) => s.loadSession);
@@ -32,16 +34,22 @@ export function LearnPlayerLoader({
     if (hydrated.current) return;
     hydrated.current = true;
 
-    let wordTimestamps: WordTimestamps | null = null;
+    let timestamps = wordTimestamps;
 
-    const storeTimestamps = useLearnStore.getState().wordTimestamps;
-    if (storeTimestamps && storeTimestamps.words.length > 0) {
-      wordTimestamps = storeTimestamps;
-    } else {
+    if (!timestamps) {
+      const storeTimestamps = useLearnStore.getState().wordTimestamps;
+      if (storeTimestamps && storeTimestamps.words.length > 0) {
+        timestamps = storeTimestamps;
+      }
+    }
+
+    if (!timestamps) {
       try {
-        const stored = sessionStorage.getItem(`learn-timestamps-${sessionId}`);
+        const stored = sessionStorage.getItem(
+          `learn-timestamps-${sessionId}`,
+        );
         if (stored) {
-          wordTimestamps = JSON.parse(stored);
+          timestamps = JSON.parse(stored);
           sessionStorage.removeItem(`learn-timestamps-${sessionId}`);
         }
       } catch {
@@ -49,8 +57,14 @@ export function LearnPlayerLoader({
       }
     }
 
-    loadSession({ tutor, question, audioUrl, segments, wordTimestamps });
-  }, [tutor, question, audioUrl, segments, sessionId, loadSession]);
+    loadSession({
+      tutor,
+      question,
+      audioUrl,
+      segments,
+      wordTimestamps: timestamps,
+    });
+  }, [tutor, question, audioUrl, segments, wordTimestamps, sessionId, loadSession]);
 
   return <LearnPlayer />;
 }

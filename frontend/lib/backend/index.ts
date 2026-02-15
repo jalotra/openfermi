@@ -62,6 +62,9 @@ export type {
   LearningsessionGetByQuestionAndTutorData,
   LearningsessionGetByQuestionAndTutorResponse,
   LearningsessionGetByQuestionAndTutorResponses,
+  LearningsessionGetByQuestionIdData,
+  LearningsessionGetByQuestionIdResponse,
+  LearningsessionGetByQuestionIdResponses,
   LearningsessionGetByUserIdData,
   LearningsessionGetByUserIdResponse,
   LearningsessionGetByUserIdResponses,
@@ -200,4 +203,5 @@ export type {
   UserUpsertData,
   UserUpsertResponse,
   UserUpsertResponses,
+  WordTimestamps,
 } from "./types.gen";

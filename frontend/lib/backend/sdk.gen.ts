@@ -23,6 +23,8 @@ import type {
   LearningsessionDeleteResponses,
   LearningsessionGetByQuestionAndTutorData,
   LearningsessionGetByQuestionAndTutorResponses,
+  LearningsessionGetByQuestionIdData,
+  LearningsessionGetByQuestionIdResponses,
   LearningsessionGetByUserIdData,
   LearningsessionGetByUserIdResponses,
   LearningsessionGetData,
@@ -598,6 +600,16 @@ export class LearningSessionController {
       unknown,
       ThrowOnError
     >({ url: "/learning-sessions/schema", ...options });
+  }
+
+  public static learningsessionGetByQuestionId<
+    ThrowOnError extends boolean = false,
+  >(options: Options<LearningsessionGetByQuestionIdData, ThrowOnError>) {
+    return (options.client ?? client).get<
+      LearningsessionGetByQuestionIdResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/learning-sessions/question/{questionId}", ...options });
   }
 
   public static learningsessionGetByQuestionAndTutor<

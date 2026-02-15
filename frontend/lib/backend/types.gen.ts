@@ -134,6 +134,13 @@ export type LearningSessionDto = {
   audioUrl?: string;
   transcript?: string;
   segments?: string;
+  wordTimestamps?: WordTimestamps;
+};
+
+export type WordTimestamps = {
+  words?: Array<string>;
+  start?: Array<number>;
+  end?: Array<number>;
 };
 
 export type GenericResponseLearningSessionDto = {
@@ -1051,6 +1058,25 @@ export type LearningsessionGetSchemaResponses = {
 
 export type LearningsessionGetSchemaResponse =
   LearningsessionGetSchemaResponses[keyof LearningsessionGetSchemaResponses];
+
+export type LearningsessionGetByQuestionIdData = {
+  body?: never;
+  path: {
+    questionId: string;
+  };
+  query?: never;
+  url: "/learning-sessions/question/{questionId}";
+};
+
+export type LearningsessionGetByQuestionIdResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListLearningSessionDto;
+};
+
+export type LearningsessionGetByQuestionIdResponse =
+  LearningsessionGetByQuestionIdResponses[keyof LearningsessionGetByQuestionIdResponses];
 
 export type LearningsessionGetByQuestionAndTutorData = {
   body?: never;
