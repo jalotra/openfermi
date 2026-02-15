@@ -49,18 +49,18 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
     setIsInviting(true);
 
     try {
-      const res = await fetch(`${BACKEND_URL}/api/users/invite`, {
+      const res = await fetch("/api/email/invite", {
         method: "POST",
-        headers: getHeaders(),
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: inviteEmail }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.message || "Failed to invite user");
+        throw new Error(data?.error || "Failed to invite user");
       }
 
-      toast.success(`Invited ${inviteEmail}`);
+      toast.success(`Invited ${inviteEmail} — welcome email sent`);
       setInviteEmail("");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to invite user");
@@ -69,29 +69,34 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
     }
   };
 
-  const handleApprove = async (id: string) => {
-    setProcessingIds((prev) => new Set(prev).add(id));
+  const handleApprove = async (item: WaitlistItem) => {
+    setProcessingIds((prev) => new Set(prev).add(item.id));
     try {
-      const res = await fetch(
-        `${BACKEND_URL}/api/users/waitlist/${id}/approve`,
-        {
-          method: "PUT",
-          headers: getHeaders(),
-        },
-      );
+      const res = await fetch("/api/email/approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: item.id,
+          email: item.email,
+          name: item.name,
+        }),
+      });
 
-      if (!res.ok) throw new Error("Failed to approve");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "Failed to approve");
+      }
 
       setWaitlist((prev) =>
-        prev.map((w) => (w.id === id ? { ...w, status: "APPROVED" } : w)),
+        prev.map((w) => (w.id === item.id ? { ...w, status: "APPROVED" } : w)),
       );
-      toast.success("User approved");
-    } catch {
-      toast.error("Failed to approve request");
+      toast.success("User approved — approval email sent");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to approve request");
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);
-        next.delete(id);
+        next.delete(item.id);
         return next;
       });
     }
@@ -223,7 +228,7 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
                     <div className="flex gap-2 shrink-0">
                       <Button
                         size="sm"
-                        onClick={() => handleApprove(item.id)}
+                        onClick={() => handleApprove(item)}
                         disabled={processingIds.has(item.id)}
                       >
                         <Check className="mr-1 h-3.5 w-3.5" />
