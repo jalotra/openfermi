@@ -10,8 +10,25 @@ import Link from "next/link";
 import { useLearnStore } from "@/store/learn";
 import { SolutionController } from "@/lib/backend";
 import { backendClient } from "@/lib/backend-client";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+
+function scrollInContainer(el: HTMLElement, container: HTMLElement) {
+  const elRect = el.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+  if (elRect.bottom > containerRect.bottom || elRect.top < containerRect.top) {
+    container.scrollTo({
+      top:
+        container.scrollTop +
+        (elRect.top - containerRect.top) -
+        containerRect.height / 2,
+      behavior: "smooth",
+    });
+  }
+}
 
 export function LearnPlayer() {
+  const isMobile = useIsMobile();
   const tutor = useLearnStore((s) => s.tutor);
   const question = useLearnStore((s) => s.question);
   const audioUrl = useLearnStore((s) => s.audioUrl);
@@ -31,6 +48,9 @@ export function LearnPlayer() {
   const animFrameRef = useRef<number>(0);
   const segmentRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const wordRefs = useRef<Map<number, HTMLSpanElement>>(new Map());
+  const stepsContainerRef = useRef<HTMLDivElement>(null);
+  const transcriptContainerRef = useRef<HTMLDivElement>(null);
+  const userInteractingRef = useRef(false);
 
   const tick = useCallback(() => {
     if (!audioRef.current) return;
@@ -50,18 +70,18 @@ export function LearnPlayer() {
   }, [isPlaying, tick]);
 
   useEffect(() => {
-    if (activeSegmentIdx >= 0) {
-      segmentRefs.current
-        .get(activeSegmentIdx)
-        ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (userInteractingRef.current) return;
+    const el = segmentRefs.current.get(activeSegmentIdx);
+    if (activeSegmentIdx >= 0 && el && stepsContainerRef.current) {
+      scrollInContainer(el, stepsContainerRef.current);
     }
   }, [activeSegmentIdx]);
 
   useEffect(() => {
-    if (activeWordIdx >= 0) {
-      wordRefs.current
-        .get(activeWordIdx)
-        ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (userInteractingRef.current) return;
+    const el = wordRefs.current.get(activeWordIdx);
+    if (activeWordIdx >= 0 && el && transcriptContainerRef.current) {
+      scrollInContainer(el, transcriptContainerRef.current);
     }
   }, [activeWordIdx]);
 
@@ -122,7 +142,12 @@ export function LearnPlayer() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div
+        className={cn(
+          "flex items-center justify-between",
+          isMobile && "flex-col items-start gap-3",
+        )}
+      >
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center overflow-hidden border-2 border-primary/20 shrink-0">
             {tutor.avatarUrl ? (
@@ -216,11 +241,19 @@ export function LearnPlayer() {
       <div
         className="grid gap-6"
         style={{
-          gridTemplateColumns: "1fr 2fr",
-          height: "calc(100vh - 340px)",
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 2fr",
+          ...(isMobile ? {} : { height: "calc(100vh - 340px)" }),
         }}
       >
-        <div className="overflow-auto pr-2 space-y-3">
+        <div
+          ref={stepsContainerRef}
+          onMouseEnter={() => (userInteractingRef.current = true)}
+          onMouseLeave={() => (userInteractingRef.current = false)}
+          className={cn(
+            "overflow-auto pr-2 space-y-3",
+            isMobile && "max-h-[50vh]",
+          )}
+        >
           <div className="flex items-center gap-2 mb-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm py-2 z-10">
             <Volume2 className="h-4 w-4 text-muted-foreground" />
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
@@ -267,7 +300,12 @@ export function LearnPlayer() {
           ))}
         </div>
 
-        <div className="overflow-auto pl-2">
+        <div
+          ref={transcriptContainerRef}
+          onMouseEnter={() => (userInteractingRef.current = true)}
+          onMouseLeave={() => (userInteractingRef.current = false)}
+          className={cn("overflow-auto", isMobile ? "max-h-[50vh]" : "pl-2")}
+        >
           <div className="flex items-center gap-2 mb-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm py-2 z-10">
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
