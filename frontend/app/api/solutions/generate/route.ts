@@ -6,8 +6,8 @@ import { z } from "zod";
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
   headers: {
-    "HTTP-Referer": "https://github.com/openfermi",
-    "X-Title": "OpenFermi Solution Generator",
+    "HTTP-Referer": "https://github.com/Tars",
+    "X-Title": "Tars Solution Generator",
   },
 });
 

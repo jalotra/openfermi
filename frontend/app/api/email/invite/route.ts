@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     const { error: emailError } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: email,
-      subject: "You're invited to OpenFermi!",
+      subject: "You're invited to Tars!",
       react: InviteEmail({ email, loginUrl }),
     });
 

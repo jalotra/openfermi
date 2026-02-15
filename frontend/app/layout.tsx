@@ -16,9 +16,22 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Canvas Interface - Interactive Learning Platform",
+  title: "Tars AI",
   description:
-    "An intuitive platform for educators and students to work through questions, draw solutions, and collaborate in real-time.",
+    "Tars AI is an AI native learning platform for STEM students",
+  icons: {
+    icon: [
+      { url: "/favicon.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "Tars AI",
+    description: "Tars AI is an AI native learning platform for STEM students",
+    url: "https://tars.pavitra.app",
+    images: [{ url: "/tars.png" }],
+  },
 };
 
 export default function RootLayout({

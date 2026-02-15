@@ -22,12 +22,12 @@ export function InviteEmail({ email, loginUrl }: InviteEmailProps) {
       <Body style={body}>
         <Container style={container}>
           <Section style={section}>
-            <Text style={heading}>Welcome to OpenFermi!</Text>
+            <Text style={heading}>Welcome to Tars!</Text>
 
             <Text style={paragraph}>Hey there,</Text>
 
             <Text style={paragraph}>
-              Hello trailblazer! Welcome to <strong>OpenFermi</strong> and <strong>Tars</strong>!
+              Hello trailblazer! Welcome to <strong>Tars</strong> and <strong>Tars</strong>!
               We are a small team of engineers, designers and educators who want to make you succeed in STEM and as a 1st step to your future.
               We distill knowledge out from past papers and a world class LLMs (large language models) 
               to create a platform that is as close to a real teacher as possible. Includes a bonus kicker : Richard Feynman as a tutor whenever you need help / or hints.
@@ -48,7 +48,7 @@ export function InviteEmail({ email, loginUrl }: InviteEmailProps) {
 
             <Section style={buttonContainer}>
               <Button style={button} href={loginUrl}>
-                Sign in to OpenFermi
+                Sign in to Tars
               </Button>
             </Section>
 
@@ -60,7 +60,7 @@ export function InviteEmail({ email, loginUrl }: InviteEmailProps) {
             <Hr style={hr} />
 
             <Text style={footer}>
-              — Shivam, OpenFermi
+              — Shivam, Tars
             </Text>
           </Section>
         </Container>

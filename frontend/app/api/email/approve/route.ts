@@ -77,7 +77,7 @@ export async function POST(request: Request) {
     const { error: emailError } = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL,
       to: email,
-      subject: "You've been approved on OpenFermi!",
+      subject: "You've been approved on Tars!",
       react: ApproveEmail({ name, loginUrl }),
     });
 

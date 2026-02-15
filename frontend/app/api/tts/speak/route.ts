@@ -11,8 +11,8 @@ import { uploadAudioToS3 } from "@/lib/s3";
 const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY,
   headers: {
-    "HTTP-Referer": "https://github.com/openfermi",
-    "X-Title": "OpenFermi Learn",
+    "HTTP-Referer": "https://github.com/Tars",
+    "X-Title": "Tars Learn",
   },
 });
 

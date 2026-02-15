@@ -12,7 +12,7 @@ export default function LandingPage() {
       <nav className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-bold">Learn with Friends</span>
+            <span className="text-xl font-bold">Tars</span>
           </div>
           <Link href="/questions">
             <Button>Get Started</Button>
@@ -114,7 +114,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">
-              Why Choose Learn with Friends?
+              Why Choose Tars?
             </h2>
             <p className="text-gray-600 text-lg">
               Built for modern learners and students
@@ -194,10 +194,10 @@ export default function LandingPage() {
         <div className="container mx-auto px-6 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-4 md:mb-0">
-              <span className="font-semibold">Learn with Friends</span>
+              <span className="font-semibold">Tars</span>
             </div>
             <p className="text-gray-600 text-sm">
-              © 2026 Learn with Friends. All rights reserved.
+              © 2026 Tars. All rights reserved.
             </p>
           </div>
         </div>
