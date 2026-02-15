@@ -1,6 +1,7 @@
 package com.law.tech.backend.learningsessions.models;
 
 import com.law.tech.backend.base.models.BaseEntity;
+import com.law.tech.backend.learningsessions.converters.WordTimestampsConverter;
 import com.law.tech.backend.questions.models.Question;
 import com.law.tech.backend.tutors.models.Tutor;
 import jakarta.persistence.*;
@@ -46,4 +47,8 @@ public class LearningSession extends BaseEntity {
 
     @Column(name = "segments", columnDefinition = "TEXT")
     private String segments;
+
+    @Convert(converter = WordTimestampsConverter.class)
+    @Column(name = "word_timestamps", columnDefinition = "TEXT")
+    private WordTimestamps wordTimestamps;
 }

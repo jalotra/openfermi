@@ -67,6 +67,14 @@ public class LearningSessionController extends BaseController<LearningSessionDto
         );
     }
 
+    @GetMapping("/question/{questionId}")
+    public ResponseEntity<GenericResponse<List<LearningSessionDto>>> getByQuestionId(@PathVariable UUID questionId) {
+        List<LearningSessionDto> sessions = learningSessionReadService.findByQuestionId(questionId);
+        return ResponseEntity.ok(
+                GenericResponse.<List<LearningSessionDto>>builder().data(sessions).message("Success").build()
+        );
+    }
+
     @GetMapping("/question/{questionId}/tutor/{tutorId}")
     public ResponseEntity<GenericResponse<LearningSessionDto>> getByQuestionAndTutor(
             @PathVariable UUID questionId, @PathVariable UUID tutorId) {

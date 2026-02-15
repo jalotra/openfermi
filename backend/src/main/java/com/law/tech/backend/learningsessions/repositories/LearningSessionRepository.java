@@ -11,5 +11,6 @@ import java.util.UUID;
 @Repository
 public interface LearningSessionRepository extends BaseRepository<LearningSession> {
     Optional<LearningSession> findByQuestionIdAndTutorId(UUID questionId, UUID tutorId);
+    List<LearningSession> findByQuestionId(UUID questionId);
     List<LearningSession> findByUserId(String userId);
 }

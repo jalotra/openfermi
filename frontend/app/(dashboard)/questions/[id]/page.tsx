@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   ImageIcon,
   ChevronDown,
+  GraduationCap,
   Lightbulb,
 } from "lucide-react";
 import Link from "next/link";
@@ -96,6 +97,12 @@ export default async function QuestionDetailsPage({
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <Link href={`/learning-sessions?questionId=${question.id || id}`}>
+              <Button size="lg" variant="outline">
+                <GraduationCap className="mr-2 h-4 w-4" />
+                Learning Sessions
+              </Button>
+            </Link>
             <Link href={`/questions/${question.id || id}/solution`}>
               <Button size="lg" variant="outline">
                 <Lightbulb className="mr-2 h-4 w-4" />

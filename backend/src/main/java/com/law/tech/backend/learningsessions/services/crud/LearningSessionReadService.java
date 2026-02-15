@@ -28,6 +28,12 @@ public class LearningSessionReadService extends BaseReadService<LearningSessionD
         return learningSessionRepository.findByQuestionIdAndTutorId(questionId, tutorId).map(mapper::toDto);
     }
 
+    public List<LearningSessionDto> findByQuestionId(UUID questionId) {
+        return learningSessionRepository.findByQuestionId(questionId).stream()
+                .map(mapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public List<LearningSessionDto> findByUserId(String userId) {
         return learningSessionRepository.findByUserId(userId).stream()
                 .map(mapper::toDto)
