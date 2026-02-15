@@ -45,9 +45,7 @@ export function LearnPlayerLoader({
 
     if (!timestamps) {
       try {
-        const stored = sessionStorage.getItem(
-          `learn-timestamps-${sessionId}`,
-        );
+        const stored = sessionStorage.getItem(`learn-timestamps-${sessionId}`);
         if (stored) {
           timestamps = JSON.parse(stored);
           sessionStorage.removeItem(`learn-timestamps-${sessionId}`);
@@ -64,7 +62,15 @@ export function LearnPlayerLoader({
       segments,
       wordTimestamps: timestamps,
     });
-  }, [tutor, question, audioUrl, segments, wordTimestamps, sessionId, loadSession]);
+  }, [
+    tutor,
+    question,
+    audioUrl,
+    segments,
+    wordTimestamps,
+    sessionId,
+    loadSession,
+  ]);
 
   return <LearnPlayer />;
 }

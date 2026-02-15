@@ -22,6 +22,23 @@ export type GenericResponseSessionStateDto = {
   message?: string;
 };
 
+export type GenericResponseWaitlistRequestDto = {
+  data?: WaitlistRequestDto;
+  message?: string;
+};
+
+export type WaitlistRequestDto = {
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  email?: string;
+  name?: string;
+  message?: string;
+  status?: "PENDING" | "APPROVED" | "REJECTED";
+};
+
 export type TutorDto = {
   id?: string;
   createdAt?: string;
@@ -160,10 +177,18 @@ export type UserDto = {
   provider?: string;
   providerId?: string;
   lastLoginAt?: string;
+  admin?: boolean;
+  approved?: boolean;
 };
 
 export type GenericResponseUserDto = {
   data?: UserDto;
+  message?: string;
+};
+
+export type WaitlistSubmitRequest = {
+  email?: string;
+  name?: string;
   message?: string;
 };
 
@@ -173,6 +198,10 @@ export type UserSyncRequest = {
   avatarUrl?: string;
   provider?: string;
   providerId?: string;
+};
+
+export type InviteRequest = {
+  email?: string;
 };
 
 export type PresignUrlRequest = {
@@ -231,6 +260,11 @@ export type GenericResponseListLearningSessionDto = {
   message?: string;
 };
 
+export type GenericResponseListWaitlistRequestDto = {
+  data?: Array<WaitlistRequestDto>;
+  message?: string;
+};
+
 export type SessionstateGetStateData = {
   body?: never;
   path?: never;
@@ -267,6 +301,44 @@ export type SessionstateUpsertStateResponses = {
 
 export type SessionstateUpsertStateResponse =
   SessionstateUpsertStateResponses[keyof SessionstateUpsertStateResponses];
+
+export type WaitlistrequestRejectData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/users/waitlist/{id}/reject";
+};
+
+export type WaitlistrequestRejectResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseWaitlistRequestDto;
+};
+
+export type WaitlistrequestRejectResponse =
+  WaitlistrequestRejectResponses[keyof WaitlistrequestRejectResponses];
+
+export type WaitlistrequestApproveData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/users/waitlist/{id}/approve";
+};
+
+export type WaitlistrequestApproveResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseWaitlistRequestDto;
+};
+
+export type WaitlistrequestApproveResponse =
+  WaitlistrequestApproveResponses[keyof WaitlistrequestApproveResponses];
 
 export type TutorReadData = {
   body?: never;
@@ -486,6 +558,42 @@ export type UserUpsertResponses = {
 
 export type UserUpsertResponse = UserUpsertResponses[keyof UserUpsertResponses];
 
+export type WaitlistrequestListData = {
+  body?: never;
+  path?: never;
+  query?: {
+    status?: string;
+  };
+  url: "/api/users/waitlist";
+};
+
+export type WaitlistrequestListResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListWaitlistRequestDto;
+};
+
+export type WaitlistrequestListResponse =
+  WaitlistrequestListResponses[keyof WaitlistrequestListResponses];
+
+export type WaitlistrequestSubmitData = {
+  body: WaitlistSubmitRequest;
+  path?: never;
+  query?: never;
+  url: "/api/users/waitlist";
+};
+
+export type WaitlistrequestSubmitResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseWaitlistRequestDto;
+};
+
+export type WaitlistrequestSubmitResponse =
+  WaitlistrequestSubmitResponses[keyof WaitlistrequestSubmitResponses];
+
 export type UserSyncUserData = {
   body: UserSyncRequest;
   path?: never;
@@ -497,11 +605,28 @@ export type UserSyncUserResponses = {
   /**
    * OK
    */
-  200: UserDto;
+  200: GenericResponseUserDto;
 };
 
 export type UserSyncUserResponse =
   UserSyncUserResponses[keyof UserSyncUserResponses];
+
+export type UserInviteUserData = {
+  body: InviteRequest;
+  path?: never;
+  query?: never;
+  url: "/api/users/invite";
+};
+
+export type UserInviteUserResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseUserDto;
+};
+
+export type UserInviteUserResponse =
+  UserInviteUserResponses[keyof UserInviteUserResponses];
 
 export type PresignCreatePresignUrlData = {
   body: PresignUrlRequest;
@@ -1168,6 +1293,25 @@ export type UserGetResponses = {
 
 export type UserGetResponse = UserGetResponses[keyof UserGetResponses];
 
+export type WaitlistrequestGetByEmailData = {
+  body?: never;
+  path: {
+    email: string;
+  };
+  query?: never;
+  url: "/api/users/waitlist/email/{email}";
+};
+
+export type WaitlistrequestGetByEmailResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseWaitlistRequestDto;
+};
+
+export type WaitlistrequestGetByEmailResponse =
+  WaitlistrequestGetByEmailResponses[keyof WaitlistrequestGetByEmailResponses];
+
 export type UserGetSchemaData = {
   body?: never;
   path?: never;
@@ -1198,11 +1342,29 @@ export type UserGetByProviderIdResponses = {
   /**
    * OK
    */
-  200: UserDto;
+  200: GenericResponseUserDto;
 };
 
 export type UserGetByProviderIdResponse =
   UserGetByProviderIdResponses[keyof UserGetByProviderIdResponses];
+
+export type UserGetMeData = {
+  body?: never;
+  path?: never;
+  query: {
+    email: string;
+  };
+  url: "/api/users/me";
+};
+
+export type UserGetMeResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseUserDto;
+};
+
+export type UserGetMeResponse = UserGetMeResponses[keyof UserGetMeResponses];
 
 export type UserGetByEmailData = {
   body?: never;
@@ -1217,7 +1379,7 @@ export type UserGetByEmailResponses = {
   /**
    * OK
    */
-  200: UserDto;
+  200: GenericResponseUserDto;
 };
 
 export type UserGetByEmailResponse =

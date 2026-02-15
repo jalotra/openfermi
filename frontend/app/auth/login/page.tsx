@@ -11,24 +11,25 @@ import {
 } from "@/components/ui/card";
 import { Chrome } from "lucide-react";
 import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 function AuthPageContent() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
+    setError(null);
     try {
       await authClient.signIn.social({
         provider: "google",
         callbackURL: callbackUrl,
       });
-    } catch (error) {
-      console.error("Sign in error:", error);
-    } finally {
+    } catch (err) {
+      console.error("Sign in error:", err);
+      setError("An unexpected error occurred.");
       setIsLoading(false);
     }
   };
@@ -43,6 +44,11 @@ function AuthPageContent() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 text-center">
+              {error}
+            </div>
+          )}
           <Button
             variant="outline"
             className="w-full h-12"

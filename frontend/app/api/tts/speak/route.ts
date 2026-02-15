@@ -203,15 +203,15 @@ IMPORTANT RULES:
           {
             method: "POST",
             headers,
-          body: JSON.stringify({
-            questionId,
-            tutorId,
-            userId: userId || "anonymous",
-            audioUrl,
-            transcript: fullTranscript,
-            segments: JSON.stringify(enrichedSegments),
-            wordTimestamps,
-          }),
+            body: JSON.stringify({
+              questionId,
+              tutorId,
+              userId: userId || "anonymous",
+              audioUrl,
+              transcript: fullTranscript,
+              segments: JSON.stringify(enrichedSegments),
+              wordTimestamps,
+            }),
           },
         );
 

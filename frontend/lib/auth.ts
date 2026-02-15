@@ -1,55 +1,69 @@
 import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 
-// Helper function to sync user data to Spring Boot backend
-async function syncUserToBackend(user: any) {
+const BACKEND_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
+).replace(/\/+$/, "");
+
+function getBackendHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (process.env.NEXT_PUBLIC_API_KEY) {
+    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_API_KEY;
+  }
+  return headers;
+}
+
+async function syncUserToBackend(user: any): Promise<{ approved: boolean }> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/users/sync`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: user.email,
-          name: user.name,
-          avatarUrl: user.image,
-          provider: "google",
-          providerId: user.id,
-        }),
-      },
-    );
+    const response = await fetch(`${BACKEND_URL}/api/users/sync`, {
+      method: "POST",
+      headers: getBackendHeaders(),
+      body: JSON.stringify({
+        email: user.email,
+        name: user.name,
+        avatarUrl: user.image,
+        provider: "google",
+        providerId: user.id,
+      }),
+    });
+
+    if (response.status === 403) {
+      return { approved: false };
+    }
 
     if (!response.ok) {
       console.error("Failed to sync user to backend:", await response.text());
+      return { approved: false };
     }
+
+    return { approved: true };
   } catch (error) {
     console.error("Error syncing user to backend:", error);
+    return { approved: false };
   }
 }
 
 export const auth = betterAuth({
-  // No database configuration - using stateless mode
-  // Sessions are stored in signed/encrypted cookies only
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
 
-  // Stateless session management with JWT cookies
   session: {
     cookieCache: {
       enabled: true,
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-      strategy: "jwt", // JWT format for better interoperability
+      maxAge: 7 * 24 * 60 * 60,
+      strategy: "jwt",
       refreshCache: true,
     },
   },
 
-  // Account configuration for OAuth
   account: {
     storeStateStrategy: "cookie",
     storeAccountCookie: true,
   },
 
-  // Google OAuth provider
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -57,8 +71,25 @@ export const auth = betterAuth({
     },
   },
 
-  // Enable Next.js cookies plugin (must be last in plugins array)
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          await syncUserToBackend(user);
+        },
+      },
+    },
+    session: {
+      create: {
+        after: async (session) => {
+          // we don't need to sync user to backend on session create
+        },
+      },
+    },
+  },
+
   plugins: [nextCookies()],
 });
 
+export { syncUserToBackend };
 export type AuthType = typeof auth;
