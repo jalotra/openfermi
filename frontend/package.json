@@ -15,6 +15,7 @@
     "@cartesia/cartesia-js": "^2.2.9",
     "@openrouter/ai-sdk-provider": "^2.2.3",
     "@react-email/components": "^1.0.7",
+    "@react-email/render": "^2.0.4",
     "@tanstack/react-table": "^8.21.3",
     "@tldraw/tldraw": "^4.3.0",
     "ai": "^6.0.86",
