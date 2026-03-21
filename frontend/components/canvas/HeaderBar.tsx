@@ -49,7 +49,7 @@ export function HeaderBar({
   const isLowTime = timeLeftSeconds < 60;
 
   return (
-    <header className="w-full bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+    <header className="w-full bg-background border-b border-border px-6 py-4 flex items-center justify-between">
       {/* Left section */}
       <div className="flex items-center gap-4">
         {onSidebarToggle && (
@@ -72,13 +72,13 @@ export function HeaderBar({
         </Button>
 
         <div
-          className={`text-lg font-mono font-medium tabular-nums ${isLowTime ? "text-red-600 animate-pulse" : "text-gray-900"}`}
+          className={`text-lg font-mono font-medium tabular-nums ${isLowTime ? "text-destructive animate-pulse" : "text-foreground"}`}
         >
           {formatCountdown(timeLeftSeconds)}
         </div>
 
         {isPaused && (
-          <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+          <Badge variant="secondary" className="bg-muted text-foreground">
             PAUSED
           </Badge>
         )}
@@ -95,7 +95,7 @@ export function HeaderBar({
         >
           <ChevronLeft className="h-5 w-5" />
         </Button>
-        <div className="text-sm font-medium text-gray-700">
+        <div className="text-sm font-medium text-muted-foreground">
           Q {currentQuestion}/{totalQuestions}
         </div>
         <Button

@@ -95,8 +95,8 @@ function WaitlistFormContent() {
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="w-full max-w-md">
           <CardContent className="flex flex-col items-center py-12 space-y-4">
-            <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+              <CheckCircle2 className="h-8 w-8 text-primary" />
             </div>
             <h2 className="text-xl font-semibold text-center">
               Request Received
@@ -168,7 +168,7 @@ function WaitlistFormContent() {
             </div>
 
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+              <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-sm text-destructive">
                 {error}
               </div>
             )}

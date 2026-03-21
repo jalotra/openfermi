@@ -38,10 +38,10 @@ export default async function SessionPage({
 
   if (!session) {
     return (
-      <div className="flex-1 bg-gray-50/50 p-8">
+      <div className="flex-1 bg-muted/50 p-8">
         <div className="max-w-2xl mx-auto">
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error || "Session not found"}</p>
+          <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
+            <p className="text-destructive">{error || "Session not found"}</p>
           </div>
         </div>
       </div>

@@ -63,7 +63,7 @@ export default async function QuestionDetailsPage({
   if (!question) notFound();
 
   return (
-    <div className="flex-1 min-h-0 overflow-auto bg-gray-50/50 p-8">
+    <div className="flex-1 min-h-0 overflow-auto bg-muted/50 p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href="/questions"
@@ -83,10 +83,10 @@ export default async function QuestionDetailsPage({
                 variant="secondary"
                 className={
                   question.difficulty === "EASY"
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-muted text-foreground"
                     : question.difficulty === "MEDIUM"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-red-100 text-red-700"
+                      ? "bg-muted text-foreground"
+                      : "bg-destructive/10 text-destructive"
                 }
               >
                 {question.difficulty}
@@ -127,7 +127,7 @@ export default async function QuestionDetailsPage({
                 <CardTitle>Question Content</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-lg leading-relaxed text-gray-800">
+                <div className="text-lg leading-relaxed text-foreground">
                   <LatexRenderer content={question.latexQuestionText || ""} />
                 </div>
               </CardContent>
@@ -171,12 +171,12 @@ export default async function QuestionDetailsPage({
                       return (
                         <div
                           key={index}
-                          className="flex items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm"
+                          className="flex items-center p-4 rounded-lg border border-border bg-background shadow-sm"
                         >
                           <span className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 text-primary font-bold mr-4 shrink-0">
                             {key}
                           </span>
-                          <div className="text-gray-700 flex-1">
+                          <div className="text-muted-foreground flex-1">
                             <LatexRenderer content={option} />
                           </div>
                         </div>
@@ -195,7 +195,7 @@ export default async function QuestionDetailsPage({
               <CardContent className="space-y-4">
                 {question.subject && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       Subject
                     </label>
                     <p className="font-medium">{question.subject}</p>
@@ -203,7 +203,7 @@ export default async function QuestionDetailsPage({
                 )}
                 {question.topic && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       Topic
                     </label>
                     <p className="font-medium">{question.topic}</p>
@@ -211,7 +211,7 @@ export default async function QuestionDetailsPage({
                 )}
                 {question.examType && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       Exam Type
                     </label>
                     <p className="font-medium">{question.examType}</p>
@@ -219,14 +219,14 @@ export default async function QuestionDetailsPage({
                 )}
                 {question.year && (
                   <div>
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                       Year
                     </label>
                     <p className="font-medium">{question.year}</p>
                   </div>
                 )}
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Created
                   </label>
                   <p className="font-medium">
@@ -236,7 +236,7 @@ export default async function QuestionDetailsPage({
                   </p>
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                     Last Modified
                   </label>
                   <p className="font-medium">

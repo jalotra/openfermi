@@ -89,7 +89,7 @@ export default async function SolutionPage({
   const existingSolution = await fetchSolutionByQuestionId(id);
 
   return (
-    <div className="flex-1 min-h-0 overflow-auto bg-gray-50/50 p-8">
+    <div className="flex-1 min-h-0 overflow-auto bg-muted/50 p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <Link
           href={`/questions/${id}`}
@@ -113,10 +113,10 @@ export default async function SolutionPage({
                 variant="secondary"
                 className={
                   question.difficulty === "EASY"
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-muted text-foreground"
                     : question.difficulty === "MEDIUM"
-                      ? "bg-yellow-100 text-yellow-700"
-                      : "bg-red-100 text-red-700"
+                      ? "bg-muted text-foreground"
+                      : "bg-destructive/10 text-destructive"
                 }
               >
                 {question.difficulty}

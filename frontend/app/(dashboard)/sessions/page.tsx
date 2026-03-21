@@ -50,7 +50,7 @@ export default async function SessionsPage({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-background">
       <div className="p-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
@@ -70,8 +70,8 @@ export default async function SessionsPage({
         </div>
 
         {error ? (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
+          <div className="p-4 bg-destructive/10 border border-destructive/30 rounded-lg">
+            <p className="text-destructive">{error}</p>
           </div>
         ) : sessions.length === 0 ? (
           <div className="p-8 text-center border-2 border-dashed rounded-lg">

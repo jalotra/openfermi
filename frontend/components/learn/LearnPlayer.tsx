@@ -254,7 +254,7 @@ export function LearnPlayer() {
             isMobile && "max-h-[50vh]",
           )}
         >
-          <div className="flex items-center gap-2 mb-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm py-2 z-10">
+          <div className="flex items-center gap-2 mb-2 sticky top-0 bg-muted/90 backdrop-blur-sm py-2 z-10">
             <Volume2 className="h-4 w-4 text-muted-foreground" />
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Solution Steps
@@ -270,7 +270,7 @@ export function LearnPlayer() {
               className={`rounded-lg border p-4 cursor-pointer transition-all ${
                 activeSegmentIdx === i
                   ? "border-primary bg-primary/5 shadow-sm"
-                  : "border-gray-200 bg-white hover:border-gray-300"
+                  : "border-border bg-background hover:border-border"
               }`}
             >
               <div className="flex items-start gap-3">
@@ -278,7 +278,7 @@ export function LearnPlayer() {
                   className={`flex items-center justify-center h-7 w-7 rounded-full text-sm font-bold shrink-0 ${
                     activeSegmentIdx === i
                       ? "bg-primary text-primary-foreground"
-                      : "bg-gray-100 text-gray-600"
+                      : "bg-muted text-muted-foreground"
                   }`}
                 >
                   {seg.stepNumber}
@@ -286,12 +286,14 @@ export function LearnPlayer() {
                 <div className="flex-1 min-w-0">
                   <h4
                     className={`font-medium text-sm ${
-                      activeSegmentIdx === i ? "text-primary" : "text-gray-900"
+                      activeSegmentIdx === i
+                        ? "text-primary"
+                        : "text-foreground"
                     }`}
                   >
                     {seg.stepTitle}
                   </h4>
-                  <p className="text-sm text-gray-600 mt-1 leading-relaxed">
+                  <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
                     {seg.solutionContent}
                   </p>
                 </div>
@@ -306,7 +308,7 @@ export function LearnPlayer() {
           onMouseLeave={() => (userInteractingRef.current = false)}
           className={cn("overflow-auto", isMobile ? "max-h-[50vh]" : "pl-2")}
         >
-          <div className="flex items-center gap-2 mb-2 sticky top-0 bg-gray-50/90 backdrop-blur-sm py-2 z-10">
+          <div className="flex items-center gap-2 mb-2 sticky top-0 bg-muted/90 backdrop-blur-sm py-2 z-10">
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               Transcript
@@ -334,10 +336,10 @@ export function LearnPlayer() {
                           isActive
                             ? "bg-primary/20 text-primary font-semibold rounded px-0.5"
                             : isInActiveSegment
-                              ? "text-gray-900"
+                              ? "text-foreground"
                               : isPast
-                                ? "text-gray-400"
-                                : "text-gray-500"
+                                ? "text-muted-foreground"
+                                : "text-muted-foreground"
                         }`}
                       >
                         {word}{" "}

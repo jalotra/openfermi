@@ -117,7 +117,7 @@ export function SolutionViewer({
             </p>
           </div>
           {error && (
-            <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-md">
+            <p className="text-sm text-destructive bg-destructive/10 px-4 py-2 rounded-md">
               {error}
             </p>
           )}
@@ -136,7 +136,7 @@ export function SolutionViewer({
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Lightbulb className="h-5 w-5 text-yellow-500" />
+              <Lightbulb className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Hints</CardTitle>
             </div>
           </CardHeader>
@@ -149,7 +149,7 @@ export function SolutionViewer({
                 >
                   <AccordionTrigger className="text-left hover:no-underline">
                     <span className="flex items-center gap-3">
-                      <span className="flex items-center justify-center h-7 w-7 rounded-full bg-yellow-100 text-yellow-700 text-sm font-bold shrink-0">
+                      <span className="flex items-center justify-center h-7 w-7 rounded-full bg-muted text-foreground text-sm font-bold shrink-0">
                         {hint.stepNumber}
                       </span>
                       <span className="font-medium py-1">
@@ -173,7 +173,7 @@ export function SolutionViewer({
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-green-600" />
+              <BookOpen className="h-5 w-5 text-primary" />
               <CardTitle>Solution</CardTitle>
             </div>
           </CardHeader>

@@ -29,7 +29,7 @@ export function DrawingToolbar({
 
   return (
     <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
-      <div className="flex flex-col gap-2 bg-white rounded-full shadow-lg p-2 border border-gray-200">
+      <div className="flex flex-col gap-2 bg-background rounded-full shadow-lg p-2 border border-border">
         <Button
           variant="ghost"
           size="icon"
@@ -46,14 +46,14 @@ export function DrawingToolbar({
         >
           <Redo2 className="h-5 w-5" />
         </Button>
-        <div className="h-px bg-gray-200 my-1" />
+        <div className="h-px bg-border my-1" />
         <Button
           variant="ghost"
           size="icon"
           onClick={() => handleToolClick("eraser")}
           className={cn(
             "h-10 w-10 rounded-full",
-            activeTool === "eraser" && "bg-gray-100",
+            activeTool === "eraser" && "bg-muted",
           )}
         >
           <Eraser className="h-5 w-5" />
@@ -64,7 +64,7 @@ export function DrawingToolbar({
           onClick={() => handleToolClick("hand")}
           className={cn(
             "h-10 w-10 rounded-full",
-            activeTool === "hand" && "bg-gray-100",
+            activeTool === "hand" && "bg-muted",
           )}
         >
           <Hand className="h-5 w-5" />
@@ -75,7 +75,7 @@ export function DrawingToolbar({
           onClick={() => handleToolClick("pen")}
           className={cn(
             "h-10 w-10 rounded-full",
-            activeTool === "pen" && "bg-gray-100",
+            activeTool === "pen" && "bg-muted",
           )}
         >
           <Pen className="h-5 w-5" />
@@ -86,7 +86,7 @@ export function DrawingToolbar({
           variant="ghost"
           size="icon"
           onClick={onExport}
-          className="h-10 w-10 rounded-full bg-white shadow-lg border border-gray-200"
+          className="h-10 w-10 rounded-full bg-background shadow-lg border border-border"
         >
           <FileDown className="h-5 w-5" />
         </Button>

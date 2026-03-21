@@ -41,9 +41,9 @@ export function QuestionPanel({
 
   return (
     <div className="w-full px-6 py-4">
-      <Card className="p-6 bg-white rounded-lg shadow-sm">
+      <Card className="p-6 bg-background rounded-lg shadow-sm">
         <div className="mb-6">
-          <div className="text-base text-gray-900 leading-relaxed">
+          <div className="text-base text-foreground leading-relaxed">
             <LatexRenderer content={questionContent} />
           </div>
         </div>
@@ -87,15 +87,15 @@ export function QuestionPanel({
                 onClick={() => onAnswerChange?.(key)}
                 className={cn(
                   "flex items-start gap-3 w-full text-left p-3 rounded-lg transition-colors",
-                  "hover:bg-gray-50",
+                  "hover:bg-muted",
                   isSelected &&
-                    "bg-blue-50 border-2 border-blue-500 hover:bg-blue-50",
+                    "bg-accent border-2 border-primary hover:bg-accent",
                 )}
               >
                 <span
                   className={cn(
                     "font-medium min-w-[24px]",
-                    isSelected ? "text-blue-700" : "text-gray-700",
+                    isSelected ? "text-primary" : "text-muted-foreground",
                   )}
                 >
                   {key}.
@@ -103,7 +103,7 @@ export function QuestionPanel({
                 <div
                   className={cn(
                     "flex-1",
-                    isSelected ? "text-blue-900" : "text-gray-700",
+                    isSelected ? "text-foreground" : "text-muted-foreground",
                   )}
                 >
                   <LatexRenderer content={optionText} />
@@ -113,7 +113,7 @@ export function QuestionPanel({
           })}
         </div>
       </Card>
-      <Separator className="mt-4 bg-gray-200" />
+      <Separator className="mt-4 bg-border" />
     </div>
   );
 }

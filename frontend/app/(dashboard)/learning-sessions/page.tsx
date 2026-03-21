@@ -78,7 +78,7 @@ export default async function LearningSessionsPage({
   }));
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-background">
       <div className="p-8 space-y-8">
         <div>
           {qId && (
@@ -101,8 +101,8 @@ export default async function LearningSessionsPage({
         </div>
 
         {error ? (
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-yellow-800">{error}</p>
+          <div className="p-4 bg-muted border border-border rounded-lg">
+            <p className="text-foreground">{error}</p>
           </div>
         ) : enrichedSessions.length === 0 ? (
           <div className="p-8 text-center border-2 border-dashed rounded-lg">

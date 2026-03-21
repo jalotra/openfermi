@@ -36,11 +36,10 @@ export class SessionActionImpl {
       if (question.id) {
         let solutionExists = false;
         try {
-          const solutionRes =
-            await SolutionController.solutionGetByQuestionId({
-              client: backendClient,
-              path: { questionId: question.id },
-            });
+          const solutionRes = await SolutionController.solutionGetByQuestionId({
+            client: backendClient,
+            path: { questionId: question.id },
+          });
           solutionExists = !!solutionRes.data?.data;
         } catch {
           solutionExists = false;
@@ -59,7 +58,10 @@ export class SessionActionImpl {
               }),
             });
           } catch (solErr) {
-            console.warn("Solution generation failed, proceeding to TTS:", solErr);
+            console.warn(
+              "Solution generation failed, proceeding to TTS:",
+              solErr,
+            );
           }
         }
       }
