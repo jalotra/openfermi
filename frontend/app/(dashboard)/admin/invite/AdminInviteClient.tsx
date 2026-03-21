@@ -92,7 +92,9 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
       );
       toast.success("User approved — approval email sent");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to approve request");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to approve request",
+      );
     } finally {
       setProcessingIds((prev) => {
         const next = new Set(prev);

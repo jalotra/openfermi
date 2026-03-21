@@ -58,7 +58,7 @@ public class SessionStateController {
         SessionStateDto saved = sessionStateService.upsertState(
                 dto.getSessionId(),
                 dto.getQuestionId(),
-                dto.getTldrawSnapshot()
+                dto.getDrawingStrokes()
         );
 
         return ResponseEntity.ok(

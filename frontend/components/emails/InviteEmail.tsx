@@ -27,6 +27,8 @@ export function InviteEmail({ email, loginUrl }: InviteEmailProps) {
             <Text style={paragraph}>Hey there,</Text>
 
             <Text style={paragraph}>
+              Hello trailblazer! Welcome to <strong>Tars</strong> and{" "}
+              <strong>Tars</strong>
               We’re a small team of engineers, designers, and educators on a
               mission to help you succeed in STEM — and take your first
               confident steps toward the future you want to build.

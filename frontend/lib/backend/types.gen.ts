@@ -14,7 +14,7 @@ export type SessionStateDto = {
   updatedBy?: string;
   sessionId?: string;
   questionId?: string;
-  tldrawSnapshot?: JsonNode;
+  drawingStrokes?: JsonNode;
 };
 
 export type GenericResponseSessionStateDto = {

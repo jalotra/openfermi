@@ -18,5 +18,5 @@ import java.util.UUID;
 public class SessionStateDto extends BaseDto {
     private UUID sessionId;
     private UUID questionId;
-    private JsonNode tldrawSnapshot;
+    private JsonNode drawingStrokes;
 }
