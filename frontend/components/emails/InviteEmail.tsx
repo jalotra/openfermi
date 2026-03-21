@@ -28,15 +28,26 @@ export function InviteEmail({ email, loginUrl }: InviteEmailProps) {
 
             <Text style={paragraph}>
               Hello trailblazer! Welcome to <strong>Tars</strong> and{" "}
-              <strong>Tars</strong>! We are a small team of engineers, designers
-              and educators who want to make you succeed in STEM and as a 1st
-              step to your future. We distill knowledge out from past papers and
-              a world class LLMs (large language models) to create a platform
-              that is as close to a real teacher as possible. Includes a bonus
-              kicker : Richard Feynman as a tutor whenever you need help / or
-              hints. We would love to hear from you. Always up for feedback /
-              suggestions / critic on how we together can make this platform
-              better.
+              <strong>Tars</strong>
+              We’re a small team of engineers, designers, and educators on a
+              mission to help you succeed in STEM — and take your first
+              confident steps toward the future you want to build.
+            </Text>
+            <Text style={paragraph}>
+              We distill insights from past papers and combine them with
+              world-class large language models to create a learning platform
+              that feels as close to a real teacher as possible.
+            </Text>
+            <Text style={paragraph}>
+              And here’s the bonus: whenever you need help, hints, or a fresh
+              perspective, you can call on Richard Feynman as your on-demand
+              tutor.
+            </Text>
+            <Text style={paragraph}>
+              We’re building this for you — and with you.
+              <br />
+              Your feedback, suggestions, and honest critiques mean everything
+              to us. Let’s make this platform better, together.
             </Text>
             <Linkedin className="w-4 h-4" />
             <Text style={paragraph}>

@@ -24,6 +24,7 @@ export interface QuestionDto {
   topic?: string;
   difficulty?: string;
   options?: string[];
+  imageUrls?: string[];
 }
 
 export interface Segment {
