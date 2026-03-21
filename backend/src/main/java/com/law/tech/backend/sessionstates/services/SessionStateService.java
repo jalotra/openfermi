@@ -55,7 +55,7 @@ public class SessionStateService {
                         .question(question)
                         .build());
 
-        state.setTldrawSnapshot(snapshot);
+        state.setDrawingStrokes(snapshot);
 
         SessionState saved = sessionStateRepository.save(state);
         return toDto(saved);
@@ -80,7 +80,7 @@ public class SessionStateService {
                 .updatedBy(state.getUpdatedBy())
                 .sessionId(state.getSession().getId())
                 .questionId(state.getQuestion().getId())
-                .tldrawSnapshot(state.getTldrawSnapshot())
+                .drawingStrokes(state.getDrawingStrokes())
                 .build();
     }
 }

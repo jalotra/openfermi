@@ -49,7 +49,7 @@ public class SessionState extends BaseEntity {
     )
     private Question question;
 
-    @Column(name = "tldraw_snapshot")
+    @Column(name = "drawing_strokes")
     @JdbcTypeCode(SqlTypes.JSON)
-    private JsonNode tldrawSnapshot;
+    private JsonNode drawingStrokes;
 }

@@ -51,22 +51,19 @@ export async function POST(request: Request) {
     const { id, email, name } = body;
 
     if (!id || typeof id !== "string") {
-      return NextResponse.json(
-        { error: "id is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
     }
 
     if (!email || typeof email !== "string") {
-      return NextResponse.json(
-        { error: "email is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "email is required" }, { status: 400 });
     }
 
     if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
       return NextResponse.json(
-        { error: "Email service not configured (RESEND_API_KEY / RESEND_FROM_EMAIL missing)" },
+        {
+          error:
+            "Email service not configured (RESEND_API_KEY / RESEND_FROM_EMAIL missing)",
+        },
         { status: 500 },
       );
     }
@@ -101,7 +98,9 @@ export async function POST(request: Request) {
       const data = await backendRes.json().catch(() => null);
       console.error("Backend approve failed (email was sent):", data);
       return NextResponse.json(
-        { error: data?.message || "Backend approve failed, but email was sent" },
+        {
+          error: data?.message || "Backend approve failed, but email was sent",
+        },
         { status: 502 },
       );
     }

@@ -102,9 +102,8 @@ function WaitlistFormContent() {
               Request Received
             </h2>
             <p className="text-sm text-muted-foreground text-center max-w-sm">
-              Thanks for your interest in Tars and Tars! We&apos;ve
-              received your request and you&apos;ll be onboarded shortly after
-              review.
+              Thanks for your interest in Tars and Tars! We&apos;ve received
+              your request and you&apos;ll be onboarded shortly after review.
             </p>
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-4">
               <Clock className="h-3.5 w-3.5" />

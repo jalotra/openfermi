@@ -4,7 +4,11 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { HeaderBar } from "@/components/canvas/HeaderBar";
 import { QuestionPanel } from "@/components/canvas/QuestionPanel";
-import { CanvasEditor, CanvasTool } from "@/components/canvas/CanvasEditor";
+import {
+  CanvasEditor,
+  CanvasTool,
+  CanvasEditorHandle,
+} from "@/components/canvas/CanvasEditor";
 import { DrawingToolbar } from "@/components/canvas/DrawingToolbar";
 import { CollaborationBar } from "@/components/canvas/CollaborationBar";
 import { useSidebar } from "@/components/canvas/SidebarContext";
@@ -14,7 +18,6 @@ import { SessionController } from "@/lib/backend/sdk.gen";
 import { AxiosError } from "axios";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
-import { exportAs } from "tldraw";
 
 interface SessionPlayerProps {
   session: SessionDto;
@@ -24,7 +27,7 @@ interface SessionPlayerProps {
 export function SessionPlayer({ session, questions }: SessionPlayerProps) {
   const router = useRouter();
   const { toggle } = useSidebar();
-  const editorRef = useRef<any>(null);
+  const editorRef = useRef<CanvasEditorHandle>(null);
 
   const [sessionState, setSessionState] = useState(session.state || "DRAFT");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -277,8 +280,6 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
 
   const isPaused = sessionState === "PAUSED";
 
-  const CANVAS_HEIGHT_PX = 5000;
-
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       <div className="sticky top-0 z-30">
@@ -313,38 +314,21 @@ export function SessionPlayer({ session, questions }: SessionPlayerProps) {
           handleAnswerChange(currentQuestion.id || "", answer)
         }
       />
-      <div className="relative" style={{ height: `${CANVAS_HEIGHT_PX}px` }}>
+      <div className="relative">
         <CanvasEditor
+          ref={editorRef}
           key={`${session.id}-${currentQuestion.id}`}
           sessionId={session.id}
           questionId={currentQuestion.id}
-          onEditorReady={(editor) => {
-            editorRef.current = editor;
-          }}
         />
         <DrawingToolbar
           onToolChange={(tool: CanvasTool) => {
-            const toolMap: Record<CanvasTool, string> = {
-              pen: "draw",
-              eraser: "eraser",
-              hand: "hand",
-            };
-            editorRef.current?.setCurrentTool(toolMap[tool] ?? "draw");
+            editorRef.current?.setTool(tool);
           }}
           onUndo={() => editorRef.current?.undo()}
           onRedo={() => editorRef.current?.redo()}
           onExport={async () => {
-            const editor = editorRef.current;
-            if (!editor) return;
-            const shapeIds = editor.getCurrentPageShapeIds();
-            if (shapeIds.size === 0) {
-              alert("Nothing to export — draw something first!");
-              return;
-            }
-            await exportAs(editor, [...shapeIds], {
-              format: "png",
-              name: `solution-q${currentIndex + 1}`,
-            });
+            await editorRef.current?.exportPng(`solution-q${currentIndex + 1}`);
           }}
         />
         <CollaborationBar

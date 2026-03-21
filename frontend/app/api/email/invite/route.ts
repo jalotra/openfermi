@@ -51,15 +51,15 @@ export async function POST(request: Request) {
     const { email } = body;
 
     if (!email || typeof email !== "string") {
-      return NextResponse.json(
-        { error: "email is required" },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "email is required" }, { status: 400 });
     }
 
     if (!process.env.RESEND_API_KEY || !process.env.RESEND_FROM_EMAIL) {
       return NextResponse.json(
-        { error: "Email service not configured (RESEND_API_KEY / RESEND_FROM_EMAIL missing)" },
+        {
+          error:
+            "Email service not configured (RESEND_API_KEY / RESEND_FROM_EMAIL missing)",
+        },
         { status: 500 },
       );
     }

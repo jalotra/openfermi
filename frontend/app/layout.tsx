@@ -17,8 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Tars AI",
-  description:
-    "Tars AI is an AI native learning platform for STEM students",
+  description: "Tars AI is an AI native learning platform for STEM students",
   icons: {
     icon: [
       { url: "/favicon.png", sizes: "32x32", type: "image/png" },

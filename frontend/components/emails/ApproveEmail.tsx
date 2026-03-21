@@ -29,13 +29,16 @@ export function ApproveEmail({ name, loginUrl }: ApproveEmailProps) {
             <Text style={paragraph}>{greeting},</Text>
 
             <Text style={paragraph}>
-              Hello trailblazer! Welcome to <strong>Tars</strong> and <strong>Tars</strong>!
-              We are a small team of engineers, designers and educators who want to make you succeed in STEM and as a 1st step to your future.
-              We distill knowledge out from past papers and a world class LLMs (large language models) 
-              to create a platform that is as close to a real teacher as possible.
-              Includes a bonus kicker : Richard Feynman as a tutor whenever you need help / or hints.
-              We would love to hear from you.
-              Always up for feedback / suggestions / critic on how we together can make this platform better.
+              Hello trailblazer! Welcome to <strong>Tars</strong> and{" "}
+              <strong>Tars</strong>! We are a small team of engineers, designers
+              and educators who want to make you succeed in STEM and as a 1st
+              step to your future. We distill knowledge out from past papers and
+              a world class LLMs (large language models) to create a platform
+              that is as close to a real teacher as possible. Includes a bonus
+              kicker : Richard Feynman as a tutor whenever you need help / or
+              hints. We would love to hear from you. Always up for feedback /
+              suggestions / critic on how we together can make this platform
+              better.
             </Text>
             <Linkedin className="w-4 h-4" />
             <Text style={paragraph}>
@@ -55,15 +58,13 @@ export function ApproveEmail({ name, loginUrl }: ApproveEmailProps) {
             </Section>
 
             <Text style={paragraph}>
-              If you run into anything or have feedback, just reply to this email
-              — we&apos;d love to hear from you.
+              If you run into anything or have feedback, just reply to this
+              email — we&apos;d love to hear from you.
             </Text>
 
             <Hr style={hr} />
 
-            <Text style={footer}>
-              — Shivam, Tars
-            </Text>
+            <Text style={footer}>— Shivam, Tars</Text>
           </Section>
         </Container>
       </Body>
