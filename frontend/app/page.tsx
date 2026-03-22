@@ -283,12 +283,12 @@ export default function LandingPage() {
 
         <div className="flex items-center gap-6 text-sm font-medium">
           <Link
-            href="/login"
+            href="/auth/login"
             className="hover:opacity-70 transition-opacity hidden sm:block"
           >
             Login
           </Link>
-          <Link href="/signup">
+          <Link href="/auth/signup">
             <button className="bg-[#6b4c3a] text-background px-6 py-2.5 rounded-full hover:bg-[#5a3f2f] transition-colors shadow-sm">
               Sign up
             </button>
