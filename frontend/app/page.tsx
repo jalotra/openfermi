@@ -288,7 +288,7 @@ export default function LandingPage() {
           >
             Login
           </Link>
-          <Link href="/auth/signup">
+          <Link href="/auth/login">
             <button className="bg-[#6b4c3a] text-background px-6 py-2.5 rounded-full hover:bg-[#5a3f2f] transition-colors shadow-sm">
               Sign up
             </button>
