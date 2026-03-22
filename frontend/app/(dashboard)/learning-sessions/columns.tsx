@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { parseDate } from "@/lib/utils";
 
 export interface LearningSessionRow {
   id: string;
@@ -78,10 +79,10 @@ export const columns: ColumnDef<LearningSessionRow>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const date = row.getValue("createdAt") as string;
-      return date ? (
+      const parsed = parseDate(row.getValue("createdAt") as string | number[]);
+      return parsed ? (
         <span className="text-sm">
-          {new Date(date).toLocaleDateString(undefined, {
+          {parsed.toLocaleDateString(undefined, {
             year: "numeric",
             month: "short",
             day: "numeric",

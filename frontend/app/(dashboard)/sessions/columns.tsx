@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { SessionDto } from "@/lib/backend/types.gen";
+import { parseDate } from "@/lib/utils";
 
 function formatTimeLeft(seconds?: number) {
   if (seconds == null) return "-";
@@ -79,6 +80,22 @@ export const columns: ColumnDef<SessionDto>[] = [
           Created
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const parsed = parseDate(row.getValue("createdAt") as string | number[]);
+      return parsed ? (
+        <span className="text-sm">
+          {parsed.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </span>
+      ) : (
+        <span className="text-muted-foreground">-</span>
       );
     },
   },

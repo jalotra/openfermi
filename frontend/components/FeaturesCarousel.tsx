@@ -21,24 +21,24 @@ const FEATURES = [
   },
   {
     icon: Users,
-    iconBg: "bg-blue-100",
-    iconColor: "text-blue-600",
+    iconBg: "bg-accent",
+    iconColor: "text-primary",
     title: "Real-time Collaboration",
     description:
       "Work together with peers and instructors. Chat, share audio, and collaborate seamlessly.",
   },
   {
     icon: Clock,
-    iconBg: "bg-green-100",
-    iconColor: "text-green-600",
+    iconBg: "bg-muted",
+    iconColor: "text-primary",
     title: "Session Timer",
     description:
       "Track your study sessions with our built-in timer. Stay focused and manage your time effectively.",
   },
   {
     icon: FileText,
-    iconBg: "bg-purple-100",
-    iconColor: "text-purple-600",
+    iconBg: "bg-secondary",
+    iconColor: "text-secondary-foreground",
     title: "Export & Save",
     description:
       "Export your work as PDF, save your progress, and never lose your solutions.",
@@ -66,7 +66,7 @@ export function FeaturesCarousel() {
                   <h3 className="text-xl font-semibold mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <p className="text-muted-foreground">{feature.description}</p>
                 </Card>
               </CarouselItem>
             );

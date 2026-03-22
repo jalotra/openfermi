@@ -92,7 +92,7 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
         <h2 className="text-xl font-semibold">Choose a Question</h2>
 
         {error && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-sm text-destructive">
             {error}
           </div>
         )}
@@ -143,10 +143,10 @@ export function LearnSession({ tutors, questions }: LearnSessionProps) {
                           variant="secondary"
                           className={
                             q.difficulty === "EASY"
-                              ? "bg-green-100 text-green-700 text-xs"
+                              ? "bg-muted text-foreground text-xs"
                               : q.difficulty === "MEDIUM"
-                                ? "bg-yellow-100 text-yellow-700 text-xs"
-                                : "bg-red-100 text-red-700 text-xs"
+                                ? "bg-muted text-foreground text-xs"
+                                : "bg-destructive/10 text-destructive text-xs"
                           }
                         >
                           {q.difficulty}

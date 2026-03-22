@@ -42,7 +42,7 @@ const navItems = [
   { title: "Sessions", url: "/sessions", icon: Clock },
   { title: "Learn", url: "/learn", icon: GraduationCap },
   { title: "Learning Sessions", url: "/learning-sessions", icon: BookOpen },
-  { title: "Settings", url: "#", icon: Settings },
+  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 const adminNavItems = [

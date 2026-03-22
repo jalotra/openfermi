@@ -78,13 +78,13 @@ export default async function SessionResultsPage({
 
   const scoreColor =
     score >= 70
-      ? "text-green-600"
+      ? "text-primary"
       : score >= 40
-        ? "text-yellow-600"
-        : "text-red-600";
+        ? "text-muted-foreground"
+        : "text-destructive";
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-background">
       <div className="p-8 space-y-8 max-w-4xl mx-auto w-full">
         <div className="flex items-center justify-between">
           <div>
@@ -124,10 +124,10 @@ export default async function SessionResultsPage({
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <CheckCircle2 className="h-8 w-8 text-green-600" />
+                <CheckCircle2 className="h-8 w-8 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Correct</p>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-2xl font-bold text-primary">
                     {correctCount}/{totalQuestions}
                   </p>
                 </div>
@@ -137,10 +137,10 @@ export default async function SessionResultsPage({
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <XCircle className="h-8 w-8 text-red-600" />
+                <XCircle className="h-8 w-8 text-destructive" />
                 <div>
                   <p className="text-sm text-muted-foreground">Incorrect</p>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-2xl font-bold text-destructive">
                     {incorrectCount}
                   </p>
                 </div>
@@ -150,7 +150,7 @@ export default async function SessionResultsPage({
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
-                <Clock className="h-8 w-8 text-blue-600" />
+                <Clock className="h-8 w-8 text-primary" />
                 <div>
                   <p className="text-sm text-muted-foreground">Time Spent</p>
                   <p className="text-2xl font-bold">{formatTime(timeSpent)}</p>
@@ -189,11 +189,11 @@ export default async function SessionResultsPage({
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 mt-1">
                         {isUnanswered ? (
-                          <MinusCircle className="h-5 w-5 text-gray-400" />
+                          <MinusCircle className="h-5 w-5 text-muted-foreground" />
                         ) : isCorrect ? (
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          <CheckCircle2 className="h-5 w-5 text-primary" />
                         ) : (
-                          <XCircle className="h-5 w-5 text-red-600" />
+                          <XCircle className="h-5 w-5 text-destructive" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -205,10 +205,10 @@ export default async function SessionResultsPage({
                             variant="secondary"
                             className={
                               isUnanswered
-                                ? "bg-gray-100 text-gray-600"
+                                ? "bg-muted text-muted-foreground"
                                 : isCorrect
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-700"
+                                  ? "bg-muted text-foreground"
+                                  : "bg-destructive/10 text-destructive"
                             }
                           >
                             {isUnanswered
@@ -223,7 +223,7 @@ export default async function SessionResultsPage({
                             </Badge>
                           )}
                         </div>
-                        <div className="text-sm text-gray-800 mb-3">
+                        <div className="text-sm text-foreground mb-3">
                           <LatexRenderer
                             content={
                               q.latexQuestionText || q.questionText || ""
@@ -240,12 +240,12 @@ export default async function SessionResultsPage({
                               "p-2 rounded border text-sm flex items-start gap-2";
                             if (isCorrectOption) {
                               className +=
-                                " bg-green-50 border-green-300 text-green-800";
+                                " bg-muted border-border text-foreground";
                             } else if (isUserChoice && !isCorrect) {
                               className +=
-                                " bg-red-50 border-red-300 text-red-800";
+                                " bg-destructive/10 border-destructive/30 text-destructive";
                             } else {
-                              className += " bg-gray-50 border-gray-200";
+                              className += " bg-muted border-border";
                             }
 
                             return (
@@ -265,8 +265,8 @@ export default async function SessionResultsPage({
                           </p>
                         )}
                         {q.explanation && (
-                          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded text-sm">
-                            <p className="font-medium text-blue-800 mb-1">
+                          <div className="mt-3 p-3 bg-accent border border-border rounded text-sm">
+                            <p className="font-medium text-foreground mb-1">
                               Explanation
                             </p>
                             <LatexRenderer content={q.explanation} />

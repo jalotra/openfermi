@@ -39,7 +39,7 @@ export default async function QuestionsPage({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-background">
       <div className="p-8 space-y-8">
         <div className="flex items-center justify-between">
           <div>
@@ -59,9 +59,11 @@ export default async function QuestionsPage({
         </div>
 
         {error ? (
-          <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-yellow-800">{error}</p>
-            <p className="text-sm text-yellow-600 mt-2">No questions found.</p>
+          <div className="p-4 bg-muted border border-border rounded-lg">
+            <p className="text-foreground">{error}</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              No questions found.
+            </p>
           </div>
         ) : questions.length === 0 ? (
           <div className="p-8 text-center border-2 border-dashed rounded-lg">

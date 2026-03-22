@@ -82,7 +82,7 @@ export default async function NewSessionPage({
 
   if (ids.length === 0) {
     return (
-      <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white p-8">
+      <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-background p-8">
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="text-2xl font-bold mb-4">No Questions Selected</h1>
           <p className="text-muted-foreground mb-6">
@@ -118,7 +118,7 @@ export default async function NewSessionPage({
   const questions = questionResults.filter((q): q is QuestionDto => Boolean(q));
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-white">
+    <div className="flex-1 flex flex-col min-h-0 overflow-auto bg-background">
       <div className="p-8 space-y-8 max-w-4xl mx-auto w-full">
         <div className="flex items-center justify-between">
           <div>

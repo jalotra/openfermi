@@ -53,7 +53,7 @@ export default async function LearnPage() {
   const questions: QuestionDto[] = questionsResponse.data?.data || [];
 
   return (
-    <div className="flex-1 min-h-0 overflow-auto bg-gray-50/50 p-8">
+    <div className="flex-1 min-h-0 overflow-auto bg-muted/50 p-8">
       <div className="max-w-6xl mx-auto space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
