@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Line, LineChart } from "recharts";
@@ -34,7 +35,6 @@ function RotatingText({
   );
 }
 
-// Generate math data for doodles
 const generateMathData = () => {
   const data = [];
   const start = -2 * Math.PI;
@@ -43,7 +43,6 @@ const generateMathData = () => {
 
   for (let x = start; x <= end; x += step) {
     const tanValue = Math.tan(x);
-    // Cap tan values to avoid giant vertical lines at asymptotes
     const cappedTan = Math.abs(tanValue) > 5 ? null : tanValue;
 
     data.push({
@@ -91,12 +90,37 @@ function MathCurveDoodle({
 
 const INSTITUTIONS = [
   { name: "IIT Bombay", style: "font-serif text-lg" },
-  { name: "ALLEN", style: "font-bold tracking-wider text-lg" },
-  { name: "FIITJEE", style: "font-bold tracking-wide text-lg" },
   { name: "Stanford", style: "font-serif text-lg" },
-  { name: "MIT", style: "font-bold tracking-widest text-lg" },
-  { name: "Resonance", style: "font-semibold text-lg" },
+  { name: "MIT", style: "font-serif tracking-widest text-lg" },
+  { name: "DTU", style: "font-serif tracking-wider text-lg" },
 ];
+
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: "Choose a Question",
+    description:
+      "Browse our collection of educational questions and pick one to work on.",
+    bg: "bg-[#fce8e8]",
+  },
+  {
+    title: "Draw Your Solution",
+    description:
+      "Use intuitive drawing tools to sketch, annotate, and solve on the canvas.",
+    bg: "bg-[#e8e8fc]",
+  },
+  {
+    title: "Understand with AI agents",
+    description:
+      "Intelligent agents help you grasp the problem and guide you toward a solution.",
+    bg: "bg-[#e8fce8]",
+  },
+  {
+    title: "Collaborate & share",
+    description:
+      "Work with others, get feedback, and export your solutions when you're done.",
+    bg: "bg-[#fcfce8]",
+  },
+] as const;
 
 const FEATURES = [
   {
@@ -231,290 +255,6 @@ function MathDoodles() {
   );
 }
 
-function TabletMockup() {
-  return (
-    <div className="relative z-10 w-full max-w-[800px] mx-auto mt-12 mb-16">
-      {/* Outer Tablet Frame */}
-      <div className="rounded-[2.5rem] bg-[#eaddc9] p-3 shadow-2xl border border-[#d1c5b4]">
-        {/* Inner Screen */}
-        <div className="rounded-[2rem] bg-white border border-[#d1c5b4] overflow-hidden flex h-[450px] text-left">
-          {/* Left Panel: AI Steps */}
-          <div className="w-[28%] border-r border-[#e0d8d0] p-4 flex flex-col bg-[#faf9f6]">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <div className="size-5 rounded bg-[#fce8e8] flex items-center justify-center border border-[#e5b5b5]">
-                  <span className="text-[10px] font-bold text-foreground">
-                    T
-                  </span>
-                </div>
-                <span className="text-xs font-semibold text-foreground">
-                  Tars AI
-                </span>
-              </div>
-              <svg
-                viewBox="0 0 24 24"
-                className="size-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M12 5v14M5 12h14" />
-              </svg>
-            </div>
-
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold text-foreground">
-                AI Steps
-              </span>
-              <span className="text-[10px] bg-white border border-[#e0d8d0] px-2 py-1 rounded-full text-gray-500">
-                Pre-requisite
-              </span>
-            </div>
-
-            <div className="flex-1 space-y-3 overflow-hidden">
-              {[
-                {
-                  title: "Step 1",
-                  desc: "Set current limits of integration on my prompt proper or past fact.",
-                  active: true,
-                },
-                {
-                  title: "Step 2",
-                  desc: "Base close straight coordinates to the enough limits.",
-                  active: false,
-                },
-                {
-                  title: "Step 3",
-                  desc: "All limits are guided fast.",
-                  active: false,
-                },
-                {
-                  title: "Step 4",
-                  desc: "Does limit approach candidate with vast loss.",
-                  active: false,
-                },
-                {
-                  title: "Step 5",
-                  desc: "Time to cross multiply the...",
-                  active: false,
-                },
-              ].map((step, i) => (
-                <div
-                  key={i}
-                  className={`p-3 rounded-xl border ${step.active ? "bg-white border-[#d1c5b4] shadow-sm" : "bg-transparent border-transparent opacity-60"}`}
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <div
-                      className={`size-4 rounded-full flex items-center justify-center text-[10px] ${step.active ? "bg-[#e8e8fc] text-foreground" : "bg-gray-200 text-gray-500"}`}
-                    >
-                      {i === 0 ? "/" : ""}
-                    </div>
-                    <span className="text-xs font-bold text-foreground">
-                      {step.title}
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-gray-500 leading-tight ml-6">
-                    {step.desc}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Center Panel: Canvas */}
-          <div className="flex-1 p-4 flex flex-col bg-white relative">
-            {/* Toolbar */}
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-1 bg-[#faf9f6] p-1 rounded-lg border border-[#e0d8d0]">
-                {["Free", "Select", "Format", "Length", "Math"].map(
-                  (tool, i) => (
-                    <button
-                      key={tool}
-                      className={`px-3 py-1.5 rounded-md text-[10px] font-medium flex items-center gap-1 ${i === 0 ? "bg-white shadow-sm text-foreground" : "text-gray-500 hover:bg-gray-100"}`}
-                    >
-                      <div className="size-3 rounded-sm bg-gray-200" />
-                      {tool}
-                    </button>
-                  ),
-                )}
-              </div>
-              <button className="px-4 py-1.5 bg-white border border-[#e0d8d0] rounded-lg text-[10px] font-bold flex items-center gap-1 shadow-sm">
-                <span className="text-green-600">✓</span> Submit
-              </button>
-            </div>
-
-            {/* Canvas Content */}
-            <div className="flex-1 relative">
-              <p className="text-sm text-foreground mb-4">
-                ① Find <span className="font-serif italic">a</span> in the
-                problem <span className="font-serif italic">b b</span> :
-              </p>
-
-              <div className="flex items-start gap-8 mb-8">
-                <div className="text-lg font-serif italic text-foreground">
-                  ∫ f(x) dt ={" "}
-                  <span className="inline-block border-b border-foreground pb-1 mb-1">
-                    √ L² - ab²
-                  </span>
-                  <br />
-                  <span className="ml-12">a²</span>
-                </div>
-
-                {/* Hand-drawn graph */}
-                <svg
-                  viewBox="0 0 100 100"
-                  className="w-32 h-32 text-foreground"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                >
-                  <path d="M10 90 L90 90 M10 10 L10 90" />
-                  <path d="M10 90 L60 40 L80 40" />
-                  <path d="M60 40 L60 90" strokeDasharray="4 4" />
-                  <text
-                    x="5"
-                    y="15"
-                    fontSize="10"
-                    stroke="none"
-                    fill="currentColor"
-                  >
-                    y
-                  </text>
-                  <text
-                    x="95"
-                    y="95"
-                    fontSize="10"
-                    stroke="none"
-                    fill="currentColor"
-                  >
-                    x
-                  </text>
-                  <text
-                    x="55"
-                    y="98"
-                    fontSize="10"
-                    stroke="none"
-                    fill="currentColor"
-                  >
-                    b
-                  </text>
-                  <text
-                    x="5"
-                    y="45"
-                    fontSize="10"
-                    stroke="none"
-                    fill="currentColor"
-                  >
-                    a
-                  </text>
-                  <text
-                    x="85"
-                    y="35"
-                    fontSize="10"
-                    stroke="none"
-                    fill="currentColor"
-                  >
-                    y=f(x)
-                  </text>
-                  {/* Hatched area */}
-                  <path
-                    d="M15 85 L25 90 M20 80 L35 90 M25 75 L45 90 M30 70 L55 90 M35 65 L60 85 M40 60 L60 80 M45 55 L60 75 M50 50 L60 70 M55 45 L60 65"
-                    strokeWidth="0.5"
-                  />
-                </svg>
-              </div>
-
-              <p className="text-sm text-foreground mb-4">
-                ② Consider using integration by parts for the first term...
-              </p>
-
-              <div className="text-base font-serif italic text-foreground space-y-4">
-                <p>
-                  = ½ ∫ f(a) da ={" "}
-                  <span className="inline-block border-b border-foreground pb-1 mb-1">
-                    da
-                  </span>{" "}
-                  ∫ dx
-                </p>
-                <p>= ∫ (1+a)dt + (1+w) = 0</p>
-                <p>=</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Panel: Director */}
-          <div className="w-[25%] border-l border-[#e0d8d0] p-4 flex flex-col bg-[#faf9f6]">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold text-foreground">
-                Director
-              </span>
-              <svg
-                viewBox="0 0 24 24"
-                className="size-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </div>
-
-            <div className="flex-1 space-y-4 overflow-hidden">
-              <div className="flex gap-2">
-                <div className="size-5 rounded-full bg-[#e8e8fc] shrink-0" />
-                <div>
-                  <p className="text-[10px] font-bold text-foreground">
-                    Tars AI Tutor
-                  </p>
-                  <p className="text-[10px] text-gray-500 leading-tight mt-1">
-                    proton lasers smeared belts per cor wrons.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-end">
-                <div className="bg-[#fce8e8] text-foreground text-[10px] px-3 py-2 rounded-xl rounded-tr-sm border border-[#e5b5b5]">
-                  How could feet?
-                </div>
-              </div>
-
-              <div className="flex gap-2">
-                <div className="size-5 rounded-full bg-[#e8e8fc] shrink-0" />
-                <div>
-                  <p className="text-[10px] font-bold text-foreground">
-                    Tars AI Tutor
-                  </p>
-                  <p className="text-[10px] text-gray-500 leading-tight mt-1">
-                    Consists using Pigeon by gents in Sin Gartish, nomore Sontic
-                    Vilonets to free regeneration to another burnout.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 relative">
-              <input
-                type="text"
-                placeholder="Type a message..."
-                className="w-full bg-white border border-[#e0d8d0] rounded-lg px-3 py-2 text-[10px] focus:outline-none"
-              />
-              <svg
-                viewBox="0 0 24 24"
-                className="size-3 absolute right-3 top-2.5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden relative selection:bg-[#fce8e8]">
@@ -530,7 +270,7 @@ export default function LandingPage() {
         </Link>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          {["Features", "Pricing", "Resources"].map((item) => (
+          {["Features"].map((item) => (
             <Link
               key={item}
               href={`#${item.toLowerCase()}`}
@@ -586,7 +326,7 @@ export default function LandingPage() {
                 </svg>
               </button>
             </Link>
-            <Link href="#demo">
+            {/* <Link href="#demo">
               <button className="bg-[#e8fce8] border-2 border-background ring-1 ring-[#b5e5b5] text-foreground px-6 py-3 rounded-full font-medium flex items-center gap-2 hover:bg-[#d6f5d6] transition-colors shadow-sm">
                 Watch Demo
                 <svg
@@ -599,12 +339,51 @@ export default function LandingPage() {
                   <path d="M9 5l7 7-7 7" />
                 </svg>
               </button>
-            </Link>
+            </Link> */}
           </div>
 
-          <TabletMockup />
+          <div className="relative z-10 w-full max-w-[800px] mx-auto mt-12 mb-16">
+            <div className="rounded-[2.5rem] bg-[#eaddc9] p-3 shadow-2xl border border-[#d1c5b4]">
+              <div className="rounded-[2rem] bg-white border border-[#d1c5b4] overflow-hidden">
+                <Image
+                  src="/product_photo.png"
+                  alt="Tars AI workspace showing AI steps, canvas, and tutor"
+                  width={2140}
+                  height={1338}
+                  className="w-full h-auto block"
+                  priority
+                  sizes="(max-width: 800px) 100vw, 800px"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <div className="mt-8 mb-24 w-full">
+        {/* How It Works Section */}
+        <section className="w-full mb-24 text-center" id="features">
+          <h2 className="text-3xl font-bold mb-2">How It Works</h2>
+          <p className="text-2xl font-medium text-gray-600 mb-10 max-w-2xl mx-auto">
+            Four simple steps from question to solution.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full text-left">
+            {HOW_IT_WORKS_STEPS.map((step, i) => (
+              <div
+                key={step.title}
+                className={`${step.bg} rounded-3xl p-6 border border-[#d1c5b4] shadow-sm hover:-translate-y-1 transition-transform`}
+              >
+                <div className="size-10 rounded-full bg-background/80 border border-[#d1c5b4] flex items-center justify-center text-sm font-bold text-foreground mb-4">
+                  {i + 1}
+                </div>
+                <h3 className="font-bold text-sm mb-2">{step.title}</h3>
+                <p className="text-xs text-gray-600 leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-8 mb-24 w-full">
             <h3 className="text-xl font-medium mb-6 text-center">
               Used by students from
             </h3>
@@ -616,86 +395,6 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-        </div>
-
-        {/* Features Section */}
-        <div className="mb-24 text-center w-full">
-          <h2 className="text-3xl font-bold mb-2">
-            First attempt to final solution.
-          </h2>
-          <h3 className="text-2xl font-medium text-gray-600 mb-10">
-            No grind.
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-            {FEATURES.map((feature) => (
-              <div
-                key={feature.title}
-                className={`${feature.bg} rounded-3xl p-6 border border-[#d1c5b4] shadow-sm text-left hover:-translate-y-1 transition-transform`}
-              >
-                {feature.icon}
-                <h4 className="font-bold text-sm mb-2">{feature.title}</h4>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* AI Tutor Section */}
-        <div className="mb-24 text-center relative w-full">
-          <h2 className="text-3xl font-bold mb-8">
-            An AI Tutor with Superpowers
-          </h2>
-
-          <div className="max-w-md mx-auto mb-12 relative">
-            <div className="bg-[#fcfce8] border border-[#d1c5b4] rounded-full px-6 py-3 shadow-sm flex items-center justify-between">
-              <span className="text-sm text-gray-500">
-                Describe your doubt (e.g. &quot;Help me with rotational
-                motion&quot;)
-              </span>
-              <div className="size-6 rounded-full bg-[#e8e8fc] flex items-center justify-center">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="size-3 text-foreground"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
-            {SUBJECTS.map((subject) => (
-              <div
-                key={subject.name}
-                className={`${subject.bg} rounded-3xl p-6 border border-[#d1c5b4] shadow-sm flex flex-col items-center text-center hover:-translate-y-1 transition-transform`}
-              >
-                {subject.icon}
-                <h4 className="font-bold text-sm mb-2">{subject.name}</h4>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  {subject.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className="text-center mb-24 w-full">
-          <h2 className="text-3xl font-bold mb-6">
-            Start Mastering <RotatingText items={EXAM_NAMES} /> Today.
-          </h2>
-          <Link href="/signup">
-            <button className="bg-[#6b4c3a] border-2 border-background ring-1 ring-[#6b4c3a] text-background px-8 py-3 rounded-full font-medium hover:bg-[#5a3f2f] transition-colors shadow-sm">
-              Get Started
-            </button>
-          </Link>
-        </div>
 
         {/* Footer */}
         <footer className="w-full pt-12 border-t border-[#d1c5b4] flex flex-col sm:flex-row justify-between gap-8 text-left">

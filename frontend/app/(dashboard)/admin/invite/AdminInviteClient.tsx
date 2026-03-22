@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Check, Mail, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
+import { parseDate } from "@/lib/utils";
 
 const BACKEND_URL = (
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
@@ -215,14 +216,14 @@ export function AdminInviteClient({ initialWaitlist }: AdminInviteClientProps) {
                     )}
                     {item.createdAt && (
                       <p className="text-xs text-muted-foreground mt-1">
-                        {new Date(item.createdAt).toLocaleDateString(
+                        {parseDate(item.createdAt)?.toLocaleDateString(
                           undefined,
                           {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
                           },
-                        )}
+                        ) ?? "-"}
                       </p>
                     )}
                   </div>

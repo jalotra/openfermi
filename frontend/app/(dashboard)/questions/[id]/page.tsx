@@ -23,6 +23,7 @@ import { QuestionDto } from "@/lib/backend/types.gen";
 import { QuestionController } from "@/lib/backend/sdk.gen";
 import { AxiosError } from "axios";
 import { notFound } from "next/navigation";
+import { parseDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -230,9 +231,8 @@ export default async function QuestionDetailsPage({
                     Created
                   </label>
                   <p className="font-medium">
-                    {question.createdAt
-                      ? new Date(question.createdAt).toLocaleDateString()
-                      : "Unknown"}
+                    {parseDate(question.createdAt)?.toLocaleDateString() ??
+                      "Unknown"}
                   </p>
                 </div>
                 <div>
@@ -240,9 +240,8 @@ export default async function QuestionDetailsPage({
                     Last Modified
                   </label>
                   <p className="font-medium">
-                    {question.updatedAt
-                      ? new Date(question.updatedAt).toLocaleDateString()
-                      : "Unknown"}
+                    {parseDate(question.updatedAt)?.toLocaleDateString() ??
+                      "Unknown"}
                   </p>
                 </div>
               </CardContent>
