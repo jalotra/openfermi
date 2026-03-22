@@ -1,9 +1,38 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Line, LineChart } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
+
+const EXAM_NAMES = ["JEE", "NEET", "AP Exams", "SAT"];
+
+function RotatingText({
+  items,
+  interval = 2500,
+}: {
+  items: string[];
+  interval?: number;
+}) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const id = setInterval(
+      () => setIndex((i) => (i + 1) % items.length),
+      interval,
+    );
+    return () => clearInterval(id);
+  }, [items.length, interval]);
+
+  return (
+    <span className="inline-block relative overflow-hidden align-bottom">
+      <span key={index} className="inline-block animate-slide-up text-primary">
+        {items[index]}
+      </span>
+    </span>
+  );
+}
 
 // Generate math data for doodles
 const generateMathData = () => {
@@ -532,7 +561,7 @@ export default function LandingPage() {
         {/* Hero Section */}
         <div className="flex flex-col pt-12 lg:pt-20 items-center w-full">
           <h1 className="text-5xl lg:text-6xl xl:text-[4.5rem] font-bold leading-[1.05] tracking-tight mb-6">
-            Solve JEE Problems at
+            Solve <RotatingText items={EXAM_NAMES} /> Problems at
             <br />
             the Speed of Thought.
           </h1>
@@ -659,7 +688,7 @@ export default function LandingPage() {
         {/* CTA Section */}
         <div className="text-center mb-24 w-full">
           <h2 className="text-3xl font-bold mb-6">
-            Start Mastering JEE Today.
+            Start Mastering <RotatingText items={EXAM_NAMES} /> Today.
           </h2>
           <Link href="/signup">
             <button className="bg-[#6b4c3a] border-2 border-background ring-1 ring-[#6b4c3a] text-background px-8 py-3 rounded-full font-medium hover:bg-[#5a3f2f] transition-colors shadow-sm">
