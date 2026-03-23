@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   BookOpen,
+  Bot,
   ChevronsUpDown,
   Clock,
   GraduationCap,
@@ -42,6 +43,7 @@ const navItems = [
   { title: "Sessions", url: "/sessions", icon: Clock },
   { title: "Learn", url: "/learn", icon: GraduationCap },
   { title: "Learning Sessions", url: "/learning-sessions", icon: BookOpen },
+  { title: "Agent Sessions", url: "/agent-sessions", icon: Bot },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 

@@ -177,8 +177,8 @@ export type UserDto = {
   provider?: string;
   providerId?: string;
   lastLoginAt?: string;
-  admin?: boolean;
   approved?: boolean;
+  admin?: boolean;
 };
 
 export type GenericResponseUserDto = {
@@ -213,6 +213,36 @@ export type PresignUrlRequest = {
 export type PresignUrlResponse = {
   url?: string;
   expiration?: string;
+};
+
+export type AgentSessionDto = {
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  createdBy?: string;
+  updatedBy?: string;
+  state?: string;
+  previousState?: string;
+  userId?: string;
+  taskArn?: string;
+  workerUrl?: string;
+  opencodeProjectId?: string;
+  opencodeSessionId?: string;
+  tokenUsage?: number;
+  cost?: number;
+  sessionTokenCap?: number;
+  sessionCostCap?: number;
+};
+
+export type GenericResponseAgentSessionDto = {
+  data?: AgentSessionDto;
+  message?: string;
+};
+
+export type AgentSessionCreateRequest = {
+  userId: string;
+  sessionTokenCap?: number;
+  sessionCostCap?: number;
 };
 
 export type GenericResponseListTutorDto = {
@@ -262,6 +292,81 @@ export type GenericResponseListLearningSessionDto = {
 
 export type GenericResponseListWaitlistRequestDto = {
   data?: Array<WaitlistRequestDto>;
+  message?: string;
+};
+
+export type GenericResponseListAgentSessionDto = {
+  data?: Array<AgentSessionDto>;
+  message?: string;
+};
+
+export type GenericResponseMapStringObject = {
+  data?: {
+    [key: string]: unknown;
+  };
+  message?: string;
+};
+
+export type AgentMessageDto = {
+  id?: string;
+  productSessionId?: string;
+  opencodeSessionId?: string;
+  role?: string;
+  agent?: string;
+  modelId?: string;
+  providerId?: string;
+  cost?: number;
+  tokensInput?: number;
+  tokensOutput?: number;
+  tokensReasoning?: number;
+  error?: string;
+  createdAt?: string;
+  completedAt?: string;
+  parts?: Array<AgentPartDto>;
+};
+
+export type AgentPartDto = {
+  id?: string;
+  messageId?: string;
+  productSessionId?: string;
+  opencodeSessionId?: string;
+  type?: string;
+  toolName?: string;
+  toolCallId?: string;
+  toolStatus?: string;
+  data?: string;
+  syncedAt?: string;
+};
+
+export type GenericResponseListAgentMessageDto = {
+  data?: Array<AgentMessageDto>;
+  message?: string;
+};
+
+export type GenericResponseBoolean = {
+  data?: boolean;
+  message?: string;
+};
+
+export type AgentArtifactDto = {
+  id?: string;
+  productSessionId?: string;
+  messageId?: string;
+  partId?: string;
+  storageKey?: string;
+  mime?: string;
+  bytes?: number;
+  sha256?: string;
+  createdAt?: string;
+};
+
+export type GenericResponseListAgentArtifactDto = {
+  data?: Array<AgentArtifactDto>;
+  message?: string;
+};
+
+export type GenericResponsePresignUrlResponse = {
+  data?: PresignUrlResponse;
   message?: string;
 };
 
@@ -644,6 +749,96 @@ export type PresignCreatePresignUrlResponses = {
 
 export type PresignCreatePresignUrlResponse =
   PresignCreatePresignUrlResponses[keyof PresignCreatePresignUrlResponses];
+
+export type Read1Data = {
+  body?: never;
+  path?: never;
+  query?: {
+    page?: string;
+    size?: string;
+  };
+  url: "/api/agent-sessions";
+};
+
+export type Read1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListAgentSessionDto;
+};
+
+export type Read1Response = Read1Responses[keyof Read1Responses];
+
+export type Upsert1Data = {
+  body: AgentSessionDto;
+  path?: never;
+  query?: never;
+  url: "/api/agent-sessions";
+};
+
+export type Upsert1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseAgentSessionDto;
+};
+
+export type Upsert1Response = Upsert1Responses[keyof Upsert1Responses];
+
+export type Transition1Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query: {
+    event: string;
+  };
+  url: "/api/agent-sessions/{id}/transition";
+};
+
+export type Transition1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseAgentSessionDto;
+};
+
+export type Transition1Response =
+  Transition1Responses[keyof Transition1Responses];
+
+export type TerminateData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/terminate";
+};
+
+export type TerminateResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseAgentSessionDto;
+};
+
+export type TerminateResponse = TerminateResponses[keyof TerminateResponses];
+
+export type CreateData = {
+  body: AgentSessionCreateRequest;
+  path?: never;
+  query?: never;
+  url: "/api/agent-sessions/create";
+};
+
+export type CreateResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseAgentSessionDto;
+};
+
+export type CreateResponse = CreateResponses[keyof CreateResponses];
 
 export type TutorDeleteData = {
   body?: never;
@@ -1384,3 +1579,241 @@ export type UserGetByEmailResponses = {
 
 export type UserGetByEmailResponse =
   UserGetByEmailResponses[keyof UserGetByEmailResponses];
+
+export type Delete1Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}";
+};
+
+export type Delete1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseAgentSessionDto;
+};
+
+export type Delete1Response = Delete1Responses[keyof Delete1Responses];
+
+export type Get1Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}";
+};
+
+export type Get1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseAgentSessionDto;
+};
+
+export type Get1Response = Get1Responses[keyof Get1Responses];
+
+export type StatusData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/status";
+};
+
+export type StatusResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseMapStringObject;
+};
+
+export type StatusResponse = StatusResponses[keyof StatusResponses];
+
+export type MessagesData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/messages";
+};
+
+export type MessagesResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListAgentMessageDto;
+};
+
+export type MessagesResponse = MessagesResponses[keyof MessagesResponses];
+
+export type HealthData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/health";
+};
+
+export type HealthResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseBoolean;
+};
+
+export type HealthResponse = HealthResponses[keyof HealthResponses];
+
+export type Debug1Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/debug";
+};
+
+export type Debug1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseString;
+};
+
+export type Debug1Response = Debug1Responses[keyof Debug1Responses];
+
+export type AvailableEvents1Data = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/available-events";
+};
+
+export type AvailableEvents1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListString;
+};
+
+export type AvailableEvents1Response =
+  AvailableEvents1Responses[keyof AvailableEvents1Responses];
+
+export type ArtifactsData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/artifacts";
+};
+
+export type ArtifactsResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListAgentArtifactDto;
+};
+
+export type ArtifactsResponse = ArtifactsResponses[keyof ArtifactsResponses];
+
+export type DownloadArtifactData = {
+  body?: never;
+  path: {
+    id: string;
+    artifactId: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/{id}/artifacts/{artifactId}/download";
+};
+
+export type DownloadArtifactResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponsePresignUrlResponse;
+};
+
+export type DownloadArtifactResponse =
+  DownloadArtifactResponses[keyof DownloadArtifactResponses];
+
+export type GetByUserIdData = {
+  body?: never;
+  path: {
+    userId: string;
+  };
+  query?: never;
+  url: "/api/agent-sessions/user/{userId}";
+};
+
+export type GetByUserIdResponses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListAgentSessionDto;
+};
+
+export type GetByUserIdResponse =
+  GetByUserIdResponses[keyof GetByUserIdResponses];
+
+export type ReadWithSorting1Data = {
+  body?: never;
+  path?: never;
+  query: {
+    direction: string;
+    sortBy: string;
+    page: string;
+    size: string;
+  };
+  url: "/api/agent-sessions/sorted";
+};
+
+export type ReadWithSorting1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseListAgentSessionDto;
+};
+
+export type ReadWithSorting1Response =
+  ReadWithSorting1Responses[keyof ReadWithSorting1Responses];
+
+export type GetSchema1Data = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/agent-sessions/schema";
+};
+
+export type GetSchema1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseJsonNode;
+};
+
+export type GetSchema1Response = GetSchema1Responses[keyof GetSchema1Responses];
+
+export type Count1Data = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: "/api/agent-sessions/count";
+};
+
+export type Count1Responses = {
+  /**
+   * OK
+   */
+  200: GenericResponseLong;
+};
+
+export type Count1Response = Count1Responses[keyof Count1Responses];

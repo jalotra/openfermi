@@ -3,20 +3,42 @@
 import type { Client, Options as Options2, TDataShape } from "./client";
 import { client } from "./client.gen";
 import type {
+  ArtifactsData,
+  ArtifactsResponses,
+  AvailableEvents1Data,
+  AvailableEvents1Responses,
   AvailableEventsData,
   AvailableEventsResponses,
+  Count1Data,
+  Count1Responses,
   CountData,
   CountResponses,
+  CreateData,
+  CreateResponses,
+  Debug1Data,
+  Debug1Responses,
   DebugData,
   DebugResponses,
+  Delete1Data,
+  Delete1Responses,
   DeleteData,
   DeleteResponses,
+  DownloadArtifactData,
+  DownloadArtifactResponses,
+  Get1Data,
+  Get1Responses,
+  GetByUserIdData,
+  GetByUserIdResponses,
   GetData,
   GetResponses,
+  GetSchema1Data,
+  GetSchema1Responses,
   GetSchemaData,
   GetSchemaResponses,
+  HealthData,
   HealthHealthData,
   HealthHealthResponses,
+  HealthResponses,
   LearningsessionCountData,
   LearningsessionCountResponses,
   LearningsessionDeleteData,
@@ -37,6 +59,8 @@ import type {
   LearningsessionReadWithSortingResponses,
   LearningsessionUpsertData,
   LearningsessionUpsertResponses,
+  MessagesData,
+  MessagesResponses,
   PresignCreatePresignUrlData,
   PresignCreatePresignUrlResponses,
   QuestionCountData,
@@ -53,8 +77,12 @@ import type {
   QuestionReadWithSortingResponses,
   QuestionUpsertData,
   QuestionUpsertResponses,
+  Read1Data,
+  Read1Responses,
   ReadData,
   ReadResponses,
+  ReadWithSorting1Data,
+  ReadWithSorting1Responses,
   ReadWithSortingData,
   ReadWithSortingResponses,
   SessionstateGetStateData,
@@ -77,6 +105,12 @@ import type {
   SolutionReadWithSortingResponses,
   SolutionUpsertData,
   SolutionUpsertResponses,
+  StatusData,
+  StatusResponses,
+  TerminateData,
+  TerminateResponses,
+  Transition1Data,
+  Transition1Responses,
   TransitionData,
   TransitionResponses,
   TutorCountData,
@@ -95,6 +129,8 @@ import type {
   TutorReadWithSortingResponses,
   TutorUpsertData,
   TutorUpsertResponses,
+  Upsert1Data,
+  Upsert1Responses,
   UpsertData,
   UpsertResponses,
   UserDeleteData,
@@ -838,6 +874,203 @@ export class PresignController {
         ...options.headers,
       },
     });
+  }
+}
+
+export class AgentSessionController {
+  public static read1<ThrowOnError extends boolean = false>(
+    options?: Options<Read1Data, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      Read1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions", ...options });
+  }
+
+  public static upsert1<ThrowOnError extends boolean = false>(
+    options: Options<Upsert1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      Upsert1Responses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/api/agent-sessions",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static transition1<ThrowOnError extends boolean = false>(
+    options: Options<Transition1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      Transition1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/transition", ...options });
+  }
+
+  public static terminate<ThrowOnError extends boolean = false>(
+    options: Options<TerminateData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      TerminateResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/terminate", ...options });
+  }
+
+  public static create<ThrowOnError extends boolean = false>(
+    options: Options<CreateData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).post<
+      CreateResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/api/agent-sessions/create",
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+    });
+  }
+
+  public static delete1<ThrowOnError extends boolean = false>(
+    options: Options<Delete1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).delete<
+      Delete1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}", ...options });
+  }
+
+  public static get1<ThrowOnError extends boolean = false>(
+    options: Options<Get1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<Get1Responses, unknown, ThrowOnError>(
+      { url: "/api/agent-sessions/{id}", ...options },
+    );
+  }
+
+  public static status<ThrowOnError extends boolean = false>(
+    options: Options<StatusData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      StatusResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/status", ...options });
+  }
+
+  public static messages<ThrowOnError extends boolean = false>(
+    options: Options<MessagesData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      MessagesResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/messages", ...options });
+  }
+
+  public static health<ThrowOnError extends boolean = false>(
+    options: Options<HealthData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      HealthResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/health", ...options });
+  }
+
+  public static debug1<ThrowOnError extends boolean = false>(
+    options: Options<Debug1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      Debug1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/debug", ...options });
+  }
+
+  public static availableEvents1<ThrowOnError extends boolean = false>(
+    options: Options<AvailableEvents1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      AvailableEvents1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/available-events", ...options });
+  }
+
+  public static artifacts<ThrowOnError extends boolean = false>(
+    options: Options<ArtifactsData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      ArtifactsResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/{id}/artifacts", ...options });
+  }
+
+  public static downloadArtifact<ThrowOnError extends boolean = false>(
+    options: Options<DownloadArtifactData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      DownloadArtifactResponses,
+      unknown,
+      ThrowOnError
+    >({
+      url: "/api/agent-sessions/{id}/artifacts/{artifactId}/download",
+      ...options,
+    });
+  }
+
+  public static getByUserId<ThrowOnError extends boolean = false>(
+    options: Options<GetByUserIdData, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      GetByUserIdResponses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/user/{userId}", ...options });
+  }
+
+  public static readWithSorting1<ThrowOnError extends boolean = false>(
+    options: Options<ReadWithSorting1Data, ThrowOnError>,
+  ) {
+    return (options.client ?? client).get<
+      ReadWithSorting1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/sorted", ...options });
+  }
+
+  public static getSchema1<ThrowOnError extends boolean = false>(
+    options?: Options<GetSchema1Data, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      GetSchema1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/schema", ...options });
+  }
+
+  public static count1<ThrowOnError extends boolean = false>(
+    options?: Options<Count1Data, ThrowOnError>,
+  ) {
+    return (options?.client ?? client).get<
+      Count1Responses,
+      unknown,
+      ThrowOnError
+    >({ url: "/api/agent-sessions/count", ...options });
   }
 }
 

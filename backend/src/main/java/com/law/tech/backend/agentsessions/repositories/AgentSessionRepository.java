@@ -8,4 +8,8 @@ import java.util.List;
 public interface AgentSessionRepository extends StatefulRepository<AgentSession> {
 
     long countByUserIdAndStateIn(String userId, List<String> states);
+
+    List<AgentSession> findByUserId(String userId);
+
+    List<AgentSession> findByUserIdOrderByCreatedAtDesc(String userId);
 }
