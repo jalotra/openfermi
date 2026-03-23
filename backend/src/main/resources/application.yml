@@ -56,6 +56,14 @@ s3Credentials:
   secretKey: ${S3_SECRET_ACCESS_KEY}
 aws:
   region: ${AWS_REGION:ap-south-1}
+ecs:
+  cluster: ${ECS_CLUSTER:opencode-agents}
+  task-definition: ${ECS_TASK_DEFINITION:opencode-stem}
+  subnets: ${ECS_SUBNETS:}
+  security-groups: ${ECS_SECURITY_GROUPS:}
+  container-name: ${ECS_CONTAINER_NAME:opencode}
+  container-port: ${ECS_CONTAINER_PORT:4096}
+  max-agents-per-user: ${MAX_AGENTS_PER_USER:3}
 clients:
   circuitbreakerdefaultconfigs:
     baseUrl: http://random.com
