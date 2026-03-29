@@ -29,7 +29,8 @@
 	<properties>
 		<java.version>21</java.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
-		<lombok.version>1.18.32</lombok.version>
+		<lombok.version>1.18.42</lombok.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<lombok-mapstruct.version>0.2.0</lombok-mapstruct.version>
 		<aws.sdk.version>2.32.4</aws.sdk.version>
 		<resilience-retrofit.version>1.1.0</resilience-retrofit.version>
@@ -334,6 +335,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
 				<configuration>
 					<annotationProcessorPaths>
 						<path>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,21 +14,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CheckCircle2, Clock, Send } from "lucide-react";
-
-const BACKEND_URL = (
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080"
-).replace(/\/+$/, "");
-
-function getHeaders(): Record<string, string> {
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
-  if (process.env.NEXT_PUBLIC_API_KEY) {
-    headers["X-API-KEY"] = process.env.NEXT_PUBLIC_API_KEY;
-  }
-  return headers;
-}
 
 function WaitlistFormContent() {
   const searchParams = useSearchParams();
@@ -44,25 +29,31 @@ function WaitlistFormContent() {
   const [error, setError] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
 
-  const checkExisting = async () => {
-    if (!email) return;
-    try {
-      const res = await fetch(
-        `${BACKEND_URL}/api/users/waitlist/email/${encodeURIComponent(email)}`,
-        { headers: getHeaders() },
-      );
-      if (res.ok) {
-        setAlreadySubmitted(true);
+  useEffect(() => {
+    const checkExisting = async () => {
+      if (!email) {
+        setChecked(true);
+        return;
       }
-    } catch {
-      // not found, show form
-    }
-    setChecked(true);
-  };
 
-  if (!checked) {
+      try {
+        const res = await fetch(`/api/waitlist?email=${encodeURIComponent(email)}`, {
+          cache: "no-store",
+        });
+
+        if (res.ok) {
+          const data = (await res.json()) as { exists?: boolean };
+          setAlreadySubmitted(data.exists === true);
+        }
+      } catch {
+        // If lookup fails, allow user to submit from UI.
+      } finally {
+        setChecked(true);
+      }
+    };
+
     checkExisting();
-  }
+  }, [email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,9 +62,12 @@ function WaitlistFormContent() {
     setError(null);
 
     try {
-      const res = await fetch(`${BACKEND_URL}/api/users/waitlist`, {
+      const res = await fetch("/api/waitlist", {
         method: "POST",
-        headers: getHeaders(),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
         body: JSON.stringify({ email, name, message }),
       });
 
