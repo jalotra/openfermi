@@ -43,7 +43,7 @@ import {
   ArtifactTitle,
   ArtifactActions,
   ArtifactAction,
-    ArtifactContent,
+  ArtifactContent,
 } from "@/components/ai-elements/artifact";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -331,9 +331,7 @@ export function AgentSessionLiveView({
                                 toolName={part.toolName || "tool"}
                               />
                               <ToolContent>
-                                {toolInput && (
-                                  <ToolInput input={toolInput} />
-                                )}
+                                {toolInput && <ToolInput input={toolInput} />}
                                 {toolOutput && (
                                   <ToolOutput
                                     output={toolOutput}
@@ -445,7 +443,9 @@ function asSnapshot(data: unknown): Snapshot | null {
   if (!data || typeof data !== "object") return null;
   const next = data as Record<string, unknown>;
   return {
-    session: isRecord(next.session) ? (next.session as AgentSessionDto) : undefined,
+    session: isRecord(next.session)
+      ? (next.session as AgentSessionDto)
+      : undefined,
     messages: Array.isArray(next.messages)
       ? (next.messages as AgentMessageDto[])
       : undefined,
