@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
@@ -44,6 +45,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Script
+          defer
+          src="https://cloud.umami.is/script.js"
+          data-website-id="6f1751a0-2b2a-416d-abf2-b51537696c5d"
+        />
         <ThemeProvider>
           {children}
           <Toaster />

@@ -384,17 +384,17 @@ export default function LandingPage() {
         </section>
 
         <div className="mt-8 mb-24 w-full">
-            <h3 className="text-xl font-medium mb-6 text-center">
-              Used by students from
-            </h3>
-            <div className="flex items-center justify-center gap-8 flex-wrap opacity-70">
-              {INSTITUTIONS.map((inst) => (
-                <span key={inst.name} className={inst.style}>
-                  {inst.name}
-                </span>
-              ))}
-            </div>
+          <h3 className="text-xl font-medium mb-6 text-center">
+            Used by students from
+          </h3>
+          <div className="flex items-center justify-center gap-8 flex-wrap opacity-70">
+            {INSTITUTIONS.map((inst) => (
+              <span key={inst.name} className={inst.style}>
+                {inst.name}
+              </span>
+            ))}
           </div>
+        </div>
 
         {/* Footer */}
         <footer className="w-full pt-12 border-t border-[#d1c5b4] flex flex-col sm:flex-row justify-between gap-8 text-left">
