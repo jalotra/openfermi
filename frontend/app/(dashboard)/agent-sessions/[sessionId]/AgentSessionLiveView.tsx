@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { AxiosError } from "axios";
 import { AgentSessionController } from "@/lib/backend/sdk.gen";
 import { backendClient } from "@/lib/backend-client";
@@ -24,6 +23,13 @@ import {
   MessageResponse,
 } from "@/components/ai-elements/message";
 import {
+  PromptInput,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  type PromptInputMessage,
+} from "@/components/ai-elements/prompt-input";
+import {
   Tool,
   ToolHeader,
   ToolContent,
@@ -37,8 +43,9 @@ import {
   ArtifactTitle,
   ArtifactActions,
   ArtifactAction,
-  ArtifactContent,
+    ArtifactContent,
 } from "@/components/ai-elements/artifact";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   ArrowLeft,
   Bot,
@@ -53,52 +60,44 @@ interface AgentSessionLiveViewProps {
   initialSession: AgentSessionDto;
 }
 
-const POLL_INTERVAL_MS = 3000;
 const TERMINAL_STATES = ["COMPLETED", "FAILED", "TERMINATED"];
+type Snapshot = {
+  session?: AgentSessionDto;
+  messages?: AgentMessageDto[];
+  artifacts?: AgentArtifactDto[];
+};
 
 export function AgentSessionLiveView({
   initialSession,
 }: AgentSessionLiveViewProps) {
-  const router = useRouter();
   const [session, setSession] = useState(initialSession);
   const [messages, setMessages] = useState<AgentMessageDto[]>([]);
   const [artifacts, setArtifacts] = useState<AgentArtifactDto[]>([]);
   const [isTerminating, setIsTerminating] = useState(false);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const isActive = !TERMINAL_STATES.includes(session.state || "");
+  const id = session.id || "";
 
-  const fetchMessages = useCallback(async () => {
+  const refresh = useCallback(async () => {
+    if (!id) return;
     try {
-      const response = await AgentSessionController.messages({
-        client: backendClient,
-        path: { id: session.id || "" },
-      });
-      setMessages(response.data?.data || []);
-    } catch {
-      // silently ignore polling errors
-    }
-  }, [session.id]);
-
-  const fetchArtifacts = useCallback(async () => {
-    try {
-      const response = await AgentSessionController.artifacts({
-        client: backendClient,
-        path: { id: session.id || "" },
-      });
-      setArtifacts(response.data?.data || []);
-    } catch {
-      // silently ignore polling errors
-    }
-  }, [session.id]);
-
-  const fetchStatus = useCallback(async () => {
-    try {
-      const response = await AgentSessionController.status({
-        client: backendClient,
-        path: { id: session.id || "" },
-      });
-      const data = response.data?.data;
+      const [status, msg, files] = await Promise.all([
+        AgentSessionController.status({
+          client: backendClient,
+          path: { id },
+        }),
+        AgentSessionController.messages({
+          client: backendClient,
+          path: { id },
+        }),
+        AgentSessionController.artifacts({
+          client: backendClient,
+          path: { id },
+        }),
+      ]);
+      const data = status.data?.data;
       if (data) {
         setSession((prev) => ({
           ...prev,
@@ -107,27 +106,81 @@ export function AgentSessionLiveView({
           cost: data.cost as number,
         }));
       }
+      setMessages(msg.data?.data || []);
+      setArtifacts(files.data?.data || []);
     } catch {
-      // silently ignore polling errors
+      // ignore refresh errors
     }
-  }, [session.id]);
+  }, [id]);
+
+  const apply = useCallback((next: Snapshot | null) => {
+    if (!next) return;
+    if (next.session) setSession(next.session);
+    if (next.messages) setMessages(next.messages);
+    if (next.artifacts) setArtifacts(next.artifacts);
+  }, []);
 
   useEffect(() => {
-    fetchMessages();
-    fetchArtifacts();
+    refresh();
+  }, [refresh]);
 
-    if (isActive) {
-      pollRef.current = setInterval(() => {
-        fetchMessages();
-        fetchArtifacts();
-        fetchStatus();
-      }, POLL_INTERVAL_MS);
-    }
-
+  useEffect(() => {
+    if (!id || !isActive) return;
+    const ctrl = new AbortController();
+    const headers = backendClient.getConfig().headers as
+      | Record<string, string>
+      | undefined;
+    void (async () => {
+      try {
+        const stream = await backendClient.sse.get({
+          url: "/api/agent-sessions/{id}/events",
+          path: { id },
+          headers,
+          signal: ctrl.signal,
+          onSseEvent: (event) => {
+            if (event.event === "snapshot") apply(asSnapshot(event.data));
+          },
+          onSseError: () => {
+            void refresh();
+          },
+        });
+        for await (const data of stream.stream) {
+          const next = asSnapshot(data);
+          if (next) apply(next);
+        }
+      } catch {
+        void refresh();
+      }
+    })();
     return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
+      ctrl.abort();
     };
-  }, [isActive, fetchMessages, fetchArtifacts, fetchStatus]);
+  }, [id, isActive, apply, refresh]);
+
+  async function handleSubmit(message: PromptInputMessage) {
+    const text = message.text.trim();
+    if (!text || !id) return;
+    setIsSending(true);
+    setError(null);
+    try {
+      await backendClient.post({
+        url: "/api/agent-sessions/{id}/prompt",
+        path: { id },
+        body: { text, parts: [] },
+      });
+      await refresh();
+    } catch (err) {
+      if (err instanceof AxiosError) {
+        setError(
+          err.response?.data?.message || err.message || "Failed to send prompt",
+        );
+      } else {
+        setError(err instanceof Error ? err.message : "Failed to send prompt");
+      }
+    } finally {
+      setIsSending(false);
+    }
+  }
 
   async function handleTerminate() {
     setIsTerminating(true);
@@ -317,6 +370,23 @@ export function AgentSessionLiveView({
             )}
             <ConversationScrollButton />
           </Conversation>
+          <div className="border-t p-4 space-y-3">
+            {error && (
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            <PromptInput onSubmit={handleSubmit}>
+              <PromptInputTextarea
+                placeholder="Send a message to the agent..."
+                disabled={!isActive || isSending}
+              />
+              <PromptInputFooter>
+                <div />
+                <PromptInputSubmit disabled={!isActive || isSending} />
+              </PromptInputFooter>
+            </PromptInput>
+          </div>
         </div>
 
         {/* Artifacts sidebar */}
@@ -369,6 +439,24 @@ function safeParseJson(data?: string): Record<string, unknown> | null {
   } catch {
     return { text: data };
   }
+}
+
+function asSnapshot(data: unknown): Snapshot | null {
+  if (!data || typeof data !== "object") return null;
+  const next = data as Record<string, unknown>;
+  return {
+    session: isRecord(next.session) ? (next.session as AgentSessionDto) : undefined,
+    messages: Array.isArray(next.messages)
+      ? (next.messages as AgentMessageDto[])
+      : undefined,
+    artifacts: Array.isArray(next.artifacts)
+      ? (next.artifacts as AgentArtifactDto[])
+      : undefined,
+  };
+}
+
+function isRecord(data: unknown): data is Record<string, unknown> {
+  return typeof data === "object" && data !== null;
 }
 
 function mapToolStatus(

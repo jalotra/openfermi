@@ -4,6 +4,7 @@ import com.law.tech.backend.agentsessions.models.AgentSession;
 import com.law.tech.backend.agentsessions.models.AgentSessionEvent;
 import com.law.tech.backend.agentsessions.models.AgentSessionState;
 import com.law.tech.backend.agentsessions.services.orchestration.EcsOrchestrationService;
+import com.law.tech.backend.agentsessions.services.orchestration.OpenCodeWorkerService;
 import com.law.tech.backend.base.statemachine.TransitionHandler;
 import com.law.tech.backend.base.statemachine.TransitionHook;
 import java.util.List;
@@ -18,9 +19,11 @@ public class AgentSessionTransitionHandler
     private static final Logger log = LoggerFactory.getLogger(AgentSessionTransitionHandler.class);
 
     private final EcsOrchestrationService ecs;
+    private final OpenCodeWorkerService worker;
 
-    public AgentSessionTransitionHandler(EcsOrchestrationService ecs) {
+    public AgentSessionTransitionHandler(EcsOrchestrationService ecs, OpenCodeWorkerService worker) {
         this.ecs = ecs;
+        this.worker = worker;
     }
 
     @Override
@@ -49,7 +52,15 @@ public class AgentSessionTransitionHandler
             AgentSession session = ctx.entity();
             String arn = ecs.provision(session);
             session.setTaskArn(arn);
-            log.info("Provisioned ECS task {} for agent session {}", arn, session.getId());
+            String workerUrl = ecs.awaitWorkerUrl(arn);
+            session.setWorkerUrl(workerUrl);
+            if (!ecs.healthCheck(workerUrl)) {
+                throw new RuntimeException("Worker health check failed for session " + session.getId());
+            }
+            OpenCodeWorkerService.SessionInfo info = worker.createSession(workerUrl);
+            session.setOpencodeSessionId(info.sessionId());
+            session.setOpencodeProjectId(info.projectId());
+            log.info("Provisioned ECS task {} and OpenCode session {} for agent session {}", arn, info.sessionId(), session.getId());
         };
     }
 

@@ -41,6 +41,9 @@ public class EcsOrchestrationService {
     @Value("${ecs.container-port}")
     private int containerPort;
 
+    @Value("${ecs.worker-url-template:}")
+    private String workerUrlTemplate;
+
     public EcsOrchestrationService(EcsClient ecs) {
         this.ecs = ecs;
         this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
@@ -88,6 +91,13 @@ public class EcsOrchestrationService {
     }
 
     public String resolveWorkerUrl(String taskArn) {
+        if (workerUrlTemplate != null && !workerUrlTemplate.isBlank()) {
+            String token = taskArn.contains("/") ? taskArn.substring(taskArn.lastIndexOf('/') + 1) : taskArn;
+            return workerUrlTemplate
+                    .replace("{taskArn}", taskArn)
+                    .replace("{taskId}", token)
+                    .replace("{port}", String.valueOf(containerPort));
+        }
         DescribeTasksResponse response = ecs.describeTasks(
                 DescribeTasksRequest.builder().cluster(cluster).tasks(taskArn).build());
 
@@ -105,6 +115,26 @@ public class EcsOrchestrationService {
         }
 
         throw new RuntimeException("No private IP found for task: " + taskArn);
+    }
+
+    public String awaitWorkerUrl(String taskArn) {
+        RuntimeException last = null;
+        for (int i = 0; i < 30; i++) {
+            try {
+                String url = resolveWorkerUrl(taskArn);
+                if (url != null && !url.isBlank()) return url;
+            } catch (RuntimeException e) {
+                last = e;
+            }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException("Interrupted while waiting for worker URL", e);
+            }
+        }
+        if (last != null) throw last;
+        throw new RuntimeException("Worker URL not available for task: " + taskArn);
     }
 
     public Map<String, String> describeTask(String taskArn) {

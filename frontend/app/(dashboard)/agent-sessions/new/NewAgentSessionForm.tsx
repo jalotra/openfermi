@@ -25,7 +25,12 @@ export function NewAgentSessionForm({ userId }: NewAgentSessionFormProps) {
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(_message: PromptInputMessage) {
+  async function handleSubmit(message: PromptInputMessage) {
+    const text = message.text.trim();
+    if (!text) {
+      setError("Please enter a prompt before starting the session.");
+      return;
+    }
     setIsCreating(true);
     setError(null);
 
@@ -41,6 +46,11 @@ export function NewAgentSessionForm({ userId }: NewAgentSessionFormProps) {
 
       const session = response.data?.data;
       if (session?.id) {
+        await backendClient.post({
+          url: "/api/agent-sessions/{id}/prompt",
+          path: { id: session.id },
+          body: { text, parts: [] },
+        });
         router.push(`/agent-sessions/${session.id}`);
       } else {
         setError("Session created but no ID returned.");
