@@ -1,0 +1,30 @@
+{
+  "name": "openfermi-agent-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pi-based ECS worker for OpenFermi agent sessions",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.884.0",
+    "@mariozechner/pi-ai": "0.67.68",
+    "@mariozechner/pi-coding-agent": "0.67.68",
+    "express": "^5.1.0",
+    "mime-types": "^2.1.35",
+    "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^24.5.2",
+    "@types/pg": "^8.20.0",
+    "typescript": "^5.9.2"
+  }
+}
